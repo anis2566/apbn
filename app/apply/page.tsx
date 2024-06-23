@@ -31,29 +31,29 @@ import { Section } from "@/schema/unit.schema"
 import { CREATE_SCOUT } from "@/actions/scout.action"
 
 const steps = [
-  {
-    id: 1,
-    name: 'Personal Information',
-    fields: ["name", "fatherName", "motherName", "dob", "gender", "phone", "religion", "email", "bloodGroup", "imageUrl"],
-    Icon: User
-  },
-  {
-    id: 2,
-    name: 'Address',
-    fields: ["villageHouse", "roadBlockSector", "division", "district", "thana", "postCode"],
-    Icon: Home
-  },
-  {
-    id: 3,
-    name: 'Scout Information',
-    fields: ["scoutType", "experience", "joinDate", "memberType", "section", "badge", "role", "scoutRegion", "scoutDistrict", "scoutUpazilla", "institute", "class", "roll", "organization", "designation", "unitId", "apsId"],
-    Icon: Contact
-  },
+    {
+        id: 1,
+        name: 'Personal Information',
+        fields: ["name", "fatherName", "motherName", "dob", "gender", "phone", "religion", "email", "bloodGroup", "imageUrl"],
+        Icon: User
+    },
+    {
+        id: 2,
+        name: 'Address',
+        fields: ["villageHouse", "roadBlockSector", "division", "district", "thana", "postCode"],
+        Icon: Home
+    },
+    {
+        id: 3,
+        name: 'Scout Information',
+        fields: ["scoutType", "experience", "joinDate", "memberType", "section", "badge", "role", "scoutRegion", "scoutDistrict", "scoutUpazilla", "institute", "class", "roll", "organization", "designation", "unitId", "apsId"],
+        Icon: Contact
+    },
 ]
 
 type Division = {
-  id: string;
-  name: string;
+    id: string;
+    name: string;
 };
 
 const Apply = () => {
@@ -71,48 +71,48 @@ const Apply = () => {
 
     useEffect(() => {
         const fetchDivisions = async () => {
-        const res = await fetch("https://bdapi.vercel.app/api/v.1/division");
-        if (res.ok) {
-            const data = await res.json();
-            setDivisions(data?.data || []);
-        } else {
-            console.error("Failed to fetch divisions:", res.status);
-        }
+            const res = await fetch("https://bdapi.vercel.app/api/v.1/division");
+            if (res.ok) {
+                const data = await res.json();
+                setDivisions(data?.data || []);
+            } else {
+                console.error("Failed to fetch divisions:", res.status);
+            }
         };
         fetchDivisions();
     }, []);
 
     useEffect(() => {
         const fetchDistricts = async () => {
-        const res = await fetch(`https://bdapi.vercel.app/api/v.1/district/${division}`, {
-            mode: 'cors'
-        });
-        if (res.ok) {
-            const data = await res.json();
-            setDistricts(data?.data || []);
-        } else {
-            console.error("Failed to fetch divisions:", res.status);
-        }
+            const res = await fetch(`https://bdapi.vercel.app/api/v.1/district/${division}`, {
+                mode: 'cors'
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setDistricts(data?.data || []);
+            } else {
+                console.error("Failed to fetch divisions:", res.status);
+            }
         };
         fetchDistricts();
     }, [division]);
 
     useEffect(() => {
         const fetchDivisions = async () => {
-        const res = await fetch(`https://bdapi.vercel.app/api/v.1/district/${region}`, {
-            mode: 'cors'
-        });
-        if (res.ok) {
-            const data = await res.json();
-            setScoutDistricts(data?.data || []);
-        } else {
-            console.error("Failed to fetch divisions:", res.status);
-        }
+            const res = await fetch(`https://bdapi.vercel.app/api/v.1/district/${region}`, {
+                mode: 'cors'
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setScoutDistricts(data?.data || []);
+            } else {
+                console.error("Failed to fetch divisions:", res.status);
+            }
         };
         fetchDivisions();
     }, [region]);
 
-    const {data:units} = useQuery({
+    const { data: units } = useQuery({
         queryKey: ["scout-units", section],
         queryFn: async () => {
             const res = await GET_UNITS(section)
@@ -160,11 +160,11 @@ const Apply = () => {
         },
     })
 
-    const { trigger, handleSubmit, formState:{errors},setValue } = form;
-    
+    const { trigger, handleSubmit, formState: { errors }, setValue } = form;
+
     type FieldName = keyof ScoutSchemaType
 
-    const {mutate: createScout, isPending} = useMutation({
+    const { mutate: createScout, isPending } = useMutation({
         mutationFn: CREATE_SCOUT,
         onSuccess: (data) => {
             router.push(`/apply/payment/${data?.id}`)
@@ -214,44 +214,44 @@ const Apply = () => {
 
             <nav aria-label='Progress'>
                 <ol role='list' className='space-y-4 md:flex md:space-x-8 md:space-y-0'>
-                {steps.map((step, index) => (
-                    <li key={step.name} className='md:flex-1'>
-                    {currentStep > index ? (
-                        <div className='group flex w-full flex-col border-l-4 border-green-500 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4'>
-                            <div className="flex items-center gap-x-2">
-                                <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                    {steps.map((step, index) => (
+                        <li key={step.name} className='md:flex-1'>
+                            {currentStep > index ? (
+                                <div className='group flex w-full flex-col border-l-4 border-green-500 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4'>
+                                    <div className="flex items-center gap-x-2">
+                                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
 
-                                    <Check className="w-6 h-6 text-white" />
+                                            <Check className="w-6 h-6 text-white" />
+                                        </div>
+                                        {step.name}
+                                    </div>
                                 </div>
-                                {step.name}    
-                            </div>
-                        </div>
-                    ) : currentStep === index ? (
-                        <div
-                        className='flex w-full flex-col border-l-4 border-amber-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4'
-                        aria-current='step'
-                        >
-                            <div className="flex items-center gap-x-2">
-                                <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center">
+                            ) : currentStep === index ? (
+                                <div
+                                    className='flex w-full flex-col border-l-4 border-amber-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4'
+                                    aria-current='step'
+                                >
+                                    <div className="flex items-center gap-x-2">
+                                        <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center">
 
-                                    <Edit className="w-6 h-6 text-white" />
+                                            <Edit className="w-6 h-6 text-white" />
+                                        </div>
+                                        {step.name}
+                                    </div>
                                 </div>
-                                {step.name} 
-                            </div>
-                        </div>
-                    ) : (
-                        <div className='group flex w-full flex-col border-l-4 border-gray-200 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4'>
-                            <div className="flex items-center gap-x-2">
-                                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                            ) : (
+                                <div className='group flex w-full flex-col border-l-4 border-gray-200 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4'>
+                                    <div className="flex items-center gap-x-2">
+                                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
 
-                                    <step.Icon className="w-6 h-6 text-indigo-500" />
+                                            <step.Icon className="w-6 h-6 text-indigo-500" />
+                                        </div>
+                                        {step.name}
+                                    </div>
                                 </div>
-                                {step.name}    
-                            </div>
-                        </div>
-                    )}
-                    </li>
-                ))}
+                            )}
+                        </li>
+                    ))}
                 </ol>
             </nav>
 
@@ -285,10 +285,11 @@ const Apply = () => {
                                         <div>
                                             <DatePicker
                                                 selected={dob}
-                                                onChange={(date: Date) => {
-                                                    setDob(date)
-                                                    field.onChange(date)
-                                                    trigger("dob")
+                                                onChange={(date: Date | null) => {
+                                                    if (date) {
+                                                        setDob(date)
+                                                        field.onChange(date)
+                                                    }
                                                 }}
                                                 showYearDropdown
                                                 dateFormatCalendar="MMMM"
@@ -354,12 +355,12 @@ const Apply = () => {
                                                 }}
                                                 defaultValue={field.value}
                                                 className="flex"
-                                                >
+                                            >
                                                 {
                                                     ["Male", "Female", "Other"].map((v, i) => (
                                                         <FormItem className="flex items-center space-x-3 space-y-0" key={i}>
                                                             <FormControl>
-                                                            <RadioGroupItem value={v} />
+                                                                <RadioGroupItem value={v} />
                                                             </FormControl>
                                                             <FormLabel className="font-normal">
                                                                 {v}
@@ -474,9 +475,9 @@ const Apply = () => {
                                         {
                                             form.watch("imageUrl") ? (
                                                 <Avatar>
-                                                        <AvatarImage src={form.getValues("imageUrl")} />
+                                                    <AvatarImage src={form.getValues("imageUrl")} />
                                                 </Avatar>
-                                            ): (
+                                            ) : (
                                                 <UploadButton
                                                     endpoint="imageUploader"
                                                     onClientUploadComplete={(res) => {
@@ -496,7 +497,7 @@ const Apply = () => {
                             />
                         </div>
                     </div>
-                    
+
                     <div className={cn("hidden space-y-6", currentStep === 1 && "block")}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
@@ -538,31 +539,31 @@ const Apply = () => {
                                 name="division"
                                 render={({ field }) => (
                                     <FormItem className="space-y-0">
-                                    <FormLabel>Division</FormLabel>
-                                    <Select
-                                        value={field.value}
-                                        defaultValue={field.value}
+                                        <FormLabel>Division</FormLabel>
+                                        <Select
+                                            value={field.value}
+                                            defaultValue={field.value}
                                             onValueChange={(value) => {
                                                 field.onChange(value)
                                                 const div = divisions.find(item => item.name === value)
                                                 setDivision(div?.id || null)
                                                 trigger("division")
-                                        }}
-                                    >
-                                        <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a division" />
-                                        </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                        {divisions.map((division, i) => (
-                                            <SelectItem value={division.name} key={i}>
-                                            {division.name}
-                                            </SelectItem>
-                                        ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
+                                            }}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a division" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {divisions.map((division, i) => (
+                                                    <SelectItem value={division.name} key={i}>
+                                                        {division.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -571,29 +572,29 @@ const Apply = () => {
                                 name="district"
                                 render={({ field }) => (
                                     <FormItem className="space-y-0">
-                                    <FormLabel>District</FormLabel>
-                                    <Select
-                                        value={field.value}
-                                        defaultValue={field.value}
+                                        <FormLabel>District</FormLabel>
+                                        <Select
+                                            value={field.value}
+                                            defaultValue={field.value}
                                             onValueChange={(value) => {
                                                 field.onChange(value)
                                                 trigger("district")
                                             }}
-                                    >
-                                        <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a division" />
-                                        </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                        {districts.map((district, i) => (
-                                            <SelectItem value={district.name} key={i}>
-                                            {district.name}
-                                            </SelectItem>
-                                        ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a division" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {districts.map((district, i) => (
+                                                    <SelectItem value={district.name} key={i}>
+                                                        {district.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -641,36 +642,36 @@ const Apply = () => {
                                 name="scoutType"
                                 render={({ field }) => (
                                     <FormItem className="space-y-3">
-                                    <FormLabel>Priority</FormLabel>
-                                    <FormControl>
-                                        <RadioGroup
-                                            onValueChange={(value) => {
-                                            field.onChange(value)
-                                            trigger("scoutType")
-                                        }}
-                                        defaultValue={field.value}
+                                        <FormLabel>Priority</FormLabel>
+                                        <FormControl>
+                                            <RadioGroup
+                                                onValueChange={(value) => {
+                                                    field.onChange(value)
+                                                    trigger("scoutType")
+                                                }}
+                                                defaultValue={field.value}
                                                 className="flex gap-x-2"
                                                 disabled={isPending}
-                                        >
-                                        <FormItem className="flex items-center space-x-3 space-y-0">
-                                            <FormControl>
-                                            <RadioGroupItem value="scoutMember" />
-                                            </FormControl>
-                                            <FormLabel className="font-normal">
-                                            For Scouts member
-                                            </FormLabel>
-                                        </FormItem>
-                                        <FormItem className="flex items-center space-x-3 space-y-0">
-                                            <FormControl>
-                                            <RadioGroupItem value="interestMember" />
-                                            </FormControl>
-                                            <FormLabel className="font-normal">
-                                            For interested to be scouts member
-                                            </FormLabel>
-                                        </FormItem>
-                                        </RadioGroup>
-                                    </FormControl>
-                                    <FormMessage />
+                                            >
+                                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                                    <FormControl>
+                                                        <RadioGroupItem value="scoutMember" />
+                                                    </FormControl>
+                                                    <FormLabel className="font-normal">
+                                                        For Scouts member
+                                                    </FormLabel>
+                                                </FormItem>
+                                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                                    <FormControl>
+                                                        <RadioGroupItem value="interestMember" />
+                                                    </FormControl>
+                                                    <FormLabel className="font-normal">
+                                                        For interested to be scouts member
+                                                    </FormLabel>
+                                                </FormItem>
+                                            </RadioGroup>
+                                        </FormControl>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -840,9 +841,9 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Role</FormLabel>
                                         <Select defaultValue={field.value[0]} onValueChange={(value) => {
-                                                field.onChange([value])
-                                                trigger("role")
-                                            }} disabled={isPending}>
+                                            field.onChange([value])
+                                            trigger("role")
+                                        }} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select scout role" />
@@ -865,32 +866,32 @@ const Apply = () => {
                                 name="scoutRegion"
                                 render={({ field }) => (
                                     <FormItem className="space-y-0">
-                                    <FormLabel>Scout Region</FormLabel>
-                                    <Select
+                                        <FormLabel>Scout Region</FormLabel>
+                                        <Select
                                             value={field.value}
                                             disabled={isPending}
-                                        defaultValue={field.value}
+                                            defaultValue={field.value}
                                             onValueChange={(value) => {
                                                 field.onChange(value)
                                                 const div = divisions.find(item => item.name === value)
                                                 setRegion(div?.id || null)
                                                 trigger("scoutRegion")
-                                        }}
-                                    >
-                                        <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select region" />
-                                        </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                        {divisions.map((division, i) => (
-                                            <SelectItem value={division.name} key={i}>
-                                            {division.name}
-                                            </SelectItem>
-                                        ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
+                                            }}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select region" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {divisions.map((division, i) => (
+                                                    <SelectItem value={division.name} key={i}>
+                                                        {division.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -902,30 +903,30 @@ const Apply = () => {
                                 name="scoutDistrict"
                                 render={({ field }) => (
                                     <FormItem className="space-y-0">
-                                    <FormLabel>Scout District</FormLabel>
-                                    <Select
-                                        value={field.value}
-                                        defaultValue={field.value}
+                                        <FormLabel>Scout District</FormLabel>
+                                        <Select
+                                            value={field.value}
+                                            defaultValue={field.value}
                                             onValueChange={(value) => {
                                                 field.onChange(value)
                                                 trigger("scoutDistrict")
                                             }}
                                             disabled={isPending}
-                                    >
-                                        <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select district" />
-                                        </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                        {scoutDistricts.map((district, i) => (
-                                            <SelectItem value={district.name} key={i}>
-                                            {district.name}
-                                            </SelectItem>
-                                        ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select district" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {scoutDistricts.map((district, i) => (
+                                                    <SelectItem value={district.name} key={i}>
+                                                        {district.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -1049,7 +1050,7 @@ const Apply = () => {
                     </div>
 
                     <div className="flex justify-center items-center gap-x-4">
-                        <Button type="button" variant="outline" onClick={() => setCurrentStep(currentStep -1)} disabled={currentStep === 0 || isPending}>Back</Button>
+                        <Button type="button" variant="outline" onClick={() => setCurrentStep(currentStep - 1)} disabled={currentStep === 0 || isPending}>Back</Button>
                         <Button type="button" onClick={next} className={cn("", currentStep === 2 && "hidden")}>{currentStep === 2 ? "Submit" : "Next"}</Button>
                         <Button type="submit" className={cn("hidden", currentStep === 2 && "flex")} disabled={isPending}>Submit</Button>
                     </div>

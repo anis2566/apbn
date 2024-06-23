@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 const isProtectedRoute = createRouteMatcher([
   "/apply",
   "/scout(.*)",
-  "/dashboard"
+  "/dashboard(.*)"
 ]);
 
 export default clerkMiddleware((auth, req) => {

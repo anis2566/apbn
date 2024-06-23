@@ -8,12 +8,21 @@ import {
   LayoutGridIcon,
   Blocks,
   UtilityPole,
+  LucideIcon,
+  Pen,
+  List,
+  Radio,
+  CircleCheck,
+  BadgeX,
+  BadgePercent,
+  CircleDollarSign,
 } from "lucide-react";
 
 type Submenu = {
   href: string;
   label: string;
   active: boolean;
+  icon: LucideIcon;
 };
 
 type Menu = {
@@ -56,11 +65,13 @@ export function getMenuList(pathname: string): Group[] {
               href: "/dashboard/unit/create",
               label: "Create",
               active: pathname === "/dashboard/unit/create",
+              icon: Pen
             },
             {
               href: "/dashboard/unit",
               label: "List",
               active: pathname === "/dashboard/unit",
+              icon: List
             },
           ],
         },
@@ -74,21 +85,25 @@ export function getMenuList(pathname: string): Group[] {
               href: "/dashboard/scout/request",
               label: "Request",
               active: pathname === "/dashboard/scout/request",
+              icon: Radio
             },
             {
               href: "/dashboard/scout/list",
               label: "List",
               active: pathname === "/dashboard/scout/list",
+              icon: List
             },
             {
               href: "/dashboard/scout/verified",
               label: "Verified",
               active: pathname === "/dashboard/scout/verified",
+              icon: CircleCheck
             },
             {
               href: "/dashboard/scout/suspended",
               label: "Suspended",
               active: pathname === "/dashboard/scout/suspended",
+              icon: BadgeX
             },
           ],
         },
@@ -102,11 +117,13 @@ export function getMenuList(pathname: string): Group[] {
               href: "/dashboard/utils/fee",
               label: "Fee",
               active: pathname === "/dashboard/utils/fee",
+              icon: CircleDollarSign
             },
             {
               href: "/dashboard/utils/coupon",
               label: "Coupon",
               active: pathname === "/dashboard/utils/coupon",
+              icon: BadgePercent
             },
           ],
         },
@@ -142,6 +159,7 @@ export function getMenuListScout(pathname: string): Group[] {
               href: "/scout/event/list",
               label: "List",
               active: pathname === "/scout/event/list",
+              icon: List
             },
           ],
         },

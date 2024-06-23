@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import {ClerkProvider,} from '@clerk/nextjs'
+import NextTopLoader from 'nextjs-toploader';
 
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -32,6 +33,7 @@ export default function RootLayout({
             <QueryProvider>
               {children}
               <Toaster />
+              <NextTopLoader showSpinner={false} color="#F97316" />
               <ModalProvider />
             </QueryProvider>
           </ThemeProvider>

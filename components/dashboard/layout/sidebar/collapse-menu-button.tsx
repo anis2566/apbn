@@ -30,6 +30,7 @@ type Submenu = {
   href: string;
   label: string;
   active: boolean;
+  icon: LucideIcon;
 };
 
 interface CollapseMenuButtonProps {
@@ -97,16 +98,16 @@ export function CollapseMenuButton({
         </Button>
       </CollapsibleTrigger>
       <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-        {submenus.map(({ href, label, active }, index) => (
+        {submenus.map(({ href, label, active, icon:Icon }, index) => (
           <Button
             key={index}
             variant={active ? "secondary" : "ghost"}
-            className="w-full justify-start h-10 mb-1"
+            className="w-full justify-start h-10 mb-1 text-muted-foreground"
             asChild
           >
             <Link href={href}>
               <span className="mr-4 ml-2">
-                <Dot size={18} />
+                <Icon className="w-4 h-4" />
               </span>
               <p
                 className={cn(

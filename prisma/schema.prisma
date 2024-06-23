@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  Admin
+  User
+  Scout
+  ScoutLeader
+}
+
+enum Section {
+  Cub
+  Scout
+  Rover 
+}
+
+enum Status {
+  Pending
+  Active
+  Inactive
+  Suspended
+}
+
+enum CouponStatus {
+  Active
+  Inactive
+}
+
+model User {
+  id String @id @default(uuid())
+  clerkId String @unique
+  name String
+  email String
+  imageUrl String
+  role Role @default(User)
+
+  scout Scout?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Scout {
+  id String @id @default(uuid())
+  name String
+  apsId String?
+  fatherName String
+  motherName String
+  dob DateTime
+  gender String
+  phone String
+  religion String
+  email String?
+  bloodGroup String?
+  villageHouse String
+  roadBlockSector String
+  district String
+  division String
+  thana String
+  postCode String?
+  scoutType String
+  experience String[] @default([""])
+  joinDate DateTime?
+  section String
+  memberType String
+  badge String?
+  role String[] @default(["User"])
+  scoutRegion String
+  scoutDistrict String
+  scoutUpazilla String?
+  institute String?
+  class String?
+  roll String?
+  organization String?
+  designation String?
+  imageUrl String
+  status Status @default(Pending)
+  isVerified Boolean @default(false)
+  isPaid Boolean @default(false)
+  allowCard Boolean @default(false)
+
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  unitId String?
+  unit Unit? @relation(fields: [unitId], references: [id])
+
+  leadingUnit Unit? @relation(name: "UnitLeader")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model Unit {
+  id String @id @default(uuid())
+  name String
+  limit Int
+  section Section
+
+  leaderId String? @unique
+  leader Scout? @relation(name: "UnitLeader", fields: [leaderId], references: [id])
+
+  scouts Scout[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Fee {
+  id String @id @default(uuid())
+  title String
+  amount Int
+  discountAmount Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Coupon {
+  id String @id @default(uuid())
+  title String
+  code String
+  value Int
+  expire DateTime @default(now())
+  status CouponStatus @default(Inactive)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

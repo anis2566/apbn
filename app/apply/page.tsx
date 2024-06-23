@@ -728,10 +728,11 @@ const Apply = () => {
                                         <div>
                                             <DatePicker
                                                 selected={joinDate}
-                                                onChange={(date: Date) => {
-                                                    setJoinDate(date)
-                                                    field.onChange(date)
-                                                    trigger("joinDate")
+                                                onChange={(date: Date | null) => {
+                                                    if (date) {
+                                                        setJoinDate(date)
+                                                        field.onChange(date)
+                                                    }
                                                 }}
                                                 showYearDropdown
                                                 dateFormatCalendar="MMMM"

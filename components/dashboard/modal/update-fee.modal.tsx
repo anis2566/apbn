@@ -36,7 +36,7 @@ import { UPDATE_FEE } from "@/actions/fee.action"
 import { useUpdateFee } from "@/hooks/use-fee"
 
 export const UpdateFeeModal = () => {
-    const { open, onClose, fee } = useUpdateFee()
+    const { open, onClose, fee, feeId } = useUpdateFee()
     
     const form = useForm<z.infer<typeof FeeSchema>>({
     resolver: zodResolver(FeeSchema),
@@ -77,7 +77,7 @@ export const UpdateFeeModal = () => {
     toast.loading("Fee updating...", {
         id: "update-fee"
     })
-    updateFee({values: values, feeId: fee?.id || ""})
+    updateFee({values: values, feeId})
   }
 
     return (

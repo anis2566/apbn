@@ -198,3 +198,60 @@ export const DELETE_SCOUT = async (scoutId: string) => {
         success: "Scout deleted"
     }
 }
+
+
+type CardStatus = {
+    scoutId: string;
+    status: boolean;
+}
+export const UPDATE_SCOUT_CARD_STATUS = async ({scoutId, status}:CardStatus) => {
+    const scout = await db.scout.findUnique({
+        where: {
+            id: scoutId
+        }
+    })
+
+    if (!scout) {
+        throw new Error("Scout not found")
+    }
+
+    await db.scout.update({
+        where: {
+            id: scoutId
+        },
+        data: {
+            allowCard: status
+        }
+    })
+
+    revalidatePath("/dashboard/scout/request")
+    revalidatePath("/dashboard/scout/list")
+    // revalidatePath("/dashboard/scout/verified")
+    // revalidatePath("/dashboard/scout/cancelled")
+
+    return {
+        success: "Status updated"
+    }
+}
+
+
+export const GET_SCOUTS_BY_NAME = async (name: string) => {
+    const scouts = await db.scout.findMany({
+        where: {
+            status: Status.Active || Status.Verified,
+            ...(name && {name: {contains:name, mode: "insensitive"}})
+        },
+        select: {
+            name: true,
+            apsId: true,
+            imageUrl: true,
+            id: true
+        },
+        orderBy: {
+            createdAt: "desc"
+        },
+        take: 3,
+    })
+
+    return {scouts}
+}

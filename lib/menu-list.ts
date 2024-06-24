@@ -16,6 +16,8 @@ import {
   BadgeX,
   BadgePercent,
   CircleDollarSign,
+  Layers3,
+  Medal,
 } from "lucide-react";
 
 type Submenu = {
@@ -59,7 +61,7 @@ export function getMenuList(pathname: string): Group[] {
           href: "",
           label: "Unit",
           active: pathname.includes("/dashboard/unit"),
-          icon: Blocks,
+          icon: Layers3,
           submenus: [
             {
               href: "/dashboard/unit/create",
@@ -104,6 +106,12 @@ export function getMenuList(pathname: string): Group[] {
               label: "Suspended",
               active: pathname === "/dashboard/scout/suspended",
               icon: BadgeX
+            },
+            {
+              href: "/dashboard/scout/award",
+              label: "Award",
+              active: pathname === "/dashboard/scout/award",
+              icon: Medal
             },
           ],
         },

@@ -7,15 +7,15 @@ import {
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator
-  } from "@/components/ui/breadcrumb";
-  import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+} from "@/components/ui/breadcrumb";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { ContentLayout } from "@/components/scout"
-import { RequestList } from "@/components/dashboard/scout/request";
-import { db } from "@/lib/db";
-import { Section, Status } from "@/schema/scout.schema";
 import { Header } from "@/components/dashboard/scout/request/header";
+import { Section, Status } from "@/schema/scout.schema";
+import { db } from "@/lib/db";
 import { CustomPagination } from "@/components/custom-pagination";
+import { ActiveScoutList } from "@/components/dashboard/scout/list";
 
 interface Props {
     searchParams: {
@@ -26,14 +26,14 @@ interface Props {
     }
 };
 
-const ScoutRequest = async ({searchParams}:Props) => {
+const VerifiedScoutList = async ({searchParams}:Props) => {
     const { section, search, page, perPage } = searchParams
     const itemsPerPage = parseInt(perPage) || 5;  
     const currentPage = parseInt(page) || 1;
 
     const scouts = await db.scout.findMany({
         where: {
-            status: Status.Pending,
+            status: Status.Verified,
             ...(section && { section }),
             ...(search && {name: {contains: search, mode: "insensitive"}})
         },
@@ -49,7 +49,7 @@ const ScoutRequest = async ({searchParams}:Props) => {
 
     const totalScout = await db.scout.count({
         where: {
-            status: Status.Pending,
+            status: Status.Verified,
             ...(section && { section }),
             ...(search && {name: {contains: search, mode: "insensitive"}})
         },
@@ -61,32 +61,26 @@ const ScoutRequest = async ({searchParams}:Props) => {
         <ContentLayout title="Scout">
             <Breadcrumb>
                 <BreadcrumbList>
-                <BreadcrumbItem>
-                    <BreadcrumbLink asChild>
-                    <Link href="/dashboard">Dashboard</Link>
-                    </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                    <BreadcrumbLink asChild>
-                    <Link href="/dashboard/scout/list">Scout</Link>
-                    </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                    <BreadcrumbPage>Request</BreadcrumbPage>
-                </BreadcrumbItem>
+                    <BreadcrumbItem>
+                        <BreadcrumbLink asChild>
+                            <Link href="/dashboard">Dashboard</Link>
+                        </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                        <BreadcrumbPage>Verified List</BreadcrumbPage>
+                    </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Request List</CardTitle>
-                    <CardDescription>A collection of scout request.</CardDescription>
+                    <CardTitle>Verified List</CardTitle>
+                    <CardDescription>A collection of verified scout.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Header />
-                    <RequestList scouts={scouts} />
+                    <ActiveScoutList scouts={scouts} />
                     <CustomPagination totalPage={totalPage} />
                 </CardContent>
             </Card>
@@ -94,4 +88,4 @@ const ScoutRequest = async ({searchParams}:Props) => {
     )
 }
 
-export default ScoutRequest
+export default VerifiedScoutList

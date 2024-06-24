@@ -80,9 +80,19 @@ export const Header = () => {
                             placeholder="Search..."
                             className="w-full appearance-none bg-background pl-8 shadow-none"
                             onChange={(e) => setSearch(e.target.value)}
+                            value={search}
                         />
                     </div>
-                    <Button variant="outline" className="hidden md:flex text-rose-500" onClick={() => router.push(pathname)}>Reset</Button>
+                    <Button
+                        variant="outline"
+                        className="hidden md:flex text-rose-500"
+                        onClick={() => {
+                            setSearch("")
+                            router.push(pathname)
+                        }}
+                    >
+                        Reset
+                    </Button>
                 </div>
                 <Select onValueChange={(value) => handleSectionChange(value)}>
                     <SelectTrigger className="w-[150px]">
@@ -104,9 +114,20 @@ export const Header = () => {
                         type="search"
                         placeholder="Search..."
                         className="w-full appearance-none bg-background pl-8 shadow-none"
+                        onChange={(e) => setSearch(e.target.value)}
+                        value={search}
                     />
                 </div>
-                <Button variant="outline" className=" text-rose-500" onClick={() => router.push(pathname)}>Reset</Button>
+                <Button
+                    variant="outline"
+                    className="md:hidden text-rose-500"
+                    onClick={() => {
+                        setSearch("")
+                        router.push(pathname)
+                    }}
+                >
+                    Reset
+                </Button>
             </div>
         </div>
     )

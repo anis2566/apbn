@@ -13,3 +13,34 @@ export const useUnit = create<UnitState>()((set) => ({
   onOpen: (unitId) => set({ open: true, unitId }),
   onClose: () => set({ open: false, unitId: "" }),
 }));
+
+
+
+interface AssignLeaderState {
+  open: boolean;
+  unitId: string;
+  onOpen: (unitId: string) => void;
+  onClose: () => void;
+}
+
+export const useAssignUnitLeader = create<AssignLeaderState>()((set) => ({
+  open: false,
+  unitId: "",
+  onOpen: (unitId) => set({ open: true, unitId }),
+  onClose: () => set({ open: false, unitId: "" }),
+}));
+
+
+interface RemoveLeaderState {
+  open: boolean;
+  unitId: string;
+  onOpen: (unitId: string) => void;
+  onClose: () => void;
+}
+
+export const useRemoveUnitLeader = create<RemoveLeaderState>()((set) => ({
+  open: false,
+  unitId: "",
+  onOpen: (unitId) => set({ open: true, unitId }),
+  onClose: () => set({ open: false, unitId: "" }),
+}));

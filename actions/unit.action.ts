@@ -104,3 +104,72 @@ export const GET_UNITS = async (section: Section | undefined) => {
     units,
   };
 };
+
+
+type AssigLeader = {
+  unitId: string;
+  leaderId: string;
+}
+export const ASSIGN_LEADER = async ({unitId, leaderId}:AssigLeader) => {
+  const unit = await db.unit.findUnique({
+    where: {
+      id: unitId
+    }
+  })
+
+  if(!unit) {
+    throw new Error("Unit not found")
+  }
+
+  const scout = await db.scout.findUnique({
+    where: {
+      id: leaderId
+    }
+  })
+
+  if(!scout) {
+    throw new Error("Scout not found")
+  }
+
+  await db.unit.update({
+    where: {
+      id: unitId
+    },
+    data: {
+      leaderId
+    }
+  })
+
+  revalidatePath(`/dashboard/unit/${unitId}`)
+
+  return {
+    success: "Leader assigned"
+  }
+}
+
+
+export const REMOVE_LEADER = async (unitId: string) => {
+  const unit = await db.unit.findUnique({
+    where: {
+      id: unitId
+    }
+  })
+
+  if(!unit) {
+    throw new Error("Unit not found")
+  }
+  await db.unit.update({
+    where: {
+      id: unitId
+    },
+    data: {
+      leaderId: null
+    }
+  })
+
+  revalidatePath(`/dashboard/unit/${unitId}`)
+
+  return {
+    success: "Leader removed"
+  }
+}

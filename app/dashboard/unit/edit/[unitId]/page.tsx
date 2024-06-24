@@ -32,7 +32,7 @@ const EditUnit = async ({ params: { unitId } }: Props) => {
     if(!unit) redirect("/dashboard")
 
     return (
-        <ContentLayout title="Unit Edit">
+        <ContentLayout title="Unit">
             <Breadcrumb>
                 <BreadcrumbList>
                 <BreadcrumbItem>

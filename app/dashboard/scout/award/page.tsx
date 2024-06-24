@@ -11,30 +11,28 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { ContentLayout } from "@/components/dashboard"
+import { CreateAward } from "@/components/dashboard/scout/award/create-award";
+import { Header } from "@/components/dashboard/scout/award/header";
 import { db } from "@/lib/db";
-import { UnitList } from "@/components/dashboard/unit";
-import { Section } from "@/schema/unit.schema";
-import { Header } from "@/components/dashboard/unit/header";
+import { AwardList } from "@/components/dashboard/scout/award";
 import { CustomPagination } from "@/components/custom-pagination";
 
 interface Props {
     searchParams: {
-        section: Section;
         page: string;
         perPage: string;
         search: string;
     }
 };
 
-const Unit = async ({ searchParams }: Props) => {
-    const { section, search, page, perPage } = searchParams
-    const itemsPerPage = parseInt(perPage) || 5;
+const Award = async ({searchParams}:Props) => {
+    const { search, page, perPage } = searchParams
+    const itemsPerPage = parseInt(perPage) || 5;  
     const currentPage = parseInt(page) || 1;
 
-    const units = await db.unit.findMany({
+    const awards = await db.award.findMany({
         where: {
-            ...(section && { section }),
-            ...(search && { name: { contains: search, mode: "insensitive" } })
+            ...(search && {title: {contains: search, mode: "insensitive"}})
         },
         include: {
             scouts: {
@@ -50,17 +48,17 @@ const Unit = async ({ searchParams }: Props) => {
         take: itemsPerPage,
     })
 
-    const totalUnit = await db.unit.count({
+    const totalAward = await db.award.count({
         where: {
-            ...(section && { section }),
-            ...(search && { name: { contains: search, mode: "insensitive" } })
+            ...(search && {title: {contains: search, mode: "insensitive"}})
         }
     })
 
-    const totalPage = Math.round(totalUnit / itemsPerPage)
+    const totalPage = Math.round(totalAward / itemsPerPage)
+
 
     return (
-        <ContentLayout title="Unit">
+        <ContentLayout title="Award">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -70,19 +68,22 @@ const Unit = async ({ searchParams }: Props) => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Units</BreadcrumbPage>
+                        <BreadcrumbPage>Award</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
+            <div className="mt-4 space-y-6">
+                <CreateAward />
+            </div>
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Unit List</CardTitle>
-                    <CardDescription>A collection of your unit.</CardDescription>
+                    <CardTitle>Award List</CardTitle>
+                    <CardDescription>A collection of award.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Header />
-                    <UnitList units={units} />
+                    <AwardList awards={awards} />
                     <CustomPagination totalPage={totalPage} />
                 </CardContent>
             </Card>
@@ -90,4 +91,4 @@ const Unit = async ({ searchParams }: Props) => {
     )
 }
 
-export default Unit;
+export default Award

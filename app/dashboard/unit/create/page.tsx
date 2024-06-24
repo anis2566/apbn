@@ -14,7 +14,7 @@ import { CreateUnitForm } from "@/components/dashboard/unit/create-unit";
 
 const CreateUnit = () => {
     return (
-        <ContentLayout title="Unit Create">
+        <ContentLayout title="Unit">
             <Breadcrumb>
                 <BreadcrumbList>
                 <BreadcrumbItem>

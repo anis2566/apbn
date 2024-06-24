@@ -1,6 +1,6 @@
 "use client"
 
-import { EllipsisVertical, Eye, Pen, RefreshCcw, Trash2 } from "lucide-react"
+import { CreditCard, EllipsisVertical, Eye, Pen, RefreshCcw, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { Scout, Unit } from "@prisma/client"
 
@@ -23,8 +23,9 @@ import {
 import { Button } from "@/components/ui/button"
 
 import { cn } from "@/lib/utils"
-import { useScoutDelete, useScoutStatus } from "@/hooks/use-scout"
+import { useScoutCard, useScoutDelete, useScoutStatus } from "@/hooks/use-scout"
 import { Empty } from "@/components/empty"
+import { Status } from "@/schema/scout.schema"
 
 interface ScoutWithUnit extends Scout {
     unit: Unit | null
@@ -34,10 +35,11 @@ interface RequestListProps {
     scouts: ScoutWithUnit[]
 }
 
-export const RequestList = ({ scouts }: RequestListProps) => {
+export const ActiveScoutList = ({ scouts }: RequestListProps) => {
 
     const { onOpen } = useScoutStatus()
     const { onOpen: onOpenDelete } = useScoutDelete()
+    const { onOpen: onOpenCard } = useScoutCard()
 
     return (
         <>
@@ -54,6 +56,7 @@ export const RequestList = ({ scouts }: RequestListProps) => {
                                 <TableHead>Section</TableHead>
                                 <TableHead>Unit</TableHead>
                                 <TableHead>Payment Status</TableHead>
+                                <TableHead>Card</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
@@ -85,7 +88,19 @@ export const RequestList = ({ scouts }: RequestListProps) => {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="py-2">
-                                            <Badge>
+                                            <Badge className={cn("bg-rose-500", scout.allowCard && "bg-green-500")}>
+                                                {scout.allowCard ? "Approved" : "Rejected"}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="py-2">
+                                            <Badge 
+                                                className={cn(
+                                                    "text-white", 
+                                                    scout.status === Status.Active && "bg-green-500",
+                                                    scout.status === Status.Verified && "bg-green-500",
+                                                    scout.status === Status.Suspended && "bg-rose-500",
+                                                )}
+                                            >
                                                 {scout.status}
                                             </Badge>
                                         </TableCell>
@@ -113,6 +128,10 @@ export const RequestList = ({ scouts }: RequestListProps) => {
                                                     <DropdownMenuItem className="w-flex items-center gap-x-3" onClick={() => onOpen(scout.id)}>
                                                         <RefreshCcw className="w-4 h-4" />
                                                         Change Status
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="w-flex items-center gap-x-3" onClick={() => onOpenCard(scout.id)}>
+                                                        <CreditCard className="w-4 h-4" />
+                                                        Card Status
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="w-flex items-center gap-x-3" onClick={() => onOpenDelete(scout.id)}>
                                                         <Trash2 className="text-rose-500 w-4 h-4" />

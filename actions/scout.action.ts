@@ -29,12 +29,36 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
         throw new Error("Scout already exists")
     }
 
+    const unit = await db.unit.findUnique({
+        where: {
+            id: data.preferedUnit,
+        },
+        include: {
+            scouts: {
+                select: {
+                    id: true
+                }
+            }
+        }
+    })
+
+    if(!unit) {
+        throw new Error("Unit not found")
+    }
+
+    const isCompletedUnit = unit.limit + 1 === unit.scouts.length
+
+    if(isCompletedUnit) {
+        throw new Error("This unit is full of scout.")
+    }
+
     const { userId, clerkId } = await getUser()
     
     const newScout = await db.scout.create({
         data: {
             ...data,
-            userId
+            userId,
+            role: ["scout", data.role[0]]
         }
     })
 
@@ -49,7 +73,7 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
 
     await clerkClient.users.updateUser(clerkId, {
         publicMetadata: {
-            role: "scout",
+            role: `scout ${data.role[0]}`,
             status: "pending"
         }
     })
@@ -96,6 +120,17 @@ export const UPDATE_SCOUT_STATUS = async ({id, status}:UpdateStatus) => {
 
     if (!scout) {
         throw new Error("Scout not found")
+    }
+
+    if(status === Status.Active) {
+        await db.scout.update({
+            where: {
+                id
+            },
+            data: {
+                unitId: scout.preferedUnit
+            }
+        })
     }
 
     await db.scout.update({
@@ -254,4 +289,46 @@ export const GET_SCOUTS_BY_NAME = async (name: string) => {
     })
 
     return {scouts}
+}
+
+
+type MigrateScout = {
+    scoutId: string;
+    unitId: string;
+}
+export const MIGRATE_SCOUT = async ({scoutId, unitId}:MigrateScout) => {
+    const scout = await db.scout.findUnique({
+        where: {
+            id: scoutId
+        }
+    })
+
+    if(!scout) {
+        throw new Error("Scout not found")
+    }
+
+    const unit = await db.unit.findUnique({
+        where: {
+            id: unitId
+        }
+    })
+
+    if(!unit) {
+        throw new Error("Unit not found")
+    }
+
+    await db.scout.update({
+        where: {
+            id: scoutId
+        },
+        data: {
+            unitId
+        }
+    })
+
+    revalidatePath(`/dashboard/unit/${unitId}`)
+
+    return {
+        success: "Migration successful"
+    }
 }

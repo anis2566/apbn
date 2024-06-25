@@ -46,7 +46,7 @@ const steps = [
     {
         id: 3,
         name: 'Scout Information',
-        fields: ["scoutType", "experience", "joinDate", "memberType", "section", "badge", "role", "scoutRegion", "scoutDistrict", "scoutUpazilla", "institute", "class", "roll", "organization", "designation", "unitId", "apsId"],
+        fields: ["scoutType", "experience", "joinDate", "memberType", "section", "badge", "role", "scoutRegion", "scoutDistrict", "scoutUpazilla", "institute", "class", "roll", "organization", "designation", "preferedUnit", "apsId"],
         Icon: Contact
     },
 ]
@@ -156,7 +156,7 @@ const Apply = () => {
             organization: "",
             designation: "",
             imageUrl: "",
-            unitId: ""
+            preferedUnit: ""
         },
     })
 
@@ -1003,13 +1003,13 @@ const Apply = () => {
                             />
                             <FormField
                                 control={form.control}
-                                name="unitId"
+                                name="preferedUnit"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Unit</FormLabel>
                                         <Select defaultValue={field.value} onValueChange={(value) => {
                                             field.onChange(value)
-                                            trigger("unitId")
+                                            trigger("preferedUnit")
                                         }} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>

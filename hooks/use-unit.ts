@@ -44,3 +44,20 @@ export const useRemoveUnitLeader = create<RemoveLeaderState>()((set) => ({
   onOpen: (unitId) => set({ open: true, unitId }),
   onClose: () => set({ open: false, unitId: "" }),
 }));
+
+
+interface RemoveScoutState {
+  open: boolean;
+  scoutId: string;
+  unitId: string;
+  onOpen: (scoutId: string, unitId: string) => void;
+  onClose: () => void;
+}
+
+export const useRemoveScout = create<RemoveScoutState>()((set) => ({
+  open: false,
+  scoutId: "",
+  unitId: "",
+  onOpen: (scoutId, unitId) => set({ open: true, scoutId, unitId }),
+  onClose: () => set({ open: false, scoutId: "", unitId: "" }),
+}));

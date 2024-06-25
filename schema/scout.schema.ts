@@ -53,7 +53,7 @@ export const ScoutSchema = z.object({
   organization: z.string().optional(),
   designation: z.string().optional(),
   imageUrl: z.string().min(1, { message: "required" }),
-  unitId: z.string().min(1, { message: "required" }),
+  preferedUnit: z.string().min(1, { message: "required" }),
 });
 
 export type ScoutSchemaType = z.infer<typeof ScoutSchema>;

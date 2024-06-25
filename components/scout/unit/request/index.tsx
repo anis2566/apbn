@@ -1,4 +1,4 @@
-import { Unit } from "@prisma/client"
+import { Scout } from "@prisma/client"
 import { EllipsisVertical, Eye, Pen } from "lucide-react"
 import Link from "next/link"
 
@@ -10,7 +10,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,45 +17,61 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-import { ActionButton } from "./action.button"
+import { cn } from "@/lib/utils"
+import { EditStatusButton } from "./edit-status-button"
+import { DeleteButton } from "./delete-button"
 import { Empty } from "@/components/empty"
 
-interface UnitWithScout extends Unit {
-    scouts: { id: string; }[]
+interface ScoutListProps {
+    scouts: Scout[]
 }
 
-interface UnitListProps {
-    units: UnitWithScout[];
-}
-
-export const UnitList = ({ units }: UnitListProps) => {
+export const ScoutList = ({ scouts }: ScoutListProps) => {
     return (
         <>
             {
-                units.length < 1 ? (
-                    <Empty title="No Unit found" />
+                scouts.length < 1 ? (
+                    <Empty title="Scout Not found" />
                 ) : (
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>Image</TableHead>
                                 <TableHead>Name</TableHead>
-                                <TableHead>Section</TableHead>
-                                <TableHead>Limit</TableHead>
-                                <TableHead>Members</TableHead>
+                                <TableHead>Payment Status</TableHead>
+                                <TableHead>Status</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {
-                                units.map(unit => (
-                                    <TableRow key={unit.id}>
-                                        <TableCell className="py-3">{unit.name}</TableCell>
+                                scouts.map(scout => (
+                                    <TableRow key={scout.id}>
                                         <TableCell className="py-3">
-                                            <Badge>{unit.section}</Badge>
+                                            <Avatar>
+                                                <AvatarImage src={scout.imageUrl} />
+                                                <AvatarFallback>{scout.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
                                         </TableCell>
-                                        <TableCell className="py-3">{unit.limit}</TableCell>
-                                        <TableCell className="py-3">{unit?.leaderId ? unit.scouts.length - 1 : unit.scouts.length}</TableCell>
+                                        <TableCell className="py-3">{scout.name}</TableCell>
+                                        <TableCell className="py-3">
+                                            <Badge
+                                                className={cn(
+                                                    "text-white bg-rose-500",
+                                                    scout.isPaid && "bg-green-500"
+                                                )}
+                                            >
+                                                {scout.isPaid ? "Paid" : "Unpaid"}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge>
+                                                {scout.status}
+                                            </Badge>
+                                        </TableCell>
                                         <TableCell className="py-3">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -67,19 +82,22 @@ export const UnitList = ({ units }: UnitListProps) => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/unit/${unit.id}`} className="flex items-center gap-x-3">
+                                                        <Link href={`/scout/unit/scout/${scout.id}`} className="flex items-center gap-x-3">
                                                             <Eye className="w-4 h-4" />
                                                             View
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/unit/edit/${unit.id}`} className="flex items-center gap-x-3">
+                                                        <Link href={`/scout/unit/scout/edit/${scout.id}`} className="flex items-center gap-x-3">
                                                             <Pen className="w-4 h-4" />
                                                             Edit
                                                         </Link>
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="w-flex items-center gap-x-3" asChild>
-                                                        <ActionButton unitId={unit.id} />
+                                                    <DropdownMenuItem asChild>
+                                                        <EditStatusButton scoutId={scout.id} />
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <DeleteButton scoutId={scout.id} />
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -93,4 +111,4 @@ export const UnitList = ({ units }: UnitListProps) => {
             }
         </>
     )
-}
+} 

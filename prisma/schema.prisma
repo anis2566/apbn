@@ -38,6 +38,12 @@ enum CouponStatus {
   Inactive
 }
 
+enum MigrationStatus {
+  Pending
+  Approved
+  Rejected
+}
+
 model User {
   id String @id @default(uuid())
   clerkId String @unique
@@ -92,6 +98,8 @@ model Scout {
   isPaid Boolean @default(false)
   allowCard Boolean @default(false)
 
+  preferedUnit String
+
   userId String @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -102,6 +110,9 @@ model Scout {
   award Award? @relation(fields: [awardId], references: [id])
 
   leadingUnit Unit? @relation(name: "UnitLeader")
+
+  migrations Migration[]
+  bans Ban[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -119,6 +130,7 @@ model Unit {
   leader Scout? @relation(name: "UnitLeader", fields: [leaderId], references: [id])
 
   scouts Scout[]
+  migrations Migration[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -155,6 +167,38 @@ model Award {
   imageUrl String
 
   scouts Scout[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model Migration {
+  id String @id @default(uuid())
+  reason String
+
+  scoutId String?
+  scout Scout? @relation(fields: [scoutId], references: [id])
+
+  unitId String?
+  unit Unit? @relation(fields: [unitId], references: [id])
+
+  status MigrationStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Ban {
+  id String @id @default(uuid())
+  reason String
+
+  scoutId String?
+  scout Scout? @relation(fields: [scoutId], references: [id])
+
+  status MigrationStatus @default(Pending)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

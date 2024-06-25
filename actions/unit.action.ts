@@ -173,3 +173,48 @@ export const REMOVE_LEADER = async (unitId: string) => {
     success: "Leader removed"
   }
 }
+
+export const GET_UNITS_BY_SECTION = async (section: Section) => {
+  const units = await db.unit.findMany({
+    where: {
+      section: section
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  })
+
+  return {units}
+}
+
+
+type RemoveScout = {
+  scoutId: string;
+  unitId: string;
+}
+export const REMOVE_SCOUT = async ({scoutId, unitId}: RemoveScout) => {
+  const scout = await db.scout.findUnique({
+    where: {
+      id: scoutId
+    }
+  })
+
+  if(!scout) {
+    throw new Error("Scout not found")
+  }
+
+  await db.scout.update({
+    where: {
+      id: scoutId
+    },
+    data: {
+      unitId: null
+    }
+  })
+
+  revalidatePath(`/dashboard/unit/${unitId}`)
+
+  return {
+    success: "Scout removed"
+  }
+}

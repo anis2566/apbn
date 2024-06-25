@@ -132,7 +132,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
             organization: scout.organization || "",
             designation: scout.designation || "",
             imageUrl: scout.imageUrl || "",
-            unitId: scout.unitId || ""
+            preferedUnit: scout.unitId || ""
         },
     })
 
@@ -853,7 +853,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                             />
                             <FormField
                                 control={form.control}
-                                name="unitId"
+                                name="preferedUnit"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Unit</FormLabel>

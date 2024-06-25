@@ -9,11 +9,12 @@ const isProtectedRoute = createRouteMatcher([
 
 export default clerkMiddleware((auth, req) => {
   if (isProtectedRoute(req)) {
-    const role = auth().sessionClaims?.role;
+    const role = auth().sessionClaims?.role as string;
+    const isScout = role?.split(" ")?.includes("scout")
     if (!auth().userId) {
       auth().protect();
     } else {
-      if (req.nextUrl.pathname.startsWith("/scout") && role !== "scout") {
+      if (req.nextUrl.pathname.startsWith("/scout") && !isScout) {
         return NextResponse.redirect(new URL("/apply", req.url));
       }
 

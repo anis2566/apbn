@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Ellipsis, LogOut } from "lucide-react";
+import { Ellipsis, LogOut, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ import {
   TooltipProvider
 } from "@/components/ui/tooltip";
 import { CollapseMenuButton } from "./collapse-menu-button";
+import { useUser } from "@clerk/nextjs";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -23,6 +24,9 @@ interface MenuProps {
 export function Menu({ isOpen }: MenuProps) {
   const pathname = usePathname();
   const menuList = getMenuListScout(pathname);
+  const { user } = useUser()
+  const role = user?.publicMetadata?.role as string;
+  const isLeader = role?.split(" ")?.includes("unitLeader")
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
@@ -90,7 +94,7 @@ export function Menu({ isOpen }: MenuProps) {
                       </TooltipProvider>
                     </div>
                   ) : (
-                    <div className="w-full" key={index}>
+                    <div className={cn("w-full", label === "Unit" && !isLeader ? "hidden" : "")} key={index}>
                       <CollapseMenuButton
                         icon={Icon}
                         label={label}
@@ -108,7 +112,7 @@ export function Menu({ isOpen }: MenuProps) {
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={() => {}}
+                    onClick={() => { }}
                     variant="outline"
                     className="w-full justify-center h-10 mt-5"
                   >

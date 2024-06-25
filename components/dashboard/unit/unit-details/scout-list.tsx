@@ -1,5 +1,5 @@
-import { Unit } from "@prisma/client"
-import { EllipsisVertical, Eye, Pen } from "lucide-react"
+import { Scout } from "@prisma/client"
+import { EllipsisVertical, Eye } from "lucide-react"
 import Link from "next/link"
 
 import {
@@ -10,7 +10,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,45 +17,45 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-import { ActionButton } from "./action.button"
+import { DeleteButton } from "./delete-button"
+import { MigrationButton } from "./migration-button"
 import { Empty } from "@/components/empty"
 
-interface UnitWithScout extends Unit {
-    scouts: { id: string; }[]
+interface ScoutListProps {
+    scouts: Scout[];
+    unitId: string;
 }
 
-interface UnitListProps {
-    units: UnitWithScout[];
-}
-
-export const UnitList = ({ units }: UnitListProps) => {
+export const ScoutList = ({ scouts, unitId }: ScoutListProps) => {
     return (
         <>
             {
-                units.length < 1 ? (
-                    <Empty title="No Unit found" />
+                scouts.length < 1 ? (
+                    <Empty title="No Scout found" />
                 ) : (
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>Image</TableHead>
                                 <TableHead>Name</TableHead>
-                                <TableHead>Section</TableHead>
-                                <TableHead>Limit</TableHead>
-                                <TableHead>Members</TableHead>
+                                <TableHead>APS ID</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {
-                                units.map(unit => (
-                                    <TableRow key={unit.id}>
-                                        <TableCell className="py-3">{unit.name}</TableCell>
+                                scouts.map(scout => (
+                                    <TableRow key={scout.id}>
                                         <TableCell className="py-3">
-                                            <Badge>{unit.section}</Badge>
+                                            <Avatar>
+                                                <AvatarImage src={scout.imageUrl} />
+                                                <AvatarFallback>{scout.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
                                         </TableCell>
-                                        <TableCell className="py-3">{unit.limit}</TableCell>
-                                        <TableCell className="py-3">{unit?.leaderId ? unit.scouts.length - 1 : unit.scouts.length}</TableCell>
+                                        <TableCell className="py-3">{scout.name}</TableCell>
+                                        <TableCell className="py-3">{scout?.apsId}</TableCell>
                                         <TableCell className="py-3">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -67,19 +66,16 @@ export const UnitList = ({ units }: UnitListProps) => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/unit/${unit.id}`} className="flex items-center gap-x-3">
+                                                        <Link href={`/dashboard/scout/${scout.id}`} className="flex items-center gap-x-3">
                                                             <Eye className="w-4 h-4" />
                                                             View
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/unit/edit/${unit.id}`} className="flex items-center gap-x-3">
-                                                            <Pen className="w-4 h-4" />
-                                                            Edit
-                                                        </Link>
+                                                        <MigrationButton scoutId={scout.id} />
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="w-flex items-center gap-x-3" asChild>
-                                                        <ActionButton unitId={unit.id} />
+                                                    <DropdownMenuItem asChild>
+                                                        <DeleteButton scoutId={scout.id} unitId={unitId} />
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

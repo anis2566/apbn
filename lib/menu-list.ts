@@ -18,6 +18,7 @@ import {
   CircleDollarSign,
   Layers3,
   Medal,
+  CalendarClock,
 } from "lucide-react";
 
 type Submenu = {
@@ -161,13 +162,38 @@ export function getMenuListScout(pathname: string): Group[] {
           href: "",
           label: "Event",
           active: pathname.includes("/scout/event"),
-          icon: Blocks,
+          icon: CalendarClock,
           submenus: [
             {
               href: "/scout/event/list",
               label: "List",
               active: pathname === "/scout/event/list",
               icon: List
+            },
+          ],
+        },
+      ],
+    },
+    {
+      groupLabel: "",
+      menus: [
+        {
+          href: "",
+          label: "Unit",
+          active: pathname.includes("/scout/unit"),
+          icon: Layers3,
+          submenus: [
+            {
+              href: "/scout/unit",
+              label: "Manage",
+              active: pathname === "/scout/unit",
+              icon: Settings
+            },
+            {
+              href: "/scout/unit/request",
+              label: "Request",
+              active: pathname === "/scout/unit/request",
+              icon: Radio
             },
           ],
         },

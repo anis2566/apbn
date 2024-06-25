@@ -15,6 +15,14 @@ export const useScoutStatus = create<ScoutStatusState>()((set) => ({
 }));
 
 
+export const useScoutStatusLeader = create<ScoutStatusState>()((set) => ({
+  open: false,
+  scoutId: "",
+  onOpen: (scoutId) => set({ open: true, scoutId }),
+  onClose: () => set({ open: false, scoutId: "" }),
+}));
+
+
 interface ScoutDeleteState {
   open: boolean;
   scoutId: string;

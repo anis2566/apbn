@@ -1,6 +1,10 @@
+import { ContentLayout } from "@/components/scout"
+
 const ScoutDashboard = () => {
     return (
-        <div>Dashboard</div>
+        <ContentLayout title="Dashboard">
+            <div>Dashboard</div>
+        </ContentLayout>
     )
 }
 

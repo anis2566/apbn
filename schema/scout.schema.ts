@@ -43,7 +43,9 @@ export const ScoutSchema = z.object({
   section: z.string().min(1, { message: "required" }),
   memberType: z.string().min(1, { message: "required" }),
   badge: z.string().optional(),
-  role: z.array(z.string()).min(1, { message: "required" }),
+  role: z.nativeEnum(Role).refine((val) => Object.values(Role).includes(val), {
+    message: "required",
+  }),
   scoutRegion: z.string().min(1, { message: "required" }),
   scoutDistrict: z.string().min(1, { message: "required" }),
   scoutUpazilla: z.string().optional(),

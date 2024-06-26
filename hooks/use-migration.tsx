@@ -1,3 +1,4 @@
+import { Migration, Unit } from "@prisma/client";
 import { create } from "zustand";
 
 interface MigrationState {
@@ -14,9 +15,47 @@ export const useMigration = create<MigrationState>()((set) => ({
   onClose: () => set({ open: false, scoutId: "" }),
 }));
 
+
 export const useMigrationLeader = create<MigrationState>()((set) => ({
   open: false,
   scoutId: "",
   onOpen: (scoutId) => set({ open: true, scoutId }),
   onClose: () => set({ open: false, scoutId: "" }),
+}));
+
+
+interface MigrationStatusState {
+  open: boolean;
+  migrationId: string;
+  onOpen: (migrationId: string) => void;
+  onClose: () => void;
+}
+
+export const useMigrationStatus = create<MigrationStatusState>()((set) => ({
+  open: false,
+  migrationId: "",
+  onOpen: (migrationId) => set({ open: true, migrationId }),
+  onClose: () => set({ open: false, migrationId: "" }),
+}));
+
+
+interface MigrationWithScout extends Migration {
+  scout: {
+    name: string;
+  } | null;
+  unit: Unit | null;
+}
+
+interface MigrationVeiwState {
+  open: boolean;
+  migration: MigrationWithScout | null;
+  onOpen: (migration: MigrationWithScout) => void;
+  onClose: () => void;
+}
+
+export const useMigrationView = create<MigrationVeiwState>()((set) => ({
+  open: false,
+  migration: null,
+  onOpen: (migration) => set({ open: true, migration }),
+  onClose: () => set({ open: false, migration: null }),
 }));

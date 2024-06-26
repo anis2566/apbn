@@ -78,12 +78,12 @@ model Scout {
   thana String
   postCode String?
   scoutType String
-  experience String[] @default([""])
+  experience String[] @default([])
   joinDate DateTime?
   section String
   memberType String
   badge String?
-  role String[] @default(["Scout"])
+  role Role[] @default([Scout])
   scoutRegion String
   scoutDistrict String
   scoutUpazilla String?

@@ -1,7 +1,9 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { Role } from "@/schema/scout.schema";
 import { Section, UnitSchema, UnitSchemaType } from "@/schema/unit.schema";
+import { clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
 export const CREATE_UNIT = async (values: UnitSchemaType) => {
@@ -124,6 +126,13 @@ export const ASSIGN_LEADER = async ({unitId, leaderId}:AssigLeader) => {
   const scout = await db.scout.findUnique({
     where: {
       id: leaderId
+    },
+    include: {
+      user: {
+        select: {
+          clerkId: true
+        }
+      }
     }
   })
 
@@ -136,7 +145,23 @@ export const ASSIGN_LEADER = async ({unitId, leaderId}:AssigLeader) => {
       id: unitId
     },
     data: {
-      leaderId
+      leaderId,
+    }
+  })
+
+  const updatedScout = await db.scout.update({
+    where: {
+      id: leaderId
+    },
+    data: {
+      role: scout.role?.includes(Role.ScoutLeader) ? scout?.role : [...scout?.role, Role.ScoutLeader]
+    }
+  })
+
+  await clerkClient.users.updateUser(scout?.user?.clerkId, {
+    publicMetadata: {
+      role: updatedScout?.role?.join(" "),
+      status: "active"
     }
   })
 
@@ -152,12 +177,42 @@ export const REMOVE_LEADER = async (unitId: string) => {
   const unit = await db.unit.findUnique({
     where: {
       id: unitId
+    },
+    include: {
+      leader: {
+        include: {
+          user: {
+            select: {
+              clerkId: true
+            }
+          }
+        }
+      }
     }
   })
 
   if(!unit) {
     throw new Error("Unit not found")
   }
+
+  if(unit.leader) {
+    await db.scout.update({
+      where: {
+        id: unit.leader.id
+      },
+      data: {
+        role: unit.leader.role.filter(role => role !== Role.ScoutLeader)
+      }
+    })
+
+    await clerkClient.users.updateUser(unit.leader.user.clerkId, {
+      publicMetadata: {
+        role: unit.leader.role.filter(role => role !== Role.ScoutLeader).join(" "),
+        status: "active"
+      }
+    })
+  }
+
   await db.unit.update({
     where: {
       id: unitId
@@ -166,6 +221,8 @@ export const REMOVE_LEADER = async (unitId: string) => {
       leaderId: null
     }
   })
+
+
 
   revalidatePath(`/dashboard/unit/${unitId}`)
 

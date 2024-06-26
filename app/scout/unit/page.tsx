@@ -64,7 +64,7 @@ const Unit = async ({ searchParams }: Props) => {
                 not: scoutId
             },
             status: {
-                equals: Status.Active || Status.Verified
+                equals: Status.Active
             }
         },
         include: {

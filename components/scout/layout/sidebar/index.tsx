@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { PanelsTopLeft } from "lucide-react";
+import { HeadsetIcon, PanelsTopLeft } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,8 @@ import { SidebarToggle } from "./sidebar-toggle";
 export function Sidebar() {
   const sidebar = useSidebar(useSidebarToggle, (state) => state);
 
-  if(!sidebar) return null;
+  if (!sidebar) return null;
+  const { user } = useUser()
 
   return (
     <aside
@@ -44,7 +46,18 @@ export function Sidebar() {
             </h1>
           </Link>
         </Button>
-        <Menu isOpen={sidebar?.isOpen} />
+        {
+          user?.publicMetadata?.status === "pending" ? (
+            <Button className="flex items-center gap-x-4 mt-8" asChild>
+              <Link href="/support">
+                <HeadsetIcon />
+                <p className={cn("", !sidebar.isOpen && "hidden")}>Support</p>
+              </Link>
+            </Button>
+          ) : (
+            <Menu isOpen={sidebar?.isOpen} />
+          )
+        }
       </div>
     </aside>
   );

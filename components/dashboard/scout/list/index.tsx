@@ -88,8 +88,8 @@ export const ActiveScoutList = ({ scouts }: RequestListProps) => {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="py-2">
-                                            <Badge className={cn("bg-rose-500", scout.allowCard && "bg-green-500")}>
-                                                {scout.allowCard ? "Approved" : "Rejected"}
+                                            <Badge className={cn("bg-indigo-500", scout.allowCard && "bg-green-500")}>
+                                                {scout.allowCard ? "Approved" : "N/A"}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="py-2">

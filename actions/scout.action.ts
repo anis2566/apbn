@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { ScoutSchema, ScoutSchemaType, Status } from "@/schema/scout.schema"
+import { Role, ScoutSchema, ScoutSchemaType, Status } from "@/schema/scout.schema"
 import { getUser } from "@/services/user.service"
 import { clerkClient } from "@clerk/nextjs/server"
 import { revalidatePath } from "next/cache"
@@ -58,7 +58,7 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
         data: {
             ...data,
             userId,
-            role: ["scout", data.role[0]]
+            role: data.role === Role.Scout ? [data.role] : [Role.Scout, data.role]
         }
     })
 
@@ -67,13 +67,13 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
             id: userId
         },
         data: {
-            role: "Scout"
+            role: Role.Scout
         }
     })
 
     await clerkClient.users.updateUser(clerkId, {
         publicMetadata: {
-            role: `scout ${data.role[0]}`,
+            role: newScout.role.join(" "),
             status: "pending"
         }
     })
@@ -131,6 +131,14 @@ export const UPDATE_SCOUT_STATUS = async ({id, status}:UpdateStatus) => {
                 unitId: scout.preferedUnit
             }
         })
+
+        await clerkClient.users.updateUser(scout.user?.clerkId, {
+            publicMetadata: {
+                role: scout.role.join(" "),
+                status: "active"
+            }
+        })
+
     }
 
     await db.scout.update({
@@ -142,17 +150,11 @@ export const UPDATE_SCOUT_STATUS = async ({id, status}:UpdateStatus) => {
         }
     })
 
-    await clerkClient.users.updateUser(scout.user.clerkId, {
-        publicMetadata: {
-            role: scout.role,
-            status
-        }
-    })
-
     revalidatePath("/dashboard/scout/request")
-    // revalidatePath("/dashboard/scout/list")
-    // revalidatePath("/dashboard/scout/verified")
-    // revalidatePath("/dashboard/scout/cancelled")
+    revalidatePath("/dashboard/scout/list")
+    revalidatePath("/dashboard/scout/verified")
+    revalidatePath("/dashboard/scout/cancelled")
+    revalidatePath("/scout/unit/request")
 
     return {
         success: "Status updated"
@@ -192,7 +194,8 @@ export const UPDATE_SCOUT = async ({values, id}:UpdateScout) => {
             id
         },
         data: {
-            ...data
+            ...data,
+            role: data.role === Role.Scout ? [Role.Scout] : [Role.Scout, data.role]
         }
     })
 

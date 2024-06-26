@@ -1,6 +1,4 @@
-import { Unit } from "@prisma/client"
-import { EllipsisVertical, Eye, Pen } from "lucide-react"
-import Link from "next/link"
+import { Ban, Scout } from "@prisma/client"
 
 import {
     Table,
@@ -18,45 +16,60 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-
-import { ActionButton } from "./action.button"
 import { Empty } from "@/components/empty"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
+import { MigrationStatus } from "@/schema/migration.schema"
+import { EllipsisVertical, Eye } from "lucide-react"
+import Link from "next/link"
+import { ViewButton } from "./view-button"
 
-interface UnitWithScout extends Unit {
-    scouts: { id: string; }[]
+interface BanWithScout extends Ban {
+    scout: Scout
 }
 
-interface UnitListProps {
-    units: UnitWithScout[];
+interface BanListProps {
+    bans: BanWithScout[]
 }
 
-export const UnitList = ({ units }: UnitListProps) => {
+export const BanList = ({ bans }: BanListProps) => {
     return (
         <>
             {
-                units.length < 1 ? (
-                    <Empty title="No Unit found" />
+                bans.length < 1 ? (
+                    <Empty title="No Migration found" />
                 ) : (
                     <Table>
                         <TableHeader>
                             <TableRow>
+                                <TableHead>Image</TableHead>
                                 <TableHead>Name</TableHead>
-                                <TableHead>Section</TableHead>
-                                <TableHead>Limit</TableHead>
-                                <TableHead>Members</TableHead>
+                                <TableHead>Status</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {
-                                units.map(unit => (
-                                    <TableRow key={unit.id}>
-                                        <TableCell className="py-3">{unit.name}</TableCell>
+                                bans.map(ban => (
+                                    <TableRow key={ban.id}>
                                         <TableCell className="py-3">
-                                            <Badge>{unit.section}</Badge>
+                                            <Avatar>
+                                                <AvatarImage src={ban.scout?.imageUrl} />
+                                                <AvatarFallback>{ban.scout?.name?.charAt(0)}</AvatarFallback>
+                                            </Avatar>
                                         </TableCell>
-                                        <TableCell className="py-3">{unit.limit}</TableCell>
-                                        <TableCell className="py-3">{unit.scouts.length}</TableCell>
+                                        <TableCell className="py-3">{ban.scout?.name}</TableCell>
+                                        <TableCell className="py-3">
+                                            <Badge
+                                                className={cn(
+                                                    "text-white",
+                                                    ban.status === MigrationStatus.Approved && "bg-green-500",
+                                                    ban.status === MigrationStatus.Rejected && "bg-rose-500",
+                                                )}
+                                            >
+                                                {ban.status}
+                                            </Badge>
+                                        </TableCell>
                                         <TableCell className="py-3">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -67,20 +80,17 @@ export const UnitList = ({ units }: UnitListProps) => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/unit/${unit.id}`} className="flex items-center gap-x-3">
+                                                        <Link href={`/dashboard/scout/${ban.scoutId}`} className="flex items-center gap-x-3">
                                                             <Eye className="w-4 h-4" />
-                                                            View
+                                                            View Profile
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/unit/edit/${unit.id}`} className="flex items-center gap-x-3">
-                                                            <Pen className="w-4 h-4" />
-                                                            Edit
-                                                        </Link>
+                                                        <ViewButton ban={ban} />
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="w-flex items-center gap-x-3" asChild>
-                                                        <ActionButton unitId={unit.id} />
-                                                    </DropdownMenuItem>
+                                                     {/* <DropdownMenuItem asChild>
+                                                        <StatusButton migrationId={migration.id} />
+                                                    </DropdownMenuItem> */}
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>

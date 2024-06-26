@@ -21,7 +21,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 
-import { ScoutSchema, Section } from "@/schema/scout.schema"
+import { Role, ScoutSchema, Section } from "@/schema/scout.schema"
 import { BADGES, BLOODGROUP, MEMBERTYPE, ROLES, SCOUT_SECTION_TYPE } from "@/constant"
 import { UploadButton } from "@/lib/uploadthing"
 import { GET_UNITS } from "@/actions/unit.action"
@@ -117,12 +117,12 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
             thana: scout.thana || "",
             postCode: scout.postCode || "",
             scoutType: scout.scoutType || "",
-            experience: scout.experience || [""],
+            experience: scout.experience || [],
             joinDate: scout.joinDate || new Date(),
             section: scout.section || "",
             memberType: scout.memberType || "",
             badge: scout.badge || "",
-            role: scout.role || [""],
+            role: scout.role.filter(role => role !== Role.Scout)[0] as Role || Role.Scout,
             scoutRegion: scout.scoutRegion || "",
             scoutDistrict: scout.scoutDistrict || "",
             scoutUpazilla: scout.scoutUpazilla || "",
@@ -714,7 +714,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Role</FormLabel>
-                                        <Select defaultValue={field.value[0]} onValueChange={(value) => field.onChange([value])} disabled={isPending}>
+                                        <Select defaultValue={field.value} onValueChange={(value) => field.onChange(value as Role)} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select scout role" />
@@ -722,8 +722,8 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                             </FormControl>
                                             <SelectContent>
                                                 {
-                                                    ROLES.map((v, i) => (
-                                                        <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                    Object.values(Role).map((v, i) => (
+                                                        <SelectItem value={v} key={i}>{v}</SelectItem>
                                                     ))
                                                 }
                                             </SelectContent>

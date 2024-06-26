@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { CollapseMenuButton } from "./collapse-menu-button";
 import { useUser } from "@clerk/nextjs";
+import { Role } from "@/schema/scout.schema";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -26,7 +27,7 @@ export function Menu({ isOpen }: MenuProps) {
   const menuList = getMenuListScout(pathname);
   const { user } = useUser()
   const role = user?.publicMetadata?.role as string;
-  const isLeader = role?.split(" ")?.includes("unitLeader")
+  const isLeader = role?.split(" ")?.includes(Role.ScoutLeader)
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">

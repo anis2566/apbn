@@ -19,6 +19,9 @@ import {
   Layers3,
   Medal,
   CalendarClock,
+  FileStack,
+  RefreshCcwDot,
+  Ban,
 } from "lucide-react";
 
 type Submenu = {
@@ -68,13 +71,13 @@ export function getMenuList(pathname: string): Group[] {
               href: "/dashboard/unit/create",
               label: "Create",
               active: pathname === "/dashboard/unit/create",
-              icon: Pen
+              icon: Pen,
             },
             {
               href: "/dashboard/unit",
               label: "List",
               active: pathname === "/dashboard/unit",
-              icon: List
+              icon: List,
             },
           ],
         },
@@ -88,31 +91,51 @@ export function getMenuList(pathname: string): Group[] {
               href: "/dashboard/scout/request",
               label: "Request",
               active: pathname === "/dashboard/scout/request",
-              icon: Radio
+              icon: Radio,
             },
             {
               href: "/dashboard/scout/list",
               label: "List",
               active: pathname === "/dashboard/scout/list",
-              icon: List
+              icon: List,
             },
             {
               href: "/dashboard/scout/verified",
               label: "Verified",
               active: pathname === "/dashboard/scout/verified",
-              icon: CircleCheck
+              icon: CircleCheck,
             },
             {
               href: "/dashboard/scout/suspended",
               label: "Suspended",
               active: pathname === "/dashboard/scout/suspended",
-              icon: BadgeX
+              icon: BadgeX,
             },
             {
               href: "/dashboard/scout/award",
               label: "Award",
               active: pathname === "/dashboard/scout/award",
-              icon: Medal
+              icon: Medal,
+            },
+          ],
+        },
+        {
+          href: "",
+          label: "Applications",
+          active: pathname.includes("/dashboard/app"),
+          icon: FileStack,
+          submenus: [
+            {
+              href: "/dashboard/app/migration",
+              label: "Migration",
+              active: pathname === "/dashboard/app/migration",
+              icon: RefreshCcwDot,
+            },
+            {
+              href: "/dashboard/app/ban",
+              label: "Ban",
+              active: pathname === "/dashboard/app/ban",
+              icon: Ban,
             },
           ],
         },
@@ -126,13 +149,13 @@ export function getMenuList(pathname: string): Group[] {
               href: "/dashboard/utils/fee",
               label: "Fee",
               active: pathname === "/dashboard/utils/fee",
-              icon: CircleDollarSign
+              icon: CircleDollarSign,
             },
             {
               href: "/dashboard/utils/coupon",
               label: "Coupon",
               active: pathname === "/dashboard/utils/coupon",
-              icon: BadgePercent
+              icon: BadgePercent,
             },
           ],
         },
@@ -168,7 +191,7 @@ export function getMenuListScout(pathname: string): Group[] {
               href: "/scout/event/list",
               label: "List",
               active: pathname === "/scout/event/list",
-              icon: List
+              icon: List,
             },
           ],
         },
@@ -187,13 +210,13 @@ export function getMenuListScout(pathname: string): Group[] {
               href: "/scout/unit",
               label: "Manage",
               active: pathname === "/scout/unit",
-              icon: Settings
+              icon: Settings,
             },
             {
               href: "/scout/unit/request",
               label: "Request",
               active: pathname === "/scout/unit/request",
-              icon: Radio
+              icon: Radio,
             },
           ],
         },

@@ -8,40 +8,43 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { ContentLayout } from "@/components/dashboard"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Header } from "@/components/dashboard/app/migration/header";
+import { MigrationList } from "@/components/dashboard/app/migration";
 import { db } from "@/lib/db";
-import { UnitList } from "@/components/dashboard/unit";
-import { Section } from "@/schema/unit.schema";
-import { Header } from "@/components/dashboard/unit/header";
-import { CustomPagination } from "@/components/custom-pagination";
+import { MigrationStatus } from "@/schema/migration.schema";
+import { BanList } from "@/components/dashboard/app/ban";
 
 interface Props {
     searchParams: {
-        section: Section;
+        status: MigrationStatus;
         page: string;
         perPage: string;
         search: string;
     }
 };
 
-const Unit = async ({ searchParams }: Props) => {
-    const { section, search, page, perPage } = searchParams
+const BanApp = async ({searchParams}:Props) => {
+
+    const { status, search, page, perPage } = searchParams
     const itemsPerPage = parseInt(perPage) || 5;
     const currentPage = parseInt(page) || 1;
 
-    const units = await db.unit.findMany({
+    const bans = await db.ban.findMany({
         where: {
-            ...(section && { section }),
-            ...(search && { name: { contains: search, mode: "insensitive" } })
+            ...(status && {status}),
+            ...(search && {
+                scout: {
+                    name: {
+                        contains: search, mode: "insensitive"
+                    }
+                }
+            })
         },
         include: {
-            scouts: {
-                select: {
-                    id: true
-                }
-            }
+            scout: true            
         },
         orderBy: {
             createdAt: "desc"
@@ -50,19 +53,8 @@ const Unit = async ({ searchParams }: Props) => {
         take: itemsPerPage,
     })
 
-    const totalUnit = await db.unit.count({
-        where: {
-            ...(section && { section }),
-            ...(search && { name: { contains: search, mode: "insensitive" } })
-        }
-    })
-
-    const totalPage = Math.round(totalUnit / itemsPerPage)
-
-    console.log(units[0])
-
     return (
-        <ContentLayout title="Unit">
+        <ContentLayout title="Applications">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -72,24 +64,24 @@ const Unit = async ({ searchParams }: Props) => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Units</BreadcrumbPage>
+                        <BreadcrumbPage>Bans</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Unit List</CardTitle>
-                    <CardDescription>A collection of your unit.</CardDescription>
+                    <CardTitle>Ban List</CardTitle>
+                    <CardDescription>A collection of ban application.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Header />
-                    <UnitList units={units} />
-                    <CustomPagination totalPage={totalPage} />
+                    <BanList bans={bans} />
+                    {/* <MigrationList migrations={migrations} /> */}
                 </CardContent>
             </Card>
         </ContentLayout>
     )
 }
 
-export default Unit;
+export default BanApp;

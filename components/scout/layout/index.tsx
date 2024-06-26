@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { Sidebar } from "./sidebar";
+import { useUser } from "@clerk/nextjs";
+import { Pending } from "../pending";
 
 export default function ScoutPanelLayout({
   children
@@ -13,6 +15,7 @@ export default function ScoutPanelLayout({
   const sidebar = useSidebar(useSidebarToggle, (state) => state);
 
   if (!sidebar) return null;
+  const {user} = useUser()
 
   return (
     <>
@@ -23,7 +26,11 @@ export default function ScoutPanelLayout({
           sidebar?.isOpen === false ? "lg:ml-[90px]" : "lg:ml-64"
         )}
       >
-        {children}
+        {
+          user?.publicMetadata?.status === "pending" ? (
+            <Pending />
+          ) : children
+        }
       </main>
     </>
   );

@@ -47,3 +47,47 @@ export const APPLY_MIGRATION = async (values: MigrationSchemaType) => {
         success: "Applied successfully"
     }
 }
+
+
+type MigrationStatusType = {
+    migrationId: string;
+    status: MigrationStatus;
+}
+export const UPDATE_MIGRATION_STATUS = async ({migrationId, status}:MigrationStatusType) => {
+    const migration = await db.migration.findUnique({
+        where: {
+            id: migrationId
+        }
+    })
+    if(!migration) {
+        throw new Error("Migration not found")
+    }
+
+    if(status === MigrationStatus.Approved) {
+        if(migration.scoutId) {
+            await db.scout.update({
+                where: {
+                    id: migration.scoutId
+                },
+                data: {
+                    unitId: migration.unitId
+                }
+            })
+        }
+    }
+
+    await db.migration.update({
+        where: {
+            id: migrationId
+        },
+        data: {
+            status
+        }
+    })
+
+    revalidatePath("/dashboard/app/migration")
+
+    return {
+        success: "Status updated"
+    }
+}

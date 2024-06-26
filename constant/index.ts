@@ -156,7 +156,7 @@ export const BADGES = [
 export const ROLES = [
   {
     label: "ইউনিট লিডার",
-    value: "unitLeader",
+    value: "ScoutLeader",
   },
   {
     label: "Not Applicable",

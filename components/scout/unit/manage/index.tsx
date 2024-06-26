@@ -1,5 +1,5 @@
 import { Ban, Migration, Scout } from "@prisma/client"
-import { EllipsisVertical, Eye, Pen } from "lucide-react"
+import { EllipsisVertical, Eye } from "lucide-react"
 import Link from "next/link"
 
 import {
@@ -28,7 +28,7 @@ import { BanButton } from "./ban-button"
 
 interface ScoutWithMigrationAndBan extends Scout {
     migrations: Migration[];
-    bans: Ban[]
+    bans: Ban[];
 }
 
 interface ScoutListProps {
@@ -50,6 +50,7 @@ export const ScoutList = ({ scouts }: ScoutListProps) => {
                                 <TableHead>APS ID</TableHead>
                                 <TableHead>Migration Status</TableHead>
                                 <TableHead>Ban Status</TableHead>
+                                <TableHead>Card</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -89,6 +90,11 @@ export const ScoutList = ({ scouts }: ScoutListProps) => {
                                                 {scout?.bans?.length < 1 ? "N/A" : scout?.bans[0]?.status}
                                             </Badge>
                                         </TableCell>
+                                        <TableCell className="py-2">
+                                            <Badge className={cn("bg-indigo-500", scout.allowCard && "bg-green-500")}>
+                                                {scout.allowCard ? "Approved" : "N/A"}
+                                            </Badge>
+                                        </TableCell>
                                         <TableCell className="py-3">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -102,12 +108,6 @@ export const ScoutList = ({ scouts }: ScoutListProps) => {
                                                         <Link href={`/scout/unit/${scout.id}`} className="flex items-center gap-x-3">
                                                             <Eye className="w-4 h-4" />
                                                             View
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href={`/scout/unit/scout/edit/${scout.id}`} className="flex items-center gap-x-3">
-                                                            <Pen className="w-4 h-4" />
-                                                            Edit
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>

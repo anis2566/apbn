@@ -11,6 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useSession } from "@clerk/nextjs"
 
 import { Separator } from "@/components/ui/separator"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -23,7 +24,7 @@ import { Label } from "@/components/ui/label"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 
 import { cn } from "@/lib/utils"
-import { ScoutSchema, ScoutSchemaType } from "@/schema/scout.schema"
+import { Role, ScoutSchema, ScoutSchemaType } from "@/schema/scout.schema"
 import { BADGES, BLOODGROUP, MEMBERTYPE, ROLES, SCOUT_SECTION_TYPE } from "@/constant"
 import { UploadButton } from "@/lib/uploadthing"
 import { GET_UNITS } from "@/actions/unit.action"
@@ -68,6 +69,7 @@ const Apply = () => {
     const [section, setSection] = useState<Section>()
 
     const router = useRouter()
+    const {session} = useSession()
 
     useEffect(() => {
         const fetchDivisions = async () => {
@@ -141,12 +143,12 @@ const Apply = () => {
             thana: "",
             postCode: "",
             scoutType: "",
-            experience: [""],
+            experience: [],
             joinDate: new Date(),
             section: "",
             memberType: "",
             badge: "",
-            role: [""],
+            role: Role.Scout,
             scoutRegion: "",
             scoutDistrict: "",
             scoutUpazilla: "",
@@ -167,7 +169,8 @@ const Apply = () => {
     const { mutate: createScout, isPending } = useMutation({
         mutationFn: CREATE_SCOUT,
         onSuccess: (data) => {
-            router.push(`/apply/payment/${data?.id}`)
+            router.push(`/scout/payment/${data?.id}`)
+            session?.reload()
             toast.success(data.success, {
                 id: "create-scout"
             });
@@ -842,7 +845,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Role</FormLabel>
                                         <Select defaultValue={field.value[0]} onValueChange={(value) => {
-                                            field.onChange([value])
+                                            field.onChange(value as Role)
                                             trigger("role")
                                         }} disabled={isPending}>
                                             <FormControl>
@@ -852,8 +855,8 @@ const Apply = () => {
                                             </FormControl>
                                             <SelectContent>
                                                 {
-                                                    ROLES.map((v, i) => (
-                                                        <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                    Object.values(Role).map((v, i) => (
+                                                        <SelectItem value={v} key={i}>{v}</SelectItem>
                                                     ))
                                                 }
                                             </SelectContent>

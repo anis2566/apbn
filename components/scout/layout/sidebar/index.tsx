@@ -11,9 +11,9 @@ import { SidebarToggle } from "./sidebar-toggle";
 
 export function Sidebar() {
   const sidebar = useSidebar(useSidebarToggle, (state) => state);
+  const { user } = useUser()
 
   if (!sidebar) return null;
-  const { user } = useUser()
 
   return (
     <aside

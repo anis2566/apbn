@@ -37,7 +37,7 @@ export const useBanDelete = create<BanStatusState>()((set) => ({
 }));
 
 interface BanWithScout extends Ban {
-  scout: Scout
+  scout: Scout | null;
 }
 
 interface BanVeiwState {

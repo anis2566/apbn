@@ -10,6 +10,7 @@ const isProtectedRoute = createRouteMatcher([
 export default clerkMiddleware((auth, req) => {
   if (isProtectedRoute(req)) {
     const role = auth().sessionClaims?.role as string;
+    // const status = auth().sessionClaims?.status as string;
     const isScout = role?.split(" ")?.includes("Scout")
     if (!auth().userId) {
       auth().protect(); 
@@ -17,6 +18,9 @@ export default clerkMiddleware((auth, req) => {
       if (req.nextUrl.pathname.startsWith("/scout") && !isScout) {
         return NextResponse.redirect(new URL("/apply", req.url));
       }
+      // if (req.nextUrl.pathname.startsWith("/scout") && status === "pending") {
+      //   return NextResponse.redirect(new URL("/scout/pending", req.url));
+      // }
 
       // if (req.nextUrl.pathname.startsWith("/dashboard") && role !== "admin") {
       //   return NextResponse.redirect(new URL("/", req.url));

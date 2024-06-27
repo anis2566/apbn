@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { Sidebar } from "./sidebar";
+import { useUser } from "@clerk/nextjs";
+import { Pending } from "../pending";
 
 export default function ScoutPanelLayout({
   children
@@ -11,9 +13,13 @@ export default function ScoutPanelLayout({
   children: React.ReactNode;
 }) {
   const sidebar = useSidebar(useSidebarToggle, (state) => state);
-
+  const {user} = useUser()
+  
   if (!sidebar) return null;
 
+  if(user?.publicMetadata?.status === "pending") {
+    return <Pending />
+  }
 
   return (
     <>

@@ -1,6 +1,10 @@
 import { AssignUnitLeaderModal } from "@/components/dashboard/modal/assign-leader.modal"
+import { BanStatusModal } from "@/components/dashboard/modal/ban-status.modal"
+import { BanViewModal } from "@/components/dashboard/modal/ban-view.modal"
 import { CreateAwardModal } from "@/components/dashboard/modal/create-award-modal"
 import { DeleteAwardModal } from "@/components/dashboard/modal/delete-award.modal"
+import { DeleteBanModal } from "@/components/dashboard/modal/delete-ban.modal"
+import { DeleteMigrationModal } from "@/components/dashboard/modal/delete-migration.modal"
 import { MigrationStatusModal } from "@/components/dashboard/modal/migration-status.modal"
 import { MigrationViewModal } from "@/components/dashboard/modal/migration-view.modal"
 import { MigrationModal } from "@/components/dashboard/modal/migration.modal"
@@ -28,7 +32,11 @@ export const ModalProvider = () => {
             <MigrationModal />
             <MigrationViewModal />
             <MigrationStatusModal />
+            <DeleteMigrationModal />
             <MigrationModalLeader />
+            <BanViewModal />
+            <BanStatusModal />
+            <DeleteBanModal />
             <RemoveScoutModal />
             <ScoutRequestModalLeader />
             <BanModal />

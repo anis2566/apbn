@@ -1,6 +1,7 @@
 "use server"
 
 import axios from "axios"
+import { getScout } from "./user.service"
 
 export const GENERATE_BKASH_TOKEN = async () => {
     
@@ -40,6 +41,42 @@ export const CREATE_PAYMENT_FOR_REGISTER = async ({token, scoutId, amount}:Creat
           mode: "0011",
           payerReference: " ",
           callbackURL: `http://localhost:3000/api/payment/register/verify?token=${token}&scoutId=${scoutId}`,
+          amount: amount,
+          currency: "BDT",
+          intent: "sale",
+          merchantInvoiceNumber: "Inv" + Math.floor(100000 + Math.random() * 900000),
+        },
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                authorization: token,
+                "x-app-key": process.env.NEXT_PUBLIC_PGW_BKASH_API_KEY,
+            }
+        }
+    )
+
+    return {
+        succes: true,
+        url: res.data?.bkashURL
+    }
+}
+
+
+
+type CreatePaymentEvent = {
+    token: string;
+    amount: number;
+    appId: string;
+    scoutId: string;
+}
+export const CREATE_PAYMENT_FOR_EVENT = async ({token, appId, amount, scoutId}:CreatePaymentEvent) => {
+      const res = await axios.post(
+        process.env.NEXT_PUBLIC_PGW_BKASH_CREATE_PAYMENT_URL!,
+        {
+          mode: "0011",
+          payerReference: " ",
+          callbackURL: `http://localhost:3000/api/payment/event/verify?token=${token}&scoutId=${scoutId}&appId=${appId}`,
           amount: amount,
           currency: "BDT",
           intent: "sale",

@@ -44,6 +44,11 @@ enum MigrationStatus {
   Rejected
 }
 
+enum PaymentStatus {
+  Paid
+  Unpaid
+}
+
 model User {
   id String @id @default(uuid())
   clerkId String @unique
@@ -113,6 +118,7 @@ model Scout {
 
   migrations Migration[]
   bans Ban[]
+  eventApplications EventApplication[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -203,3 +209,43 @@ model Ban {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+
+
+model Event {
+  id String @id @default(uuid())
+  title String
+  description String
+  venue String
+  imageUrl String
+  entryFee Int
+  eventStart DateTime
+  eventEnd DateTime
+  registrationStart DateTime
+  registrationEnd DateTime
+
+  applications EventApplication[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model EventApplication {
+  id String @id @default(uuid())
+
+  scoutId String?
+  scout Scout? @relation(fields: [scoutId], references: [id])
+
+  eventId String?
+  event Event? @relation(fields: [eventId], references: [id])
+
+  paymentStatus PaymentStatus @default(Unpaid)
+  status MigrationStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+

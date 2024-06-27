@@ -1,6 +1,7 @@
-import { Migration, Scout, Unit } from "@prisma/client"
-import { EllipsisVertical, Eye } from "lucide-react"
+import { Event } from "@prisma/client"
+import { EllipsisVertical, Eye, Pen } from "lucide-react"
 import Link from "next/link"
+import { format } from "date-fns"
 
 import {
     Table,
@@ -18,71 +19,54 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 import { Empty } from "@/components/empty"
 import { cn } from "@/lib/utils"
-import { MigrationStatus } from "@/schema/migration.schema"
-import { ViewButton } from "./view-button"
-import { StatusButton } from "./status-button"
-import { DeleteButton } from "./delete-button"
 
-interface ScoutWithUnit extends Scout {
-    unit: {
-        name: string;
+interface EventWithApplication extends Event {
+    applications: {
         id: string;
-    } | null
+    }[]
 }
 
-interface MigrationWithScout extends Migration {
-    scout: ScoutWithUnit | null;
-    unit: Unit | null;
+interface EventListProps {
+    events: EventWithApplication[]
 }
 
-interface MigrationListProps {
-    migrations: MigrationWithScout[]
-}
-
-export const MigrationList = ({ migrations }: MigrationListProps) => {
+export const EventList = ({ events }: EventListProps) => {
     return (
         <>
             {
-                migrations.length < 1 ? (
-                    <Empty title="No Migration App found" />
+                events.length < 1 ? (
+                    <Empty title="No Event Found" />
                 ) : (
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Image</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>C. Unit</TableHead>
-                                <TableHead>M. Unit</TableHead>
+                                <TableHead>Title</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Entry Fee</TableHead>
+                                <TableHead>Participants</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {
-                                migrations.map(migration => (
-                                    <TableRow key={migration.id}>
-                                        <TableCell className="py-3">
-                                            <Avatar>
-                                                <AvatarImage src={migration.scout?.imageUrl} />
-                                                <AvatarFallback>{migration.scout?.name?.charAt(0)}</AvatarFallback>
-                                            </Avatar>
-                                        </TableCell>
-                                        <TableCell className="py-3">{migration.scout?.name}</TableCell>
-                                        <TableCell className="py-3">{migration.scout?.unit?.name}</TableCell>
-                                        <TableCell className="py-3">{migration.unit?.name}</TableCell>
+                                events.map(event => (
+                                    <TableRow key={event.id}>
+                                        <TableCell className="py-3">{event.title}</TableCell>
+                                        <TableCell className="py-3">{format(event.eventStart, "dd MMM yyyy")} - {format(event.eventEnd, "dd MMM yyyy")}</TableCell>
+                                        <TableCell className="py-3">&#2547;{event.entryFee > 0 ? event.entryFee : "Free"}</TableCell>
+                                        <TableCell className="py-3">{event.applications.length}</TableCell>
                                         <TableCell className="py-3">
                                             <Badge
                                                 className={cn(
-                                                    "text-white",
-                                                    migration.status === MigrationStatus.Approved && "bg-green-500",
-                                                    migration.status === MigrationStatus.Rejected && "bg-rose-500",
+                                                    "text-white bg-green-500",
+                                                    event.eventEnd <= new Date() && "bg-rose-500"
                                                 )}
                                             >
-                                                {migration.status}
+                                                {event.eventEnd <= new Date() ? "Expired" : "Running"}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="py-3">
@@ -95,20 +79,26 @@ export const MigrationList = ({ migrations }: MigrationListProps) => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/scout/${migration.scoutId}`} className="flex items-center gap-x-3">
+                                                        <Link href={`/dashboard/event/${event.id}`} className="flex items-center gap-x-3">
                                                             <Eye className="w-4 h-4" />
-                                                            View Profile
+                                                            View
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <ViewButton migration={migration} />
+                                                        <Link href={`/dashboard/event/edit/${event.id}`} className="flex items-center gap-x-3">
+                                                            <Pen className="w-4 h-4" />
+                                                            Edit
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    {/* <DropdownMenuItem asChild>
+                                                        <ViewButton ban={ban} />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <StatusButton migrationId={migration.id} />
+                                                        <StatusButton banId={ban.id} />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <DeleteButton migrationId={migration.id} />
-                                                    </DropdownMenuItem>
+                                                        <DeleteButton banId={ban.id} />
+                                                    </DropdownMenuItem> */}
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>

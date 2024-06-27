@@ -22,6 +22,8 @@ import {
   FileStack,
   RefreshCcwDot,
   Ban,
+  File,
+  CalendarDays,
 } from "lucide-react";
 
 type Submenu = {
@@ -121,9 +123,29 @@ export function getMenuList(pathname: string): Group[] {
         },
         {
           href: "",
+          label: "Event",
+          active: pathname.includes("/dashboard/app"),
+          icon: CalendarDays,
+          submenus: [
+            {
+              href: "/dashboard/event/create",
+              label: "Create",
+              active: pathname === "/dashboard/event/create",
+              icon: Pen,
+            },
+            {
+              href: "/dashboard/event/list",
+              label: "List",
+              active: pathname === "/dashboard/event/list",
+              icon: List,
+            },
+          ],
+        },
+        {
+          href: "",
           label: "Applications",
           active: pathname.includes("/dashboard/app"),
-          icon: FileStack,
+          icon: File,
           submenus: [
             {
               href: "/dashboard/app/migration",
@@ -188,9 +210,9 @@ export function getMenuListScout(pathname: string): Group[] {
           icon: CalendarClock,
           submenus: [
             {
-              href: "/scout/event/list",
+              href: "/scout/event",
               label: "List",
-              active: pathname === "/scout/event/list",
+              active: pathname === "/scout/event",
               icon: List,
             },
           ],

@@ -91,3 +91,27 @@ export const UPDATE_MIGRATION_STATUS = async ({migrationId, status}:MigrationSta
         success: "Status updated"
     }
 }
+
+
+export const DELETE_MIGRATION = async (id: string) => {
+    const migration = await db.migration.findUnique({
+        where: {
+            id
+        }
+    })
+    if(!migration) {
+        throw new Error("Migration not found")
+    }
+
+    await db.migration.delete({
+        where: {
+            id
+        }
+    })
+
+    revalidatePath("/dashboard/app/migration")
+
+    return {
+        success: "Application deleted"
+    }
+}

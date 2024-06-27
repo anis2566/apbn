@@ -38,6 +38,13 @@ export const useMigrationStatus = create<MigrationStatusState>()((set) => ({
   onClose: () => set({ open: false, migrationId: "" }),
 }));
 
+export const useMigrationDelete = create<MigrationStatusState>()((set) => ({
+  open: false,
+  migrationId: "",
+  onOpen: (migrationId) => set({ open: true, migrationId }),
+  onClose: () => set({ open: false, migrationId: "" }),
+}));
+
 
 interface MigrationWithScout extends Migration {
   scout: {

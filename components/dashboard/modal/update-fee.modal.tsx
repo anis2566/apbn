@@ -53,7 +53,7 @@ export const UpdateFeeModal = () => {
         amount: fee.amount,
         discountAmount: fee.discountAmount
     });
-}, [fee]);
+}, [fee, form]);
   
     console.log(fee)
     

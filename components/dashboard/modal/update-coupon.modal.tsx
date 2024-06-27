@@ -66,7 +66,7 @@ export const UpdateCouponModal = () => {
             expire: coupon.expire,
             status: coupon.status
         });
-    }, [coupon]);
+    }, [coupon, form]);
   
   const {mutate: createCoupon, isPending} = useMutation({
       mutationFn: UPDATE_COUPON,

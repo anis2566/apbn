@@ -1,4 +1,6 @@
 import { Ban, Scout } from "@prisma/client"
+import { EllipsisVertical, Eye } from "lucide-react"
+import Link from "next/link"
 
 import {
     Table,
@@ -15,17 +17,18 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Empty } from "@/components/empty"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+
+import { Empty } from "@/components/empty"
 import { cn } from "@/lib/utils"
 import { MigrationStatus } from "@/schema/migration.schema"
-import { EllipsisVertical, Eye } from "lucide-react"
-import Link from "next/link"
 import { ViewButton } from "./view-button"
+import { StatusButton } from "./status-button"
+import { DeleteButton } from "./delete-button"
 
 interface BanWithScout extends Ban {
-    scout: Scout
+    scout: Scout | null;
 }
 
 interface BanListProps {
@@ -37,7 +40,7 @@ export const BanList = ({ bans }: BanListProps) => {
         <>
             {
                 bans.length < 1 ? (
-                    <Empty title="No Migration found" />
+                    <Empty title="No Ban App Found" />
                 ) : (
                     <Table>
                         <TableHeader>
@@ -88,9 +91,12 @@ export const BanList = ({ bans }: BanListProps) => {
                                                     <DropdownMenuItem asChild>
                                                         <ViewButton ban={ban} />
                                                     </DropdownMenuItem>
-                                                     {/* <DropdownMenuItem asChild>
-                                                        <StatusButton migrationId={migration.id} />
-                                                    </DropdownMenuItem> */}
+                                                    <DropdownMenuItem asChild>
+                                                        <StatusButton banId={ban.id} />
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <DeleteButton banId={ban.id} />
+                                                    </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>

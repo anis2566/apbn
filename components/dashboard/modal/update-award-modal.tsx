@@ -40,7 +40,7 @@ export const UpdateAwardModal = () => {
             title: award.title,
             imageUrl: award.imageUrl,
         });
-    }, [award]);
+    }, [award, form]);
 
     const { mutate: createAward, isPending } = useMutation({
         mutationFn: UPDATE_AWARD,

@@ -8,14 +8,14 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { ContentLayout } from "@/components/dashboard"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/dashboard/app/migration/header";
-import { MigrationList } from "@/components/dashboard/app/migration";
 import { db } from "@/lib/db";
 import { MigrationStatus } from "@/schema/migration.schema";
 import { BanList } from "@/components/dashboard/app/ban";
+import { CustomPagination } from "@/components/custom-pagination";
 
 interface Props {
     searchParams: {
@@ -26,7 +26,7 @@ interface Props {
     }
 };
 
-const BanApp = async ({searchParams}:Props) => {
+const BanApp = async ({ searchParams }: Props) => {
 
     const { status, search, page, perPage } = searchParams
     const itemsPerPage = parseInt(perPage) || 5;
@@ -34,7 +34,7 @@ const BanApp = async ({searchParams}:Props) => {
 
     const bans = await db.ban.findMany({
         where: {
-            ...(status && {status}),
+            ...(status && { status }),
             ...(search && {
                 scout: {
                     name: {
@@ -44,7 +44,7 @@ const BanApp = async ({searchParams}:Props) => {
             })
         },
         include: {
-            scout: true            
+            scout: true
         },
         orderBy: {
             createdAt: "desc"
@@ -52,6 +52,21 @@ const BanApp = async ({searchParams}:Props) => {
         skip: (currentPage - 1) * itemsPerPage,
         take: itemsPerPage,
     })
+
+    const totalBans = await db.ban.count({
+        where: {
+            ...(status && { status }),
+            ...(search && {
+                scout: {
+                    name: {
+                        contains: search, mode: "insensitive"
+                    }
+                }
+            })
+        }
+    })
+
+    const totalPage = Math.round(totalBans / itemsPerPage)
 
     return (
         <ContentLayout title="Applications">
@@ -77,7 +92,7 @@ const BanApp = async ({searchParams}:Props) => {
                 <CardContent className="space-y-4">
                     <Header />
                     <BanList bans={bans} />
-                    {/* <MigrationList migrations={migrations} /> */}
+                    <CustomPagination totalPage={totalPage} />
                 </CardContent>
             </Card>
         </ContentLayout>

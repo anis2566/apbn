@@ -15,6 +15,27 @@ export const useBan = create<BanState>()((set) => ({
   onClose: () => set({ open: false, scoutId: "" }),
 }));
 
+
+interface BanStatusState {
+  open: boolean;
+  banId: string;
+  onOpen: (banId: string) => void;
+  onClose: () => void;
+}
+export const useBanStatus = create<BanStatusState>()((set) => ({
+  open: false,
+  banId: "",
+  onOpen: (banId) => set({ open: true, banId }),
+  onClose: () => set({ open: false, banId: "" }),
+}));
+
+export const useBanDelete = create<BanStatusState>()((set) => ({
+  open: false,
+  banId: "",
+  onOpen: (banId) => set({ open: true, banId }),
+  onClose: () => set({ open: false, banId: "" }),
+}));
+
 interface BanWithScout extends Ban {
   scout: Scout
 }
@@ -29,6 +50,6 @@ interface BanVeiwState {
 export const useBanView = create<BanVeiwState>()((set) => ({
   open: false,
   ban: null,
-  onOpen: (migration) => set({ open: true, ban }),
+  onOpen: (ban) => set({ open: true, ban }),
   onClose: () => set({ open: false, ban: null }),
 }));

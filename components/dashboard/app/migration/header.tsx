@@ -31,7 +31,7 @@ export const Header = () => {
         }, { skipEmptyString: true, skipNull: true });
 
         router.push(url);
-    }, [searchValue, router, pathname])
+    }, [searchValue, router, pathname, searchParams])
 
     const handlePerPageChange = (perPage: string) => {
         const url = queryString.stringifyUrl({

@@ -2,8 +2,8 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent, clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
-// import { Knock } from "@knocklabs/node";
-// const knock = new Knock(process.env.NEXT_PUBLIC_KNOCK_API_KEY);
+import { Knock } from "@knocklabs/node";
+const knock = new Knock(process.env.NEXT_PUBLIC_KNOCK_API_KEY);
 
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the endpoint
@@ -74,10 +74,10 @@ export async function POST(req: Request) {
       },
     });
 
-    // await knock.users.identify(evt.data.id, {
-    //   name: user.name,
-    //   avatar: user.imageUrl,
-    // })
+    await knock.users.identify(evt.data.id, {
+      name: user.name,
+      avatar: user.imageUrl,
+    })
 
   }
 
@@ -95,7 +95,7 @@ export async function POST(req: Request) {
   }
 
   if (eventType === "user.deleted") {
-    // await knock.users.delete(evt.data.id || "");
+    await knock.users.delete(evt.data.id || "");
 
     await db.user.delete({
       where: {

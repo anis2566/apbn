@@ -2,9 +2,10 @@
 
 import { db } from "@/lib/db"
 import { Role, ScoutSchema, ScoutSchemaType, Status } from "@/schema/scout.schema"
-import { getUser } from "@/services/user.service"
+import { getAdmin, getUser } from "@/services/user.service"
 import { clerkClient } from "@clerk/nextjs/server"
 import { revalidatePath } from "next/cache"
+import { sendNotification } from "../services/notification.service"
 
 export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
     const {success, data} = ScoutSchema.safeParse(values)
@@ -38,8 +39,17 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
                 select: {
                     id: true
                 }
+            },
+            leader: {
+                include: {
+                    user: {
+                        select: {
+                            clerkId: true
+                        }
+                    }
+                }
             }
-        }
+        },
     })
 
     if(!unit) {
@@ -78,6 +88,33 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
         }
     })
 
+    const { adminClerkId } = await getAdmin()
+    await sendNotification({
+        trigger: "scout-request",
+        actor: {
+            id: clerkId,
+            name: newScout.name,
+        },
+        recipients: [adminClerkId, ],
+        data: {
+            redirectUrl: `/dashboard/scout/request`
+        }
+    })
+
+    if (unit.leaderId) {
+        await sendNotification({
+            trigger: "scout-request-leader",
+            actor: {
+                id: clerkId,
+                name: newScout.name,
+            },
+            recipients: [adminClerkId, ],
+            data: {
+                redirectUrl: `/scout/unit/request`
+            }
+        })
+    }
+
     return {
         success: "Registration successfull",
         id: newScout.id
@@ -98,7 +135,6 @@ export const GET_SCOUT = async (scoutId: string) => {
 
     return {scout}
 }
-
 
 type UpdateStatus = {
     id: string;
@@ -145,6 +181,18 @@ export const UPDATE_SCOUT_STATUS = async ({id, status}:UpdateStatus) => {
         where: {
             id
         },
+        data: {
+            status
+        }
+    })
+
+    const { adminClerkId } = await getAdmin()
+    await sendNotification({
+        trigger: "scout-response",
+        actor: {
+            id: adminClerkId
+        },
+        recipients: [scout.user?.clerkId || ""],
         data: {
             status
         }

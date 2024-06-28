@@ -3,6 +3,8 @@
 import { db } from "@/lib/db";
 import { Role } from "@/schema/scout.schema";
 import { Section, UnitSchema, UnitSchemaType } from "@/schema/unit.schema";
+import { sendNotification } from "@/services/notification.service";
+import { getAdmin } from "@/services/user.service";
 import { clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
@@ -165,6 +167,18 @@ export const ASSIGN_LEADER = async ({unitId, leaderId}:AssigLeader) => {
     }
   })
 
+  const { adminClerkId } = await getAdmin()
+    await sendNotification({
+        trigger: "scout-leader-assign",
+        actor: {
+            id: adminClerkId
+        },
+        recipients: [scout.user?.clerkId || ""],
+        data: {
+            unit: unit.name
+        }
+    })
+
   revalidatePath(`/dashboard/unit/${unitId}`)
 
   return {
@@ -222,7 +236,17 @@ export const REMOVE_LEADER = async (unitId: string) => {
     }
   })
 
-
+  const { adminClerkId } = await getAdmin()
+    await sendNotification({
+        trigger: "scout-leader-remove",
+        actor: {
+            id: adminClerkId
+        },
+        recipients: [unit.leader?.user?.clerkId || ""],
+        data: {
+            unit: unit.name
+        }
+    })
 
   revalidatePath(`/dashboard/unit/${unitId}`)
 

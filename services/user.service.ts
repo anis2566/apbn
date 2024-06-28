@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server"
 
 import { db } from "@/lib/db"
 import { redirect } from "next/navigation"
+import { Role } from "@/schema/scout.schema"
 
 export const getUser = async () => {
     const { userId } = auth()
@@ -46,4 +47,23 @@ export const getScout = async () => {
     }
 
     return {scout, scoutId: scout.id, role: scout.role, clerkId: userId, status: scout.status}
+}
+
+
+export const getAdmin = async () => {
+    const admin = await db.user.findFirst({
+        where: {
+            role: Role.Admin
+        }
+    })
+
+    if (!admin) {
+        throw new Error("Admin not found")
+    }
+
+    return {
+        admin,
+        adminId: admin.id,
+        adminClerkId: admin.clerkId
+    }
 }

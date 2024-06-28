@@ -169,7 +169,7 @@ const Apply = () => {
     const { mutate: createScout, isPending } = useMutation({
         mutationFn: CREATE_SCOUT,
         onSuccess: (data) => {
-            router.push(`/scout/payment/${data?.id}`)
+            router.push(`/apply/payment/${data?.id}`)
             session?.reload()
             toast.success(data.success, {
                 id: "create-scout"

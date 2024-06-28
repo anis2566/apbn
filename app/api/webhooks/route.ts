@@ -97,9 +97,19 @@ export async function POST(req: Request) {
   if (eventType === "user.deleted") {
     await knock.users.delete(evt.data.id || "");
 
+    const user = await db.user.findUnique({
+      where: {
+        clerkId: evt.data.id
+      }
+    })
+
+    if (!user) {
+      throw new Error("User not found")
+    }
+
     await db.user.delete({
       where: {
-        clerkId: evt.data.id,
+        id: user.id
       },
     });
 

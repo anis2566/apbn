@@ -10,17 +10,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button"
 
 import { useDebounce } from "@/hooks/use-debounce"
-import { MigrationStatus } from "@/schema/migration.schema"
+import { CommiteeSection } from "@/schema/commitee.schema"
+import { formatString } from "@/lib/utils"
 
 export const Header = () => {
     const [search, setSearch] = useState<string>("")
-    const [status, setStatus] = useState<MigrationStatus>()
 
     const pathname = usePathname()
     const router = useRouter()
     const searchParams = useSearchParams()
     const searchValue = useDebounce(search, 500)
-    const params = Object.fromEntries(searchParams.entries());
 
     useEffect(() => {
         const url = queryString.stringifyUrl({
@@ -31,9 +30,10 @@ export const Header = () => {
         }, { skipEmptyString: true, skipNull: true });
 
         router.push(url);
-    }, [searchValue, router, pathname, searchParams])
+    }, [searchValue, router, pathname])
 
     const handlePerPageChange = (perPage: string) => {
+        const params = Object.fromEntries(searchParams.entries());
         const url = queryString.stringifyUrl({
             url: pathname,
             query: {
@@ -45,18 +45,18 @@ export const Header = () => {
         router.push(url)
     }
 
-    useEffect(() => {
+    const handleSectionChange = (section: string) => {
         const params = Object.fromEntries(searchParams.entries());
         const url = queryString.stringifyUrl({
             url: pathname,
             query: {
                 ...params,
-                status
+                section
             }
-        }, { skipEmptyString: true, skipNull: true });
+        }, { skipNull: true, skipEmptyString: true })
 
-        router.push(url);
-    }, [status, router, pathname, params])
+        router.push(url)
+    }
 
     return (
         <div className="space-y-2">
@@ -89,21 +89,20 @@ export const Header = () => {
                         className="hidden md:flex text-rose-500"
                         onClick={() => {
                             setSearch("")
-                            setStatus(undefined)
                             router.push(pathname)
                         }}
                     >
                         Reset
                     </Button>
                 </div>
-                <Select value={status} onValueChange={(value) => setStatus(value as MigrationStatus)}>
+                <Select onValueChange={(value) => handleSectionChange(value)}>
                     <SelectTrigger className="w-[150px]">
-                        <SelectValue placeholder="Status" />
+                        <SelectValue placeholder="Section" />
                     </SelectTrigger>
                     <SelectContent>
-                        {Object.values(MigrationStatus).map((section) => (
+                        {Object.values(CommiteeSection).map((section) => (
                             <SelectItem key={section} value={section}>
-                                {section}
+                                {formatString(section)}
                             </SelectItem>
                         ))}
                     </SelectContent>
@@ -125,7 +124,6 @@ export const Header = () => {
                     className="md:hidden text-rose-500"
                     onClick={() => {
                         setSearch("")
-                        setStatus(undefined)
                         router.push(pathname)
                     }}
                 >

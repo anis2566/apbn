@@ -26,6 +26,13 @@ enum Section {
   Rover 
 }
 
+enum CommiteeSection {
+  PackCouncil
+  TroopCouncil
+  CrewCouncil
+  GroupCommitee
+}
+
 enum Status {
   Pending
   Active
@@ -47,6 +54,12 @@ enum MigrationStatus {
 enum PaymentStatus {
   Paid
   Unpaid
+}
+
+enum TrainingType {
+  National 
+  Region
+  District
 }
 
 model User {
@@ -243,6 +256,37 @@ model EventApplication {
 
   paymentStatus PaymentStatus @default(Unpaid)
   status MigrationStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model Commitee {
+  id String @id @default(uuid())
+  name String
+  designation String
+  imageUrl String
+
+  section CommiteeSection
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model Training {
+  id String @id @default(uuid())
+  title String
+  description String
+  venue String
+  imageUrl String
+  limit Int
+  type TrainingType
+  trainingStart DateTime
+  trainingEnd DateTime
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

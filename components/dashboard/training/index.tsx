@@ -1,7 +1,7 @@
-import { Event } from "@prisma/client"
-import { EllipsisVertical, Eye, Pen } from "lucide-react"
-import Link from "next/link"
 import { format } from "date-fns"
+import { Edit, EllipsisVertical, Eye } from "lucide-react"
+import Link from "next/link"
+import { Training } from "@prisma/client"
 
 import {
     Table,
@@ -21,54 +21,45 @@ import {
 import { Button } from "@/components/ui/button"
 
 import { Empty } from "@/components/empty"
-import { cn } from "@/lib/utils"
 import { DeleteButton } from "./delete-button"
 
-interface EventWithApplication extends Event {
-    applications: {
-        id: string;
-    }[]
+interface Props {
+    trainings: Training[]
 }
 
-interface EventListProps {
-    events: EventWithApplication[]
-}
-
-export const EventList = ({ events }: EventListProps) => {
+export const TrainingList = ({ trainings }: Props) => {
     return (
         <>
             {
-                events.length < 1 ? (
-                    <Empty title="No Event Found" />
+                trainings.length < 1 ? (
+                    <Empty title="No Training Found" />
                 ) : (
                     <Table>
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Title</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Entry Fee</TableHead>
+                                <TableHead>Type</TableHead>
+                                <TableHead>Limit</TableHead>
                                 <TableHead>Participants</TableHead>
-                                <TableHead>Status</TableHead>
+                                <TableHead>Date</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {
-                                events.map(event => (
-                                    <TableRow key={event.id}>
-                                        <TableCell className="py-3">{event.title}</TableCell>
-                                        <TableCell className="py-3">{format(event.eventStart, "dd MMM yyyy")} - {format(event.eventEnd, "dd MMM yyyy")}</TableCell>
-                                        <TableCell className="py-3">&#2547;{event.entryFee > 0 ? event.entryFee : "Free"}</TableCell>
-                                        <TableCell className="py-3">{event.applications.length}</TableCell>
+                                trainings.map(training => (
+                                    <TableRow key={training.id}>
+                                        <TableCell className="py-3">{training.title}</TableCell>
                                         <TableCell className="py-3">
-                                            <Badge
-                                                className={cn(
-                                                    "text-white bg-green-500",
-                                                    event.eventEnd <= new Date() && "bg-rose-500"
-                                                )}
-                                            >
-                                                {event.eventEnd <= new Date() ? "Expired" : "Running"}
+                                            <Badge>
+                                                {training.type}
                                             </Badge>
+                                        </TableCell>
+                                        <TableCell className="py-3">{training.limit}</TableCell>
+                                        <TableCell className="py-3">20</TableCell>
+                                        <TableCell className="py-3">
+                                            {format(training.trainingStart, "dd MMM yyyy")} -
+                                            {" "} {format(training.trainingEnd, "dd MMM yyyy")}
                                         </TableCell>
                                         <TableCell className="py-3">
                                             <DropdownMenu>
@@ -80,19 +71,19 @@ export const EventList = ({ events }: EventListProps) => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/event/${event.id}`} className="flex items-center gap-x-3">
+                                                        <Link href={`/dashboard/training/${training.id}`} className="flex items-center gap-x-3">
                                                             <Eye className="w-4 h-4" />
                                                             View
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/event/edit/${event.id}`} className="flex items-center gap-x-3">
-                                                            <Pen className="w-4 h-4" />
+                                                        <Link href={`/dashboard/training/edit/${training.id}`} className="flex items-center gap-x-3">
+                                                            <Edit className="w-4 h-4" />
                                                             Edit
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <DeleteButton id={event.id} />
+                                                        <DeleteButton id={training.id} />
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

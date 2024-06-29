@@ -1,37 +1,20 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 
 import { ContentLayout } from "@/components/dashboard"
-import { EditEventForm } from "@/components/dashboard/event/edit-event-form";
-import { db } from "@/lib/db";
+import { CommiteeForm } from "@/components/dashboard/commitee/commitee-form";
 
-interface Props {
-    params: {
-        eventId: string;
-    }
-}
-
-const EditEvent = async ( {params:{eventId}}:Props) => {
-
-    const event = await db.event.findUnique({
-        where: {
-            id: eventId
-        }
-    })
-
-    if(!event) redirect("/dashboard")
-
+const CreateCommitee = () => {
     return (
-        <ContentLayout title="Event">
+        <ContentLayout title="Commitee">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -42,19 +25,19 @@ const EditEvent = async ( {params:{eventId}}:Props) => {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/dashboard/event/list">Event</Link>
+                            <Link href="/dashboard/commitee/list">Commitees</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Edit</BreadcrumbPage>
+                        <BreadcrumbPage>Create</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <EditEventForm event={event} />
+            <CommiteeForm />
         </ContentLayout>
     )
 }
 
-export default EditEvent
+export default CreateCommitee

@@ -8,7 +8,7 @@ import { CalendarIcon, Trash } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { useMutation } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
+import { Event } from "@prisma/client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -28,48 +28,49 @@ import { UploadButton } from "@/lib/uploadthing"
 import { cn } from "@/lib/utils"
 import { EventSchema } from "@/schema/event.schema"
 import { Calendar } from "@/components/ui/calendar"
-import { CREATE_EVENT } from "@/actions/event.action"
+import { UPDATE_EVENT } from "@/actions/event.action"
 
-export const EventForm = () => {
+interface Props {
+    event: Event
+}
 
-    const router = useRouter()
+export const EditEventForm = ({event}:Props) => {
 
     const form = useForm<z.infer<typeof EventSchema>>({
         resolver: zodResolver(EventSchema),
         defaultValues: {
-            title: "",
-            description: "",
-            venue: "",
-            imageUrl: "",
-            entryFee: undefined,
-            eventStart: undefined,
-            eventEnd: undefined,
-            registrationStart: undefined,
-            registrationEnd: undefined
+            title: event.title || "",
+            description: event.description || "",
+            venue: event.venue || "",
+            imageUrl: event.imageUrl || "",
+            entryFee: event.entryFee || undefined,
+            eventStart: event.eventStart || undefined,
+            eventEnd: event.eventEnd || undefined,
+            registrationStart: event.registrationStart || undefined,
+            registrationEnd: event.registrationEnd || undefined
         },
     })
 
     const {mutate: createEvent, isPending} = useMutation({
-        mutationFn: CREATE_EVENT,
+        mutationFn: UPDATE_EVENT,
         onSuccess: (data) => {
             form.reset()
-            router.push("/dashboard/event/list")
             toast.success(data.success, {
-                id: "create-event"
+                id: "update-event"
             });
         },
         onError: (error) => {
             toast.error(error.message, {
-                id: "create-event"
+                id: "update-event"
             });
         }
     })
 
     function onSubmit(values: z.infer<typeof EventSchema>) {
-        toast.loading("Event creating...", {
-            id: "create-event"
+        toast.loading("Event updating...", {
+            id: "update-event"
         })
-        createEvent(values)
+        createEvent({values, id: event.id})
     }
 
     return (

@@ -11,38 +11,30 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { ContentLayout } from "@/components/dashboard"
+import { Header } from "@/components/dashboard/commitee/header";
+import { CommiteeList } from "@/components/dashboard/commitee";
 import { db } from "@/lib/db";
-import { EventList } from "@/components/dashboard/event/event-list";
-import { MigrationStatus } from "@/schema/migration.schema";
-import { Header } from "@/components/dashboard/app/event/header";
+import { CommiteeSection } from "@/schema/commitee.schema";
 import { CustomPagination } from "@/components/custom-pagination";
 
 interface Props {
     searchParams: {
+        section: CommiteeSection;
         page: string;
         perPage: string;
         search: string;
     }
 };
 
-const Events = async ({searchParams}:Props) => {
-    const { search, page, perPage } = searchParams
+const Commitees = async ({ searchParams }: Props) => {
+    const { section, search, page, perPage } = searchParams
     const itemsPerPage = parseInt(perPage) || 5;
     const currentPage = parseInt(page) || 1;
 
-    const events = await db.event.findMany({
+    const commitees = await db.commitee.findMany({
         where: {
-            ...(search && {title: {contains: search, mode: "insensitive"}})
-        },
-        include: {
-            applications: {
-                where: {
-                    status: MigrationStatus.Approved
-                },
-                select: {
-                    id: true
-                }
-            }
+            ...(section && { section }),
+            ...(search && { name: { contains: search, mode: "insensitive" } })
         },
         orderBy: {
             createdAt: "desc"
@@ -51,16 +43,17 @@ const Events = async ({searchParams}:Props) => {
         take: itemsPerPage,
     })
 
-    const totalEvent = await db.event.count({
+    const totalCommitee = await db.commitee.count({
         where: {
-            ...(search && {title: {contains: search, mode: "insensitive"}})
+            ...(section && { section }),
+            ...(search && { name: { contains: search, mode: "insensitive" } })
         }
     })
 
-    const totalPage = Math.ceil(totalEvent / itemsPerPage)
+    const totalPage = Math.ceil(totalCommitee / itemsPerPage)
 
     return (
-        <ContentLayout title="Event">
+        <ContentLayout title="Commitee">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -70,19 +63,19 @@ const Events = async ({searchParams}:Props) => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Event List</BreadcrumbPage>
+                        <BreadcrumbPage>Commitee List</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Event List</CardTitle>
+                    <CardTitle>Commitee List</CardTitle>
                     <CardDescription>A collection of event.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Header />
-                    <EventList events={events} />
+                    <CommiteeList commitees={commitees} />
                     <CustomPagination totalPage={totalPage} />
                 </CardContent>
             </Card>
@@ -90,4 +83,4 @@ const Events = async ({searchParams}:Props) => {
     )
 }
 
-export default Events
+export default Commitees

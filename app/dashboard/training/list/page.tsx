@@ -11,10 +11,9 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { ContentLayout } from "@/components/dashboard"
+import { Header } from "@/components/dashboard/event/event-detials/header";
 import { db } from "@/lib/db";
-import { EventList } from "@/components/dashboard/event/event-list";
-import { MigrationStatus } from "@/schema/migration.schema";
-import { Header } from "@/components/dashboard/app/event/header";
+import { TrainingList } from "@/components/dashboard/training";
 import { CustomPagination } from "@/components/custom-pagination";
 
 interface Props {
@@ -25,24 +24,14 @@ interface Props {
     }
 };
 
-const Events = async ({searchParams}:Props) => {
+const Trainings = async ({searchParams}:Props) => {
     const { search, page, perPage } = searchParams
     const itemsPerPage = parseInt(perPage) || 5;
     const currentPage = parseInt(page) || 1;
 
-    const events = await db.event.findMany({
+    const trainings = await db.training.findMany({
         where: {
             ...(search && {title: {contains: search, mode: "insensitive"}})
-        },
-        include: {
-            applications: {
-                where: {
-                    status: MigrationStatus.Approved
-                },
-                select: {
-                    id: true
-                }
-            }
         },
         orderBy: {
             createdAt: "desc"
@@ -51,16 +40,16 @@ const Events = async ({searchParams}:Props) => {
         take: itemsPerPage,
     })
 
-    const totalEvent = await db.event.count({
+    const totalTraining = await db.training.count({
         where: {
             ...(search && {title: {contains: search, mode: "insensitive"}})
         }
     })
 
-    const totalPage = Math.ceil(totalEvent / itemsPerPage)
+    const totalPage = Math.ceil(totalTraining / itemsPerPage)
 
     return (
-        <ContentLayout title="Event">
+        <ContentLayout title="Training">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -70,19 +59,19 @@ const Events = async ({searchParams}:Props) => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Event List</BreadcrumbPage>
+                        <BreadcrumbPage>Training List</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Event List</CardTitle>
-                    <CardDescription>A collection of event.</CardDescription>
+                    <CardTitle>Training List</CardTitle>
+                    <CardDescription>A collection of training.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Header />
-                    <EventList events={events} />
+                    <TrainingList trainings={trainings} />
                     <CustomPagination totalPage={totalPage} />
                 </CardContent>
             </Card>
@@ -90,4 +79,4 @@ const Events = async ({searchParams}:Props) => {
     )
 }
 
-export default Events
+export default Trainings

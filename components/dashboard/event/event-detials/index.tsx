@@ -51,7 +51,7 @@ export const EventParticipants = ({ participants }: EventParticipantsProps) => {
                                         </TableCell>
                                         <TableCell className="py-3">{participant.scout?.name}</TableCell>
                                         <TableCell className="py-3">{participant.scout?.apsId}</TableCell>
-                                        <TableCell className="py-3">{format(participant.createdAt, "dd MMM yyyy")}</TableCell>
+                                        <TableCell className="py-3">{format(participant.updatedAt, "dd MMM yyyy")}</TableCell>
                                         <TableCell className="py-3">
                                             <Badge className="bg-green-700">
                                                 {participant.status}

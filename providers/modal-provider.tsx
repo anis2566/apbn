@@ -2,9 +2,13 @@ import { AssignUnitLeaderModal } from "@/components/dashboard/modal/assign-leade
 import { BanStatusModal } from "@/components/dashboard/modal/ban-status.modal"
 import { BanViewModal } from "@/components/dashboard/modal/ban-view.modal"
 import { CreateAwardModal } from "@/components/dashboard/modal/create-award-modal"
+import { DeleteCommiteeModal } from "@/components/dashboard/modal/delete-commitee-modal"
 import { DeleteAwardModal } from "@/components/dashboard/modal/delete-award.modal"
 import { DeleteBanModal } from "@/components/dashboard/modal/delete-ban.modal"
+import { DeleteEventAppModal } from "@/components/dashboard/modal/delete-event-app.modal"
+import { DeleteEventModal } from "@/components/dashboard/modal/delete-event.modal"
 import { DeleteMigrationModal } from "@/components/dashboard/modal/delete-migration.modal"
+import { EventAppStatusModal } from "@/components/dashboard/modal/event-app-status.modal"
 import { MigrationStatusModal } from "@/components/dashboard/modal/migration-status.modal"
 import { MigrationViewModal } from "@/components/dashboard/modal/migration-view.modal"
 import { MigrationModal } from "@/components/dashboard/modal/migration.modal"
@@ -17,6 +21,7 @@ import { UpdateAwardModal } from "@/components/dashboard/modal/update-award-moda
 import { BanModal } from "@/components/scout/modal/ban.modal"
 import { MigrationModalLeader } from "@/components/scout/modal/migration.modal"
 import { ScoutRequestModalLeader } from "@/components/scout/modal/scout-status.modal"
+import { DeleteTrainingModal } from "@/components/dashboard/modal/delete-training-modal"
 
 export const ModalProvider = () => {
     return (
@@ -40,6 +45,11 @@ export const ModalProvider = () => {
             <RemoveScoutModal />
             <ScoutRequestModalLeader />
             <BanModal />
+            <EventAppStatusModal />
+            <DeleteEventAppModal />
+            <DeleteCommiteeModal />
+            <DeleteEventModal />
+            <DeleteTrainingModal />
         </>
     )
 }

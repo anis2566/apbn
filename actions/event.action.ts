@@ -22,3 +22,61 @@ export const CREATE_EVENT = async (values: EventSchemaType) => {
         success: "Event created"
     }
 }
+
+
+type UpdateEvent = {
+    id: string;
+    values: EventSchemaType
+}
+export const UPDATE_EVENT = async ({id, values}:UpdateEvent) => {
+    const {data, success} = EventSchema.safeParse(values)
+    if(!success) {
+        throw new Error("Invalid input value")
+    }
+
+    const event = await db.event.findUnique({
+        where: {
+            id
+        }
+    })
+    if(!event) {
+        throw new Error("Event not found")
+    }
+
+    await db.event.update({
+        where: {
+            id
+        },
+        data: {
+            ...data
+        }
+    })
+
+    return {
+        success: "Event updated"
+    }
+}
+
+
+export const DELETE_EVENT = async (id: string) => {
+    const event = await db.event.findUnique({
+        where: {
+            id
+        }
+    })
+    if(!event) {
+        throw new Error("Event not found")
+    }
+
+    await db.event.delete({
+        where: {
+            id
+        }
+    })
+
+    revalidatePath("/dashboard/event/list")
+
+    return {
+        success: "Event deleted"
+    }
+}

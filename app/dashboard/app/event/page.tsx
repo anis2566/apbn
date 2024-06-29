@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 import { ContentLayout } from "@/components/dashboard"
 import { db } from "@/lib/db";
-import { EventList } from "@/components/dashboard/event/event-list";
+import { EventList } from "@/components/dashboard/app/event";
 import { MigrationStatus } from "@/schema/migration.schema";
 import { Header } from "@/components/dashboard/app/event/header";
 import { CustomPagination } from "@/components/custom-pagination";
@@ -25,7 +25,7 @@ interface Props {
     }
 };
 
-const Events = async ({searchParams}:Props) => {
+const EventApp = async ({searchParams}:Props) => {
     const { search, page, perPage } = searchParams
     const itemsPerPage = parseInt(perPage) || 5;
     const currentPage = parseInt(page) || 1;
@@ -38,9 +38,6 @@ const Events = async ({searchParams}:Props) => {
             applications: {
                 where: {
                     status: MigrationStatus.Approved
-                },
-                select: {
-                    id: true
                 }
             }
         },
@@ -60,7 +57,7 @@ const Events = async ({searchParams}:Props) => {
     const totalPage = Math.ceil(totalEvent / itemsPerPage)
 
     return (
-        <ContentLayout title="Event">
+        <ContentLayout title="Applications">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -70,7 +67,7 @@ const Events = async ({searchParams}:Props) => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Event List</BreadcrumbPage>
+                        <BreadcrumbPage>Events</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -90,4 +87,4 @@ const Events = async ({searchParams}:Props) => {
     )
 }
 
-export default Events
+export default EventApp

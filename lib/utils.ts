@@ -17,3 +17,8 @@ export function formattedStr(str: string) {
 
   return formattedStr;
 }
+
+
+export function formatString(input:string) {
+  return input.replace(/([A-Z])/g, ' $1').trim();
+}

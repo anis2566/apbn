@@ -1,12 +1,7 @@
 import {
-  Tag,
   Users,
   Settings,
-  Bookmark,
-  SquarePen,
   LayoutGrid,
-  LayoutGridIcon,
-  Blocks,
   UtilityPole,
   LucideIcon,
   Pen,
@@ -19,11 +14,14 @@ import {
   Layers3,
   Medal,
   CalendarClock,
-  FileStack,
   RefreshCcwDot,
   Ban,
   File,
   CalendarDays,
+  Calendar,
+  UserCog,
+  GitCompareArrows,
+  SquareStack
 } from "lucide-react";
 
 type Submenu = {
@@ -86,7 +84,7 @@ export function getMenuList(pathname: string): Group[] {
         {
           href: "",
           label: "Scout",
-          active: pathname.includes("/utils"),
+          active: pathname.includes("/dashboard/scout"),
           icon: Users,
           submenus: [
             {
@@ -124,7 +122,7 @@ export function getMenuList(pathname: string): Group[] {
         {
           href: "",
           label: "Event",
-          active: pathname.includes("/dashboard/app"),
+          active: pathname.includes("/dashboard/event"),
           icon: CalendarDays,
           submenus: [
             {
@@ -137,6 +135,26 @@ export function getMenuList(pathname: string): Group[] {
               href: "/dashboard/event/list",
               label: "List",
               active: pathname === "/dashboard/event/list",
+              icon: List,
+            },
+          ],
+        },
+        {
+          href: "",
+          label: "Training",
+          active: pathname.includes("/dashboard/training"),
+          icon: GitCompareArrows,
+          submenus: [
+            {
+              href: "/dashboard/training/create",
+              label: "Create",
+              active: pathname === "/dashboard/training/create",
+              icon: Pen,
+            },
+            {
+              href: "/dashboard/training/list",
+              label: "List",
+              active: pathname === "/dashboard/training/list",
               icon: List,
             },
           ],
@@ -159,13 +177,39 @@ export function getMenuList(pathname: string): Group[] {
               active: pathname === "/dashboard/app/ban",
               icon: Ban,
             },
+            {
+              href: "/dashboard/app/event",
+              label: "Event",
+              active: pathname === "/dashboard/app/event",
+              icon: Calendar,
+            },
+          ],
+        },
+        {
+          href: "",
+          label: "Commitee",
+          active: pathname.includes("/dashboard/commitee"),
+          icon: UserCog,
+          submenus: [
+            {
+              href: "/dashboard/commitee/create",
+              label: "Create",
+              active: pathname === "/dashboard/commitee/create",
+              icon: Pen,
+            },
+            {
+              href: "/dashboard/commitee/list",
+              label: "List",
+              active: pathname === "/dashboard/commitee/list",
+              icon: List,
+            },
           ],
         },
         {
           href: "",
           label: "Utils",
-          active: pathname.includes("/utils"),
-          icon: UtilityPole,
+          active: pathname.includes("/dashboard/utils"),
+          icon: SquareStack,
           submenus: [
             {
               href: "/dashboard/utils/fee",

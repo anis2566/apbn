@@ -3,14 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import Image from "next/image"
-import { CalendarIcon, Trash } from "lucide-react"
 import { toast } from "sonner"
+import { CalendarIcon, Trash2 } from "lucide-react"
+import Image from "next/image"
 import { format } from "date-fns"
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
+import { Training } from "@prisma/client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -21,65 +21,74 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
+import { Calendar } from "@/components/ui/calendar"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
+import { TrainingSchema, TrainingType } from "@/schema/training.schema"
 import { UploadButton } from "@/lib/uploadthing"
 import { cn } from "@/lib/utils"
-import { EventSchema } from "@/schema/event.schema"
-import { Calendar } from "@/components/ui/calendar"
-import { CREATE_EVENT } from "@/actions/event.action"
+import { UPDATE_TRAINING } from "@/actions/training.action"
 
-export const EventForm = () => {
+interface Props {
+    training: Training;
+}
+
+export const EditTrainingForm = ({training}:Props) => {
 
     const router = useRouter()
 
-    const form = useForm<z.infer<typeof EventSchema>>({
-        resolver: zodResolver(EventSchema),
+    const form = useForm<z.infer<typeof TrainingSchema>>({
+        resolver: zodResolver(TrainingSchema),
         defaultValues: {
-            title: "",
-            description: "",
-            venue: "",
-            imageUrl: "",
-            entryFee: undefined,
-            eventStart: undefined,
-            eventEnd: undefined,
-            registrationStart: undefined,
-            registrationEnd: undefined
+            title: training.title || "",
+            description: training.description || "",
+            venue: training.venue || "",
+            imageUrl: training.imageUrl || "",
+            limit: training.limit || undefined,
+            type: training.type as TrainingType || undefined,
+            trainingStart: training.trainingStart || undefined,
+            trainingEnd: training.trainingEnd || undefined
         },
     })
 
-    const {mutate: createEvent, isPending} = useMutation({
-        mutationFn: CREATE_EVENT,
+    const { mutate: updateTraining, isPending } = useMutation({
+        mutationFn: UPDATE_TRAINING,
         onSuccess: (data) => {
-            form.reset()
-            router.push("/dashboard/event/list")
             toast.success(data.success, {
-                id: "create-event"
+                id: "update-training"
             });
         },
         onError: (error) => {
             toast.error(error.message, {
-                id: "create-event"
+                id: "update-training"
             });
         }
     })
 
-    function onSubmit(values: z.infer<typeof EventSchema>) {
-        toast.loading("Event creating...", {
-            id: "create-event"
+    function onSubmit(values: z.infer<typeof TrainingSchema>) {
+        toast.loading("Training creating...", {
+            id: "update-training"
         })
-        createEvent(values)
+        updateTraining({values, id: training.id})
     }
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 grid md:grid-cols-3 gap-6">
-                <div className="md:col-span-2 space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full grid md:grid-cols-3 gap-6 mt-4">
+                <div className="md:col-span-2 space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Identity</CardTitle>
-                            <CardDescription>Fill the event information</CardDescription>
+                            <CardTitle>Identify</CardTitle>
+                            <CardDescription>Fill up training identiy</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <FormField
@@ -89,7 +98,7 @@ export const EventForm = () => {
                                     <FormItem>
                                         <FormLabel>Title</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Enter event title" {...field} disabled={isPending} />
+                                            <Input placeholder="Enter title" {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -100,12 +109,12 @@ export const EventForm = () => {
                                 name="description"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Description</FormLabel>
+                                        <FormLabel>Desctiption</FormLabel>
                                         <FormControl>
                                             <Textarea
                                                 placeholder="Enter event description"
                                                 className="resize-none"
-                                                {...field} 
+                                                {...field}
                                                 disabled={isPending}
                                             />
                                         </FormControl>
@@ -120,7 +129,7 @@ export const EventForm = () => {
                                     <FormItem>
                                         <FormLabel>Venue</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Enter event venue" {...field} disabled={isPending} />
+                                            <Input placeholder="Enter venue" {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -128,12 +137,12 @@ export const EventForm = () => {
                             />
                             <FormField
                                 control={form.control}
-                                name="entryFee"
+                                name="limit"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Entry Fee</FormLabel>
+                                        <FormLabel>Limit</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Enter event venue" type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={isPending} />
+                                            <Input placeholder="Enter limit" type="number" {...field} onChange={(e) => field.onChange(parseInt(e.target.value))} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -144,15 +153,15 @@ export const EventForm = () => {
                     <Card>
                         <CardHeader>
                             <CardTitle>Media</CardTitle>
-                            <CardDescription>Fill the event images.</CardDescription>
+                            <CardDescription>Fill up training media.</CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="space-y-3">
                             <FormField
                                 control={form.control}
                                 name="imageUrl"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Event Image</FormLabel>
+                                        <FormLabel>Thumbnail</FormLabel>
                                         <FormControl>
                                             {
                                                 form.getValues("imageUrl") ? (
@@ -165,7 +174,7 @@ export const EventForm = () => {
                                                             src={form.getValues("imageUrl")}
                                                         />
                                                         <Button className="absolute top-0 right-0" variant="ghost" size="icon" onClick={() => form.setValue("imageUrl", "")} disabled={isPending}>
-                                                            <Trash className="text-rose-500" />
+                                                            <Trash2 className="text-rose-500" />
                                                         </Button>
                                                     </div>
                                                 ) : (
@@ -189,16 +198,48 @@ export const EventForm = () => {
                         </CardContent>
                     </Card>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Event Time</CardTitle>
-                            <CardDescription>Define event time.</CardDescription>
+                            <CardTitle>Type</CardTitle>
+                            <CardDescription>Fill up training type.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <FormField
                                 control={form.control}
-                                name="eventStart"
+                                name="type"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Type</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select type" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {Object.values(TrainingType).map((type) => (
+                                                    <SelectItem key={type} value={type}>
+                                                        {type}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Date</CardTitle>
+                            <CardDescription>Fill up training date.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            <FormField
+                                control={form.control}
+                                name="trainingStart"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel>Start</FormLabel>
@@ -239,7 +280,7 @@ export const EventForm = () => {
                             />
                             <FormField
                                 control={form.control}
-                                name="eventEnd"
+                                name="trainingEnd"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel>End</FormLabel>
@@ -268,7 +309,7 @@ export const EventForm = () => {
                                                     selected={field.value}
                                                     onSelect={field.onChange}
                                                     disabled={(date) =>
-                                                        date < form.getValues("eventStart") || date < new Date("1900-01-01") || isPending
+                                                        date < form.getValues("trainingStart") || date < new Date("1900-01-01") || isPending
                                                     }
                                                     initialFocus
                                                 />
@@ -280,97 +321,7 @@ export const EventForm = () => {
                             />
                         </CardContent>
                     </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Registration Time</CardTitle>
-                            <CardDescription>Define registration time.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            <FormField
-                                control={form.control}
-                                name="registrationStart"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-col">
-                                        <FormLabel>Start</FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <FormControl>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        className={cn(
-                                                            "w-full flex items-center gap-x-2 pl-3 text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                    >
-                                                        {field.value ? (
-                                                            format(field.value, "PPP")
-                                                        ) : (
-                                                            <span>Pick a date</span>
-                                                        )}
-                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                    </Button>
-                                                </FormControl>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0" align="start">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
-                                                    disabled={(date) =>
-                                                        date < new Date() || date < new Date("1900-01-01") || isPending
-                                                    }
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="registrationEnd"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-col">
-                                        <FormLabel>End</FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <FormControl>
-                                                    <Button
-                                                        variant={"outline"}
-                                                        className={cn(
-                                                            "w-full flex items-center gap-x-2 pl-3 text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )}
-                                                    >
-                                                        {field.value ? (
-                                                            format(field.value, "PPP")
-                                                        ) : (
-                                                            <span>Pick a date</span>
-                                                        )}
-                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                    </Button>
-                                                </FormControl>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0" align="start">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={field.value}
-                                                    onSelect={field.onChange}
-                                                    disabled={(date) =>
-                                                        date < form.getValues("registrationStart") || date < new Date("1900-01-01") || isPending
-                                                    }
-                                                    initialFocus
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </CardContent>
-                    </Card>
-                    <Button type="submit" disabled={isPending}>Submit</Button>
+                    <Button disabled={isPending}>Update</Button>
                 </div>
             </form>
         </Form>

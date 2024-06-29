@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import {
     Breadcrumb,
@@ -11,27 +10,11 @@ import {
 } from "@/components/ui/breadcrumb";
 
 import { ContentLayout } from "@/components/dashboard"
-import { EditEventForm } from "@/components/dashboard/event/edit-event-form";
-import { db } from "@/lib/db";
+import { TrainingForm } from "@/components/dashboard/training/training-form";
 
-interface Props {
-    params: {
-        eventId: string;
-    }
-}
-
-const EditEvent = async ( {params:{eventId}}:Props) => {
-
-    const event = await db.event.findUnique({
-        where: {
-            id: eventId
-        }
-    })
-
-    if(!event) redirect("/dashboard")
-
+const CreateTraining = () => {
     return (
-        <ContentLayout title="Event">
+        <ContentLayout title="Training">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -42,19 +25,19 @@ const EditEvent = async ( {params:{eventId}}:Props) => {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/dashboard/event/list">Event</Link>
+                            <Link href="/dashboard/training/list">Trainings</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Edit</BreadcrumbPage>
+                        <BreadcrumbPage>Create</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <EditEventForm event={event} />
+            <TrainingForm />
         </ContentLayout>
     )
 }
 
-export default EditEvent
+export default CreateTraining

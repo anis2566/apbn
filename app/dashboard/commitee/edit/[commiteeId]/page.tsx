@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 import {
     Breadcrumb,
@@ -11,27 +11,27 @@ import {
 } from "@/components/ui/breadcrumb";
 
 import { ContentLayout } from "@/components/dashboard"
-import { EditEventForm } from "@/components/dashboard/event/edit-event-form";
 import { db } from "@/lib/db";
+import { EditCommiteeForm } from "@/components/dashboard/commitee/edit-commitee-form";
 
 interface Props {
     params: {
-        eventId: string;
+        commiteeId: string;
     }
 }
 
-const EditEvent = async ( {params:{eventId}}:Props) => {
+const EditCommitee = async ({params:{commiteeId}}:Props) => {
 
-    const event = await db.event.findUnique({
+    const commitee = await db.commitee.findUnique({
         where: {
-            id: eventId
+            id: commiteeId
         }
     })
 
-    if(!event) redirect("/dashboard")
+    if(!commitee) redirect("/dashboard")
 
     return (
-        <ContentLayout title="Event">
+        <ContentLayout title="Commitee">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -42,7 +42,7 @@ const EditEvent = async ( {params:{eventId}}:Props) => {
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/dashboard/event/list">Event</Link>
+                            <Link href="/dashboard/commitee/list">Commitees</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
@@ -52,9 +52,9 @@ const EditEvent = async ( {params:{eventId}}:Props) => {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <EditEventForm event={event} />
+            <EditCommiteeForm commitee={commitee} />
         </ContentLayout>
     )
 }
 
-export default EditEvent
+export default EditCommitee

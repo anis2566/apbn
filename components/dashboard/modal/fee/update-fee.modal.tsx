@@ -55,8 +55,6 @@ export const UpdateFeeModal = () => {
     });
 }, [fee, form]);
   
-    console.log(fee)
-    
   const {mutate: updateFee, isPending} = useMutation({
       mutationFn: UPDATE_FEE,
       onSuccess: (data) => {

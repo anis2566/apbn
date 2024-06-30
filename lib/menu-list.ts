@@ -2,7 +2,7 @@ import {
   Users,
   Settings,
   LayoutGrid,
-  UtilityPole,
+  FileSignature,
   LucideIcon,
   Pen,
   List,
@@ -21,7 +21,7 @@ import {
   Calendar,
   UserCog,
   GitCompareArrows,
-  SquareStack
+  SquareStack,
 } from "lucide-react";
 
 type Submenu = {
@@ -223,6 +223,12 @@ export function getMenuList(pathname: string): Group[] {
               active: pathname === "/dashboard/utils/coupon",
               icon: BadgePercent,
             },
+            {
+              href: "/dashboard/utils/signature",
+              label: "Signature",
+              active: pathname === "/dashboard/utils/signature",
+              icon: FileSignature,
+            },
           ],
         },
       ],
@@ -251,13 +257,44 @@ export function getMenuListScout(pathname: string): Group[] {
           href: "",
           label: "Event",
           active: pathname.includes("/scout/event"),
-          icon: CalendarClock,
+          icon: Calendar,
           submenus: [
             {
               href: "/scout/event",
               label: "List",
               active: pathname === "/scout/event",
               icon: List,
+            },
+            {
+              href: "/scout/event/app",
+              label: "Applications",
+              active: pathname === "/scout/event/app",
+              icon: File,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      groupLabel: "",
+      menus: [
+        {
+          href: "",
+          label: "Training",
+          active: pathname.includes("/scout/training"),
+          icon: GitCompareArrows,
+          submenus: [
+            {
+              href: "/scout/training",
+              label: "List",
+              active: pathname === "/scout/training",
+              icon: List,
+            },
+            {
+              href: "/scout/training/app",
+              label: "Applications",
+              active: pathname === "/scout/training/app",
+              icon: File,
             },
           ],
         },

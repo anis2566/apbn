@@ -1,5 +1,5 @@
+import { Signature } from "@prisma/client"
 import { EllipsisVertical } from "lucide-react"
-import { Fee } from "@prisma/client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -17,40 +17,44 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 import { EditButton } from "./edit-button"
-import { ActionButton } from "./action.button"
+import { DeleteButton } from "./delete-button"
 
-interface FeeListProps {
-    fees: Fee[]
+interface Props {
+    signatures: Signature[]
 }
 
-export const FeeList = ({fees}:FeeListProps) => {
+export const SignatureList = ({ signatures }: Props) => {
     return (
         <Card className="mt-4">
             <CardHeader>
-                <CardTitle>Fee List</CardTitle>
+                <CardTitle>Signature List</CardTitle>
                 <CardDescription>
-                    A collection of your fee.
+                    A collection of your signature.
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <Table>
                     <TableHeader>
                         <TableRow>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>D. Amount</TableHead>
-                        <TableHead>Action</TableHead>
+                            <TableHead>Author</TableHead>
+                            <TableHead>Signature</TableHead>
+                            <TableHead>Action</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {
-                            fees.map(fee => (
-                                <TableRow key={fee.id}>
-                                    <TableCell className="py-3 capitalize">{fee.title}</TableCell>
-                                    <TableCell className="py-3">&#2547;{fee.amount}</TableCell>
-                                    <TableCell className="py-3">&#2547;{fee.discountAmount}</TableCell>
+                            signatures.map(signature => (
+                                <TableRow key={signature.id}>
+                                    <TableCell className="py-3 capitalize">{signature.author}</TableCell>
+                                    <TableCell className="py-3">
+                                        <Avatar>
+                                            <AvatarImage src={signature.imageUrl} />
+                                            <AvatarFallback>{signature.author.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                    </TableCell>
                                     <TableCell className="py-3">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -61,10 +65,10 @@ export const FeeList = ({fees}:FeeListProps) => {
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem asChild>
-                                                    <EditButton fee={fee} />
+                                                    <EditButton signature={signature} id={signature.id} />
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="w-flex items-center gap-x-3" asChild>
-                                                    <ActionButton feeId={fee.id} />
+                                                <DropdownMenuItem asChild>
+                                                    <DeleteButton id={signature.id} />
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>

@@ -36,7 +36,6 @@ export const EventAppplyForm = ({event, scoutId}:EventAppplyFormProps) => {
         mutationFn: GENERATE_BKASH_TOKEN,
         onSuccess: (data) => {
             if (data?.token) {
-                alert("token")
                 createPayment({amount:event.entryFee, token: data?.token, appId, scoutId})
             }
         },

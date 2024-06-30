@@ -1,55 +1,118 @@
-import { AssignUnitLeaderModal } from "@/components/dashboard/modal/assign-leader.modal"
-import { BanStatusModal } from "@/components/dashboard/modal/ban-status.modal"
-import { BanViewModal } from "@/components/dashboard/modal/ban-view.modal"
-import { CreateAwardModal } from "@/components/dashboard/modal/create-award-modal"
-import { DeleteCommiteeModal } from "@/components/dashboard/modal/delete-commitee-modal"
-import { DeleteAwardModal } from "@/components/dashboard/modal/delete-award.modal"
-import { DeleteBanModal } from "@/components/dashboard/modal/delete-ban.modal"
-import { DeleteEventAppModal } from "@/components/dashboard/modal/delete-event-app.modal"
-import { DeleteEventModal } from "@/components/dashboard/modal/delete-event.modal"
-import { DeleteMigrationModal } from "@/components/dashboard/modal/delete-migration.modal"
-import { EventAppStatusModal } from "@/components/dashboard/modal/event-app-status.modal"
-import { MigrationStatusModal } from "@/components/dashboard/modal/migration-status.modal"
-import { MigrationViewModal } from "@/components/dashboard/modal/migration-view.modal"
-import { MigrationModal } from "@/components/dashboard/modal/migration.modal"
-import { RemoveLeaderModal } from "@/components/dashboard/modal/remove-leader.modal"
-import { RemoveScoutModal } from "@/components/dashboard/modal/remove-scout.modal"
-import { ScoutCardModal } from "@/components/dashboard/modal/scout-card.modal"
-import { ScoutRequestModal } from "@/components/dashboard/modal/scout-status.modal"
-import { DeleteScoutModal } from "@/components/dashboard/modal/scout.modal"
-import { UpdateAwardModal } from "@/components/dashboard/modal/update-award-modal"
-import { BanModal } from "@/components/scout/modal/ban.modal"
-import { MigrationModalLeader } from "@/components/scout/modal/migration.modal"
+// UNIT
+import { DeleteUnitModal } from "@/components/dashboard/modal/unit/delete-unit.modal"
+import { RemoveLeaderModal } from "@/components/dashboard/modal/unit/remove-leader.modal"
+import { RemoveScoutModal } from "@/components/dashboard/modal/unit/remove-scout.modal"
 import { ScoutRequestModalLeader } from "@/components/scout/modal/scout-status.modal"
-import { DeleteTrainingModal } from "@/components/dashboard/modal/delete-training-modal"
+
+// SCOUT
+import { ScoutRequestModal } from "@/components/dashboard/modal/scout/scout-status.modal"
+import { DeleteScoutModal } from "@/components/dashboard/modal/scout/delete-scout.modal"
+import { AssignUnitLeaderModal } from "@/components/dashboard/modal/unit/assign-leader.modal"
+import { ScoutCardModal } from "@/components/dashboard/modal/scout/scout-card.modal"
+
+// AWARD
+import { CreateAwardModal } from "@/components/dashboard/modal/award/create-award-modal"
+import { UpdateAwardModal } from "@/components/dashboard/modal/award/update-award-modal"
+import { DeleteAwardModal } from "@/components/dashboard/modal/award/delete-award.modal"
+
+// EVENT
+import { DeleteEventAppModal } from "@/components/dashboard/modal/event/delete-event-app.modal"
+import { DeleteEventModal } from "@/components/dashboard/modal/event/delete-event.modal"
+import { EventAppStatusModal } from "@/components/dashboard/modal/event/event-app-status.modal"
+
+// TRAINING
+import { DeleteTrainingModal } from "@/components/dashboard/modal/training/delete-training-modal"
+
+// MIGRATION
+import { DeleteMigrationModal } from "@/components/dashboard/modal/migration/delete-migration.modal"
+import { MigrationStatusModal } from "@/components/dashboard/modal/migration/migration-status.modal"
+import { MigrationViewModal } from "@/components/dashboard/modal/migration/migration-view.modal"
+import { MigrationModal } from "@/components/dashboard/modal/migration/migration.modal"
+import { MigrationModalLeader } from "@/components/scout/modal/migration.modal"
+
+// BAN
+import { BanStatusModal } from "@/components/dashboard/modal/ban/ban-status.modal"
+import { DeleteBanModal } from "@/components/dashboard/modal/ban/delete-ban.modal"
+import { BanModal } from "@/components/scout/modal/ban.modal"
+import { BanViewModal } from "@/components/dashboard/modal/ban/ban-view.modal"
+
+// COMMITEE
+import { DeleteCommiteeModal } from "@/components/dashboard/modal/commitee/delete-commitee-modal"
+
+// FEE
+import { AssignFeeModal } from "@/components/dashboard/modal/fee/assign-fee.modal"
+import { UpdateFeeModal } from "@/components/dashboard/modal/fee/update-fee.modal"
+import { DeleteFeeModal } from "@/components/dashboard/modal/fee/delete-fee.modal"
+
+// COUPON
+import { AssignCouponModal } from "@/components/dashboard/modal/coupon/assign-coupon.modal"
+import { UpdateCouponModal } from "@/components/dashboard/modal/coupon/update-coupon.modal"
+import { DeleteCouponModal } from "@/components/dashboard/modal/coupon/delete-coupon.modal"
+import { AssignSignatureModal } from "@/components/dashboard/modal/signature/assign-signature.modal"
+import { UpdateSignatureModal } from "@/components/dashboard/modal/signature/update-signature.modal"
+import { DeleteSignatureModal } from "@/components/dashboard/modal/signature/delete-signature.modal"
+
+// SIGNATURE
 
 export const ModalProvider = () => {
     return (
         <>
+            {/* UNIT */}
+            <DeleteUnitModal />
+            <AssignUnitLeaderModal />
+            <RemoveLeaderModal />
+            <RemoveScoutModal />
+
+            {/* SCOUT */}
             <ScoutRequestModal />
             <DeleteScoutModal />
+            <ScoutRequestModalLeader />
             <ScoutCardModal />
+
+            {/* AWARD */}
             <CreateAwardModal />
             <UpdateAwardModal />
             <DeleteAwardModal />
-            <AssignUnitLeaderModal />
-            <RemoveLeaderModal />
+
+            {/* EVENT */}
+            <EventAppStatusModal />
+            <DeleteEventAppModal />
+            <DeleteEventModal />
+
+            {/* TRAINING */}
+            <DeleteTrainingModal />
+
+            {/* MIGRATION */}
             <MigrationModal />
             <MigrationViewModal />
             <MigrationStatusModal />
             <DeleteMigrationModal />
             <MigrationModalLeader />
+
+            {/* BAN */}
             <BanViewModal />
             <BanStatusModal />
-            <DeleteBanModal />
-            <RemoveScoutModal />
-            <ScoutRequestModalLeader />
             <BanModal />
-            <EventAppStatusModal />
-            <DeleteEventAppModal />
+            <DeleteBanModal />
+
+            {/* COMMITEE */}
             <DeleteCommiteeModal />
-            <DeleteEventModal />
-            <DeleteTrainingModal />
+
+            {/* FEE */}
+            <AssignFeeModal />
+            <UpdateFeeModal />
+            <DeleteFeeModal />
+
+            {/* COUPON */}
+            <AssignCouponModal />
+            <UpdateCouponModal />
+            <DeleteCouponModal />
+
+            {/* SIGNATURE */}
+            <AssignSignatureModal />
+            <UpdateSignatureModal />
+            <DeleteSignatureModal />
+
         </>
     )
 }

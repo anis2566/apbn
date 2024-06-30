@@ -56,7 +56,7 @@ export const Header = () => {
         }, { skipEmptyString: true, skipNull: true });
 
         router.push(url);
-    }, [status, router, pathname, params])
+    }, [status, router, pathname, searchParams])
 
     return (
         <div className="space-y-2">

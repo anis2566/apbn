@@ -39,7 +39,7 @@ export const CREATE_PAYMENT_FOR_REGISTER = async ({token, scoutId, amount}:Creat
         {
           mode: "0011",
           payerReference: " ",
-          callbackURL: `${process.env.NEXT_PUBLIC_NODE_ENV === "development" ? "http://localhost:3000" : "https://apbn.vercel.app/"}/api/payment/register/verify?token=${token}&scoutId=${scoutId}`,
+          callbackURL: `${process.env.NEXT_PUBLIC_NODE_ENV === "development" ? "http://localhost:3000" : "https://apbn.vercel.app"}/api/payment/register/verify?token=${token}&scoutId=${scoutId}`,
           amount: amount,
           currency: "BDT",
           intent: "sale",
@@ -75,7 +75,7 @@ export const CREATE_PAYMENT_FOR_EVENT = async ({token, appId, amount, scoutId}:C
         {
           mode: "0011",
           payerReference: " ",
-          callbackURL: `${process.env.NEXT_PUBLIC_NODE_ENV === "development" ? "http://localhost:3000" : "https://apbn.vercel.app/"}/api/payment/event/verify?token=${token}&scoutId=${scoutId}&appId=${appId}`,
+          callbackURL: `${process.env.NEXT_PUBLIC_NODE_ENV === "development" ? "http://localhost:3000" : "https://apbn.vercel.app"}/api/payment/event/verify?token=${token}&scoutId=${scoutId}&appId=${appId}`,
           amount: amount,
           currency: "BDT",
           intent: "sale",

@@ -52,7 +52,7 @@ export const CREATE_PAYMENT_FOR_REGISTER = async ({token, scoutId, amount}:Creat
                 authorization: token,
                 "x-app-key": process.env.NEXT_PUBLIC_PGW_BKASH_API_KEY,
             }
-        }
+        } 
     )
 
     return {

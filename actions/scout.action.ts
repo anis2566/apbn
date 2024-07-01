@@ -2,7 +2,8 @@
 
 import { db } from "@/lib/db"
 import { Role, ScoutSchema, ScoutSchemaType, Status } from "@/schema/scout.schema"
-import { getUser } from "@/services/user.service"
+import { sendNotification } from "@/services/notification.service"
+import { getAdmin, getUser } from "@/services/user.service"
 import { clerkClient } from "@clerk/nextjs/server"
 import { revalidatePath } from "next/cache"
 
@@ -86,6 +87,35 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
             status: "pending"
         }
     })
+
+    const {adminClerkId} = await getAdmin()
+    await sendNotification({
+        trigger: "scout-request",
+        actor: {
+            id: clerkId,
+            name: newScout.name
+        },
+        recipients: [adminClerkId],
+        data: {
+            name: newScout.name,
+            redirectUrl: `/dashboard/scout/${newScout.id}`
+        }
+    })
+    
+    if(unit.leaderId) {
+        await sendNotification({
+            trigger: "scout-request-leader",
+            actor: {
+                id: clerkId,
+                name: newScout.name
+            },
+            recipients: [unit.leader?.user?.clerkId || ""],
+            data: {
+                name: newScout.name,
+                redirectUrl: `/scout/unit/scout/${newScout.id}`
+            }
+        })
+    }
 
     return {
         success: "Registration successfull",

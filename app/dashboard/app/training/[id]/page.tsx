@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import {
     Breadcrumb,
@@ -8,40 +9,53 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { db } from "@/lib/db";
 import { ContentLayout } from "@/components/dashboard"
-import { ApplicationList } from "@/components/scout/training/app";
-import { Header } from "@/components/scout/training/header";
+import { MigrationStatus } from "@/schema/migration.schema";
+import { db } from "@/lib/db";
+import { Header } from "@/components/dashboard/app/migration/header";
+import { TrainingApplicationList } from "@/components/dashboard/app/training/applications";
 import { CustomPagination } from "@/components/custom-pagination";
 
 interface Props {
+    params: {
+        id: string;
+    },
     searchParams: {
+        status: MigrationStatus;
         page: string;
         perPage: string;
         search: string;
     }
-};
+}
 
-const TrainingApplications = async ({searchParams}:Props) => {
-    const { search, page, perPage } = searchParams
+const TrainingApps = async ({ params: { id }, searchParams }: Props) => {
+    const training = await db.training.findUnique({
+        where: {
+            id
+        }
+    })
+
+    if (!training) redirect("/dashboard")
+
+    const { status, search, page, perPage } = searchParams
     const itemsPerPage = parseInt(perPage) || 5;
     const currentPage = parseInt(page) || 1;
-
-    const trainings = await db.trainingApplication.findMany({
+    const applications = await db.trainingApplication.findMany({
         where: {
+            trainingId: id,
             ...(search && {
-                training: {
-                    title: {
-                        contains: search, 
-                        mode: "insensitive"
+                scout: {
+                    name: {
+                        contains: search, mode: "insensitive"
                     }
                 }
-            })
+            }),
+            ...(status && { status }),
         },
         include: {
-            training: true
+            scout: true
         },
         orderBy: {
             createdAt: "desc"
@@ -50,34 +64,35 @@ const TrainingApplications = async ({searchParams}:Props) => {
         take: itemsPerPage,
     })
 
-    const totalApp = await db.trainingApplication.count({
+    const totalApplication = await db.trainingApplication.count({
         where: {
+            trainingId: id,
             ...(search && {
-                training: {
-                    title: {
-                        contains: search, 
-                        mode: "insensitive"
+                scout: {
+                    name: {
+                        contains: search, mode: "insensitive"
                     }
                 }
-            })
+            }),
+            ...(status && { status }),
         },
     })
 
-    const totalPage = Math.ceil(totalApp / itemsPerPage)
+    const totalPage = Math.ceil(totalApplication / itemsPerPage)
 
     return (
-        <ContentLayout title="Training">
+        <ContentLayout title="Applications">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/scout">Dashboard</Link>
+                            <Link href="/dashboard">Dashboard</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/scout/training">Trainings</Link>
+                            <Link href="/dashboard/app/training">Trainings</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
@@ -89,12 +104,12 @@ const TrainingApplications = async ({searchParams}:Props) => {
 
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Applications</CardTitle>
-                    <CardDescription>A collection of training application.</CardDescription>
+                    <CardTitle>{training.title}</CardTitle>
+                    <CardDescription>A collection of application.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Header />
-                    <ApplicationList trainings={trainings} />
+                    <TrainingApplicationList applications={applications} />
                     <CustomPagination totalPage={totalPage} />
                 </CardContent>
             </Card>
@@ -102,4 +117,4 @@ const TrainingApplications = async ({searchParams}:Props) => {
     )
 }
 
-export default TrainingApplications
+export default TrainingApps

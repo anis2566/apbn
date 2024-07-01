@@ -1,7 +1,7 @@
 import Link from "next/link";
+import { Activity, Antenna, Building, Building2, Calendar, Ear, Edit, FileType2, FlaskRound, HeartPulse, House, LayoutPanelTop, Mailbox, Medal, PersonStanding, ScanFace, School, Shell, Store, University, User, Users } from "lucide-react";
 import { redirect } from "next/navigation";
 import Image from "next/image";
-import { Activity, Antenna, Building, Building2, Calendar, Ear, FileType2, FlaskRound, HeartPulse, House, LayoutPanelTop, Mailbox, Medal, PersonStanding, ScanFace, School, Shell, Store, University, User, Users } from "lucide-react";
 import { format } from "date-fns";
 
 import {
@@ -14,62 +14,44 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 import { ContentLayout } from "@/components/scout"
 import { db } from "@/lib/db";
-import { Status } from "@/schema/scout.schema";
-import { cn, formattedStr } from "@/lib/utils";
+import { getScout } from "@/services/user.service";
+import { formattedStr } from "@/lib/utils";
 import { ListBox } from "@/components/list-box";
 
-interface Props {
-    params: {
-        scoutId: string;
-    }
-}
+const Profile = async () => {
 
-const ScoutDetails = async ({ params: { scoutId } }: Props) => {
+    const { scout } = await getScout()
 
-    const scout = await db.scout.findUnique({
-        where: {
-            id: scoutId
-        },
-        include: {
-            unit: true
-        }
-    })
-
-    if (!scout) redirect("/dashboard")
+    if (!scout) redirect("/")
 
     const awards = await db.scoutAward.findMany({
-        where: {
+        where:{
             scoutId: scout.id
         },
         include: {
             award: true
         },
         orderBy: {
-            createdAt: "desc"
+            createdAt: "desc" 
         }
     })
 
     return (
-        <ContentLayout title="Scout">
+        <ContentLayout title="Profile">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link href="/dashboard">Dashboard</Link>
+                            <Link href="/scout">Dashboard</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <Link href="/dashboard/scout/list">Scout</Link>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>Details</BreadcrumbPage>
+                        <BreadcrumbPage>Profile</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -92,16 +74,12 @@ const ScoutDetails = async ({ params: { scoutId } }: Props) => {
                             <div className="font-semibold text-xl text-primary">{scout.name}</div>
                             <div>{scout.email}</div>
                             <div>{scout.phone}</div>
-                            <Badge
-                                className={cn("capitalize text-white",
-                                    scout.status === Status.Pending && "bg-amber-500",
-                                    scout.status === Status.Active && "bg-green-500",
-                                    scout.status === Status.Verified && "bg-indigo-500",
-                                    scout.status === Status.Suspended && "bg-rose-500",
-                                )}
-                            >
-                                {scout.status}
-                            </Badge>
+                            <Link href={`/scout/profile/${scout.id}`}>
+                                <Button className="flex items-center gap-x-2 h-8">
+                                    <Edit className="w-5 h-5" />
+                                    Edit
+                                </Button>
+                            </Link>
                         </div>
                     </CardContent>
                 </Card>
@@ -203,4 +181,4 @@ const ScoutDetails = async ({ params: { scoutId } }: Props) => {
     )
 }
 
-export default ScoutDetails
+export default Profile;

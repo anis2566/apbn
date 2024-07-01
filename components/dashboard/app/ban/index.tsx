@@ -88,13 +88,13 @@ export const BanList = ({ bans }: BanListProps) => {
                                                             View Profile
                                                         </Link>
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
+                                                    <DropdownMenuItem>
                                                         <ViewButton ban={ban} />
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
+                                                    <DropdownMenuItem>
                                                         <StatusButton banId={ban.id} />
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
+                                                    <DropdownMenuItem>
                                                         <DeleteButton banId={ban.id} />
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>

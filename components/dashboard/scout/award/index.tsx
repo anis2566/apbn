@@ -24,7 +24,7 @@ import { DeleteButton } from "./delete-button"
 
 interface AwardWithScout extends Award {
     scouts: {
-        id: string;
+        scoutId: string;
     }[]
 }
 

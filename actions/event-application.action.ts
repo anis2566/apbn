@@ -17,9 +17,9 @@ export const CREATE_APPLICATION = async (values: EventApplicationSchemaType) => 
             scoutId: data.scoutId
         }
     })
-    // if(existApplication) {
-    //     throw new Error("Alread applied")
-    // }
+    if(existApplication) {
+        throw new Error("Alread applied")
+    }
 
     const application = await db.eventApplication.create({
         data: {

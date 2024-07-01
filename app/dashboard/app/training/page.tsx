@@ -8,13 +8,12 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { ContentLayout } from "@/components/dashboard"
-import { CreateAward } from "@/components/dashboard/scout/award/create-award";
-import { Header } from "@/components/dashboard/scout/award/header";
+import { Header } from "@/components/scout/training/header";
+import { TrainingList } from "@/components/dashboard/app/training";
 import { db } from "@/lib/db";
-import { AwardList } from "@/components/dashboard/scout/award";
 import { CustomPagination } from "@/components/custom-pagination";
 
 interface Props {
@@ -25,21 +24,14 @@ interface Props {
     }
 };
 
-const Award = async ({searchParams}:Props) => {
+const Trainings = async ({searchParams}:Props) => {
     const { search, page, perPage } = searchParams
-    const itemsPerPage = parseInt(perPage) || 5;  
+    const itemsPerPage = parseInt(perPage) || 5;
     const currentPage = parseInt(page) || 1;
 
-    const awards = await db.award.findMany({
+    const trainings = await db.training.findMany({
         where: {
             ...(search && {title: {contains: search, mode: "insensitive"}})
-        },
-        include: {
-            scouts: {
-                select: {
-                    scoutId: true
-                }
-            }
         },
         orderBy: {
             createdAt: "desc"
@@ -48,17 +40,16 @@ const Award = async ({searchParams}:Props) => {
         take: itemsPerPage,
     })
 
-    const totalAward = await db.award.count({
+    const totalTraining = await db.training.count({
         where: {
             ...(search && {title: {contains: search, mode: "insensitive"}})
         }
     })
 
-    const totalPage = Math.round(totalAward / itemsPerPage)
-
+    const totalPage = Math.ceil(totalTraining / itemsPerPage)
 
     return (
-        <ContentLayout title="Award">
+        <ContentLayout title="Applications">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -68,22 +59,19 @@ const Award = async ({searchParams}:Props) => {
                     </BreadcrumbItem>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                        <BreadcrumbPage>Award</BreadcrumbPage>
+                        <BreadcrumbPage>Trainings</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <div className="mt-4 space-y-6">
-                <CreateAward />
-            </div>
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>Award List</CardTitle>
-                    <CardDescription>A collection of award.</CardDescription>
+                    <CardTitle>Training List</CardTitle>
+                    <CardDescription>A collection of training.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Header />
-                    <AwardList awards={awards} />
+                    <TrainingList trainings={trainings} />
                     <CustomPagination totalPage={totalPage} />
                 </CardContent>
             </Card>
@@ -91,4 +79,4 @@ const Award = async ({searchParams}:Props) => {
     )
 }
 
-export default Award
+export default Trainings;

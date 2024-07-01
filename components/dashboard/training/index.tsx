@@ -82,7 +82,7 @@ export const TrainingList = ({ trainings }: Props) => {
                                                             Edit
                                                         </Link>
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
+                                                    <DropdownMenuItem>
                                                         <DeleteButton id={training.id} />
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>

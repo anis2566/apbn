@@ -23,35 +23,20 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-import { Status } from "@/schema/scout.schema";
-import { db } from "@/lib/db";
 import { ContentLayout } from "@/components/dashboard";
 import { StatCard } from "@/components/dashboard/card";
 import { TodoForm } from "@/components/dashboard/todo/todo-form";
 import { TodoList } from "@/components/dashboard/todo";
+import { GET_DASHBOARD_DATA } from "@/actions/dashboard.action";
 
 export default async function Dashboard() {
 
-  const scouts = await db.scout.findMany({
-    where: {
-      status: Status.Pending
-    },
-    include: {
-      unit: {
-        select: {
-          id: true
-        }
-      },
-    },
-    take: 5
-  })
-
-  const todos = await db.todo.findMany({
-    orderBy: {
-      createdAt: "desc"
-    },
-    take: 5
-  })
+  const {scoutCount,
+    unitCount,
+    eventCount,
+    commiteeCount,
+    scouts,
+    todos,} = await GET_DASHBOARD_DATA()
 
   return (
     <ContentLayout title="Dashboard">
@@ -70,10 +55,10 @@ export default async function Dashboard() {
       </Breadcrumb>
 
       <div className="mt-4 grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-        <StatCard title="Scouts" icon={Users} value={210} />
-        <StatCard title="Units" icon={Layers3} value={7} />
-        <StatCard title="Event" icon={Calendar} value={4} />
-        <StatCard title="Commitee" icon={UserCog} value={15} />
+        <StatCard title="Scouts" icon={Users} value={scoutCount} />
+        <StatCard title="Units" icon={Layers3} value={unitCount} />
+        <StatCard title="Event" icon={Calendar} value={eventCount} />
+        <StatCard title="Commitee" icon={UserCog} value={commiteeCount} />
       </div>
 
       <div className="grid md:grid-cols-3 gap-4 md:gap-8 mt-6">

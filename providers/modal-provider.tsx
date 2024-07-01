@@ -22,6 +22,8 @@ import { EventAppStatusModal } from "@/components/dashboard/modal/event/event-ap
 
 // TRAINING
 import { DeleteTrainingModal } from "@/components/dashboard/modal/training/delete-training-modal"
+import { TrainingAppStatusModal } from "@/components/dashboard/modal/training/training-app-status.modal"
+import { DeleteTrainingAppModal } from "@/components/dashboard/modal/training/delete-training-app.modal"
 
 // MIGRATION
 import { DeleteMigrationModal } from "@/components/dashboard/modal/migration/delete-migration.modal"
@@ -48,11 +50,11 @@ import { DeleteFeeModal } from "@/components/dashboard/modal/fee/delete-fee.moda
 import { AssignCouponModal } from "@/components/dashboard/modal/coupon/assign-coupon.modal"
 import { UpdateCouponModal } from "@/components/dashboard/modal/coupon/update-coupon.modal"
 import { DeleteCouponModal } from "@/components/dashboard/modal/coupon/delete-coupon.modal"
-import { AssignSignatureModal } from "@/components/dashboard/modal/signature/assign-signature.modal"
-import { UpdateSignatureModal } from "@/components/dashboard/modal/signature/update-signature.modal"
-import { DeleteSignatureModal } from "@/components/dashboard/modal/signature/delete-signature.modal"
 
 // SIGNATURE
+import { UpdateSignatureModal } from "@/components/dashboard/modal/signature/update-signature.modal"
+import { AssignSignatureModal } from "@/components/dashboard/modal/signature/assign-signature.modal"
+import { DeleteSignatureModal } from "@/components/dashboard/modal/signature/delete-signature.modal"
 
 export const ModalProvider = () => {
     return (
@@ -81,6 +83,8 @@ export const ModalProvider = () => {
 
             {/* TRAINING */}
             <DeleteTrainingModal />
+            <TrainingAppStatusModal />
+            <DeleteTrainingAppModal />
 
             {/* MIGRATION */}
             <MigrationModal />

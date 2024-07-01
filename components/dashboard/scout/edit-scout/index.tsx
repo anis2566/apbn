@@ -890,7 +890,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" disabled={isPending}>Update</Button>
+                            <Button type="submit" disabled={isPending} className="max-w-[130px]">Update</Button>
                         </div>
                     </CardContent>
                 </Card>

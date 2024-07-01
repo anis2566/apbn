@@ -1,7 +1,6 @@
-import { Event } from "@prisma/client"
-import { EllipsisVertical, Eye, Pen } from "lucide-react"
+import { Scout, TrainingApplication } from "@prisma/client"
+import { EllipsisVertical, Eye } from "lucide-react"
 import Link from "next/link"
-import { format } from "date-fns"
 
 import {
     Table,
@@ -18,56 +17,61 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 
 import { Empty } from "@/components/empty"
+import { MigrationStatus } from "@/schema/migration.schema"
 import { cn } from "@/lib/utils"
+import { StatusButton } from "./status-button"
 import { DeleteButton } from "./delete-button"
 
-interface EventWithApplication extends Event {
-    applications: {
-        id: string;
-    }[]
+interface TrainingApplicationWithScout extends TrainingApplication {
+    scout: Scout | null;
 }
 
-interface EventListProps {
-    events: EventWithApplication[]
+interface Props {
+    applications: TrainingApplicationWithScout[]
 }
 
-export const EventList = ({ events }: EventListProps) => {
+export const TrainingApplicationList = ({ applications }: Props) => {
     return (
         <>
             {
-                events.length < 1 ? (
-                    <Empty title="No Event Found" />
+                applications.length < 1 ? (
+                    <Empty title="No Application Found" />
                 ) : (
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Title</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Entry Fee</TableHead>
-                                <TableHead>Participants</TableHead>
+                                <TableHead>Image</TableHead>
+                                <TableHead>Name</TableHead>
+                                <TableHead>ِAPS ID</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {
-                                events.map(event => (
-                                    <TableRow key={event.id}>
-                                        <TableCell className="py-3">{event.title}</TableCell>
-                                        <TableCell className="py-3">{format(event.eventStart, "dd MMM yyyy")} - {format(event.eventEnd, "dd MMM yyyy")}</TableCell>
-                                        <TableCell className="py-3">&#2547;{event.entryFee > 0 ? event.entryFee : "Free"}</TableCell>
-                                        <TableCell className="py-3">{event.applications.length}</TableCell>
+                                applications.map(application => (
+                                    <TableRow key={application.id}>
+                                        <TableCell className="py-3">
+                                            <Avatar>
+                                                <AvatarImage src={application.scout?.imageUrl} />
+                                                <AvatarFallback>{application.scout?.name?.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                        </TableCell>
+                                        <TableCell className="py-3">{application.scout?.name}</TableCell>
+                                        <TableCell className="py-3">{application.scout?.apsId}</TableCell>
                                         <TableCell className="py-3">
                                             <Badge
                                                 className={cn(
-                                                    "text-white bg-green-500",
-                                                    event.eventEnd <= new Date() && "bg-rose-500"
+                                                    "text-white",
+                                                    application.status === MigrationStatus.Approved && "bg-green-500",
+                                                    application.status === MigrationStatus.Rejected && "bg-rose-500",
                                                 )}
                                             >
-                                                {event.eventEnd <= new Date() ? "Expired" : "Running"}
+                                                {application.status}
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="py-3">
@@ -80,19 +84,16 @@ export const EventList = ({ events }: EventListProps) => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/event/${event.id}`} className="flex items-center gap-x-3">
+                                                        <Link href={`/dashboard/app/training/${application.trainingId}/${application.id}`} className="flex items-center gap-x-3">
                                                             <Eye className="w-4 h-4" />
                                                             View
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/dashboard/event/edit/${event.id}`} className="flex items-center gap-x-3">
-                                                            <Pen className="w-4 h-4" />
-                                                            Edit
-                                                        </Link>
+                                                        <StatusButton id={application.id} />
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem>
-                                                        <DeleteButton id={event.id} />
+                                                    <DropdownMenuItem asChild>
+                                                        <DeleteButton id={application.id} />
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

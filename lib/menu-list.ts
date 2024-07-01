@@ -13,7 +13,6 @@ import {
   CircleDollarSign,
   Layers3,
   Medal,
-  CalendarClock,
   RefreshCcwDot,
   Ban,
   File,
@@ -183,6 +182,12 @@ export function getMenuList(pathname: string): Group[] {
               active: pathname === "/dashboard/app/event",
               icon: Calendar,
             },
+            {
+              href: "/dashboard/app/training",
+              label: "Training",
+              active: pathname === "/dashboard/app/training",
+              icon: GitCompareArrows,
+            },
           ],
         },
         {
@@ -273,11 +278,6 @@ export function getMenuListScout(pathname: string): Group[] {
             },
           ],
         },
-      ],
-    },
-    {
-      groupLabel: "",
-      menus: [
         {
           href: "",
           label: "Training",
@@ -298,11 +298,6 @@ export function getMenuListScout(pathname: string): Group[] {
             },
           ],
         },
-      ],
-    },
-    {
-      groupLabel: "",
-      menus: [
         {
           href: "",
           label: "Unit",
@@ -322,6 +317,13 @@ export function getMenuListScout(pathname: string): Group[] {
               icon: Radio,
             },
           ],
+        },
+        {
+          href: "/scout/profile",
+          label: "Profile",
+          active: pathname.includes("/scout/profile"),
+          icon: UserCog,
+          submenus: [],
         },
       ],
     },

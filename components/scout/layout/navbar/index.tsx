@@ -1,8 +1,8 @@
 import { ModeToggle } from "@/components/mode-toggle";
 
 import { SheetMenu } from "../sidebar/sheet-menu";
-import { UserButton } from "@clerk/nextjs";
 import { Notification } from "@/components/notification";
+import { UserNav } from "./user-nav";
 
 interface NavbarProps {
   title: string;
@@ -19,7 +19,7 @@ export function Navbar({ title }: NavbarProps) {
         <div className="flex flex-1 items-center space-x-2 justify-end">
           <ModeToggle />
           <Notification />
-          <UserButton afterSignOutUrl="/" />
+          <UserNav />
         </div>
       </div>
     </header>

@@ -100,13 +100,13 @@ export const MigrationList = ({ migrations }: MigrationListProps) => {
                                                             View Profile
                                                         </Link>
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
+                                                    <DropdownMenuItem>
                                                         <ViewButton migration={migration} />
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
+                                                    <DropdownMenuItem>
                                                         <StatusButton migrationId={migration.id} />
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
+                                                    <DropdownMenuItem>
                                                         <DeleteButton migrationId={migration.id} />
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>

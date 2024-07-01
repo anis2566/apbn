@@ -130,15 +130,13 @@ model Scout {
   unitId String?
   unit Unit? @relation(fields: [unitId], references: [id])
 
-  awardId String?
-  award Award? @relation(fields: [awardId], references: [id])
-
   leadingUnit Unit? @relation(name: "UnitLeader")
 
   migrations Migration[]
   bans Ban[]
   eventApplications EventApplication[]
   trainingApplications TrainingApplication[]
+  awards ScoutAward[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -192,12 +190,24 @@ model Award {
   title String
   imageUrl String
 
-  scouts Scout[]
+  scouts ScoutAward[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model ScoutAward {
+  scoutId String
+  scout Scout @relation(fields: [scoutId], references: [id])
+
+  awardId String
+  award Award @relation(fields: [awardId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@id([scoutId, awardId]) // Composite primary key
+}
 
 
 model Migration {

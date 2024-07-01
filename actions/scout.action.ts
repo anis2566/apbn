@@ -3,7 +3,7 @@
 import { db } from "@/lib/db"
 import { Role, ScoutSchema, ScoutSchemaType, Status } from "@/schema/scout.schema"
 import { sendNotification } from "@/services/notification.service"
-import { getAdmin, getUser } from "@/services/user.service"
+import { getAdmin, getScout, getUser } from "@/services/user.service"
 import { clerkClient } from "@clerk/nextjs/server"
 import { revalidatePath } from "next/cache"
 
@@ -152,7 +152,7 @@ export const UPDATE_SCOUT_STATUS = async ({id, status}:UpdateStatus) => {
                 select: {
                     clerkId: true
                 }
-            }
+            },
         }
     })
 
@@ -178,6 +178,88 @@ export const UPDATE_SCOUT_STATUS = async ({id, status}:UpdateStatus) => {
         })
 
     }
+
+    const {adminClerkId} = await getAdmin()
+    await sendNotification({
+        trigger: "scout-response",
+        actor: {
+            id: adminClerkId,
+        },
+        recipients: [scout.user?.clerkId || ""],
+        data: {
+            status
+        }
+    })
+
+    await db.scout.update({
+        where: {
+            id
+        },
+        data: {
+            status
+        }
+    })
+
+    revalidatePath("/dashboard/scout/request")
+    revalidatePath("/dashboard/scout/list")
+    revalidatePath("/dashboard/scout/verified")
+    revalidatePath("/dashboard/scout/cancelled")
+    revalidatePath("/scout/unit/request")
+
+    return {
+        success: "Status updated"
+    }
+}
+
+
+export const UPDATE_SCOUT_STATUS_LEADER = async ({id, status}:UpdateStatus) => {
+    const scout = await db.scout.findUnique({
+        where: {
+            id
+        },
+        include: {
+            user: {
+                select: {
+                    clerkId: true
+                }
+            },
+        }
+    })
+
+    if (!scout) {
+        throw new Error("Scout not found")
+    }
+
+    if(status === Status.Active) {
+        await db.scout.update({
+            where: {
+                id
+            },
+            data: {
+                unitId: scout.preferedUnit
+            }
+        })
+
+        await clerkClient.users.updateUser(scout.user?.clerkId, {
+            publicMetadata: {
+                role: scout.role.join(" "),
+                status: "active"
+            }
+        })
+
+    }
+
+    const {clerkId} = await getUser()
+    await sendNotification({
+        trigger: "scout-response-leader",
+        actor: {
+            id: clerkId,
+        },
+        recipients: [scout.user?.clerkId || ""],
+        data: {
+            status
+        }
+    })
 
     await db.scout.update({
         where: {
@@ -284,6 +366,13 @@ export const UPDATE_SCOUT_CARD_STATUS = async ({scoutId, status}:CardStatus) => 
     const scout = await db.scout.findUnique({
         where: {
             id: scoutId
+        },
+        include: {
+            user: {
+                select: {
+                    clerkId: true
+                }
+            }
         }
     })
 
@@ -300,10 +389,22 @@ export const UPDATE_SCOUT_CARD_STATUS = async ({scoutId, status}:CardStatus) => 
         }
     })
 
+    const {adminClerkId} = await getAdmin()
+    await sendNotification({
+        trigger: "scout-card",
+        actor: {
+            id: adminClerkId,
+        },
+        recipients: [scout.user?.clerkId || ""],
+        data: {
+            status: status ? "Approved" : "Rejected"
+        }
+    })
+
     revalidatePath("/dashboard/scout/request")
     revalidatePath("/dashboard/scout/list")
-    // revalidatePath("/dashboard/scout/verified")
-    // revalidatePath("/dashboard/scout/cancelled")
+    revalidatePath("/dashboard/scout/verified")
+    revalidatePath("/dashboard/scout/cancelled")
 
     return {
         success: "Status updated"
@@ -341,6 +442,18 @@ export const MIGRATE_SCOUT = async ({scoutId, unitId}:MigrateScout) => {
     const scout = await db.scout.findUnique({
         where: {
             id: scoutId
+        },
+        include: {
+            user: {
+                select: {
+                    clerkId: true
+                }
+            },
+            unit: {
+                select: {
+                    name: true
+                }
+            }
         }
     })
 
@@ -364,6 +477,19 @@ export const MIGRATE_SCOUT = async ({scoutId, unitId}:MigrateScout) => {
         },
         data: {
             unitId
+        }
+    })
+
+    const {adminClerkId} = await getAdmin()
+    await sendNotification({
+        trigger: "migrate-scout",
+        actor: {
+            id: adminClerkId,
+        },
+        recipients: [scout.user?.clerkId || ""],
+        data: {
+            currentUnit: scout.unit?.name,
+            migrateUnit: unit.name
         }
     })
 

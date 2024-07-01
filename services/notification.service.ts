@@ -15,6 +15,8 @@ type SendNotification = {
         invoice?: string;
         withdraw?: number;
         unit?: string;
+        currentUnit?: string;
+        migrateUnit?: string;
     }
 }
 

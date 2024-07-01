@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 
 import { useScoutStatusLeader } from "@/hooks/use-scout"
 import { Status } from "@/schema/scout.schema"
-import { UPDATE_SCOUT_STATUS } from "@/actions/scout.action"
+import { UPDATE_SCOUT_STATUS_LEADER } from "@/actions/scout.action"
 
 
 export const ScoutRequestModalLeader = () => {
@@ -25,7 +25,7 @@ export const ScoutRequestModalLeader = () => {
     const { open, scoutId, onClose } = useScoutStatusLeader()
     
     const {mutate: updateStatus, isPending} = useMutation({
-        mutationFn: UPDATE_SCOUT_STATUS,
+        mutationFn: UPDATE_SCOUT_STATUS_LEADER,
         onSuccess: (data) => {
             onClose()
             toast.success(data?.success, {

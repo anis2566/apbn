@@ -14,7 +14,7 @@ export function AppKnockProviders({ children }: { children: ReactNode }) {
 
   return (
     <KnockProvider
-      apiKey={apiKey}
+      apiKey={apiKey} 
       userId={userId || ""}
     >
       <KnockFeedProvider feedId={feedId}>

@@ -2,6 +2,8 @@
 
 import { db } from "@/lib/db"
 import { MigrationSchema, MigrationSchemaType, MigrationStatus } from "@/schema/migration.schema"
+import { sendNotification } from "@/services/notification.service"
+import { getAdmin, getUser } from "@/services/user.service"
 import { revalidatePath } from "next/cache"
 
 export const APPLY_MIGRATION = async (values: MigrationSchemaType) => {
@@ -13,6 +15,13 @@ export const APPLY_MIGRATION = async (values: MigrationSchemaType) => {
     const scout = await db.scout.findUnique({
         where: {
             id: data.scoutId
+        },
+        include: {
+            unit: {
+                select: {
+                    name: true
+                }
+            }
         }
     })
 
@@ -28,16 +37,38 @@ export const APPLY_MIGRATION = async (values: MigrationSchemaType) => {
         where: {
             scoutId: data.scoutId,
             status: MigrationStatus.Pending
-        }
+        },
     })
 
     if(isApplied) {
         throw new Error("Already applied")
     }
 
+    const migrateUnit = await db.unit.findUnique({
+        where: {
+            id: data.unitId
+        }
+    })
+
     await db.migration.create({
         data: {
             ...data
+        }
+    })
+
+    const {clerkId} = await getUser()
+    const {adminClerkId} = await getAdmin()
+    await sendNotification({
+        trigger: "migration-apply",
+        actor: {
+            id: clerkId,
+        },
+        recipients: [adminClerkId],
+        data: {
+            name: scout.name,
+            currentUnit: scout.unit?.name,
+            migrateUnit: migrateUnit?.name,
+            redirectUrl: `/dashboard/app/migration`
         }
     })
 
@@ -57,6 +88,35 @@ export const UPDATE_MIGRATION_STATUS = async ({migrationId, status}:MigrationSta
     const migration = await db.migration.findUnique({
         where: {
             id: migrationId
+        },
+        include: {
+            unit: {
+                select: {
+                    name: true
+                }
+            },
+            scout: {
+                include: {
+                    user: {
+                        select: {
+                            clerkId: true
+                        }
+                    },
+                    unit: {
+                        include: {
+                            leader: {
+                                include: {
+                                    user: {
+                                        select: {
+                                            clerkId: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     })
     if(!migration) {
@@ -84,6 +144,34 @@ export const UPDATE_MIGRATION_STATUS = async ({migrationId, status}:MigrationSta
             status
         }
     })
+
+    const {clerkId} = await getUser()
+    await sendNotification({
+        trigger: "migration-response",
+        actor: {
+            id: clerkId,
+        },
+        recipients: [migration.scout?.unit?.leader?.user?.clerkId || ""],
+        data: {
+            name: migration?.scout?.name,
+            status,
+        }
+    })
+
+    if(status === MigrationStatus.Approved) {
+        await sendNotification({
+            trigger: "migrate-scout",
+            actor: {
+                id: clerkId,
+            },
+            recipients: [migration.scout?.user?.clerkId || ""],
+            data: {
+                currentUnit: migration?.scout?.unit?.name,
+                migrateUnit: migration?.unit?.name
+            }
+        })
+    }
+
 
     revalidatePath("/dashboard/app/migration")
 

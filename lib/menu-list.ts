@@ -21,6 +21,8 @@ import {
   UserCog,
   GitCompareArrows,
   SquareStack,
+  MicVocal,
+  GalleryVertical,
 } from "lucide-react";
 
 type Submenu = {
@@ -234,6 +236,39 @@ export function getMenuList(pathname: string): Group[] {
               active: pathname === "/dashboard/utils/signature",
               icon: FileSignature,
             },
+          ],
+        },
+      ],
+    },
+    {
+      groupLabel: "Client",
+      menus: [
+        {
+          href: "/dashboard/news",
+          label: "News",
+          active: pathname.includes("/dashboard/news"),
+          icon: MicVocal,
+          submenus: [
+            {
+              href: "/dashboard/news/create",
+              label: "Create",
+              active: pathname === "/dashboard/news/create",
+              icon: Pen,
+            },
+            {
+              href: "/dashboard/news",
+              label: "List",
+              active: pathname === "/dashboard/news",
+              icon: List,
+            },
+          ],
+        },
+        {
+          href: "/dashboard/gallery",
+          label: "Gallery",
+          active: pathname.includes("/dashboard/gallery"),
+          icon: GalleryVertical,
+          submenus: [
           ],
         },
       ],

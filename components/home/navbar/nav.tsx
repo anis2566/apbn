@@ -1,6 +1,6 @@
 import { Tabs } from "@/components/aceternity/tabs"
 
-const tabs = [
+export const tabs = [
     {
         title: "Home",
         value: "home",

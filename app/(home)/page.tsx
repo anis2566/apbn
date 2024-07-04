@@ -1,8 +1,9 @@
+import { Commitee } from "@/components/home/commitee";
 import { Events } from "@/components/home/event";
+import { Gallery } from "@/components/home/gallery";
 import { Hero } from "@/components/home/hero";
 import { News } from "@/components/home/news";
 import { Stat } from "@/components/home/stat";
-import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Home() {
   return (
@@ -11,8 +12,8 @@ export default function Home() {
       <Stat />
       <News />
       <Events />
-      <ModeToggle />
-      <div className="h-[100vh]"></div>
+      <Commitee />
+      <Gallery />
     </main>
   );
 }

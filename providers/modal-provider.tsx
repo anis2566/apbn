@@ -55,6 +55,9 @@ import { DeleteCouponModal } from "@/components/dashboard/modal/coupon/delete-co
 import { UpdateSignatureModal } from "@/components/dashboard/modal/signature/update-signature.modal"
 import { AssignSignatureModal } from "@/components/dashboard/modal/signature/assign-signature.modal"
 import { DeleteSignatureModal } from "@/components/dashboard/modal/signature/delete-signature.modal"
+import { DeleteNewsModal } from "@/components/dashboard/modal/news/delete-news.modal"
+
+// NEWS
 
 export const ModalProvider = () => {
     return (
@@ -117,6 +120,8 @@ export const ModalProvider = () => {
             <UpdateSignatureModal />
             <DeleteSignatureModal />
 
+            {/* NEWS */}
+            <DeleteNewsModal />
         </>
     )
 }

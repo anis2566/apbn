@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import { withUt } from "uploadthing/tw";
 
 const defaultTheme = require("tailwindcss/defaultTheme");
 const svgToDataUri = require("mini-svg-data-uri");
@@ -8,7 +9,7 @@ const {
   default: flattenColorPalette,
 } = require("tailwindcss/lib/util/flattenColorPalette");
 
-const config = {
+export default withUt({
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -88,6 +89,14 @@ const config = {
             transform: "translate(calc(-50% - 0.5rem))",
           },
         },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(calc(-100% - var(--gap)))" },
+        },
+        "marquee-vertical": {
+          from: { transform: "translateY(0)" },
+          to: { transform: "translateY(calc(-100% - var(--gap)))" },
+        },
         
       },
       animation: {
@@ -95,6 +104,8 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         shimmer: "shimmer 2s linear infinite",
         scroll: "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
+        marquee: "marquee var(--duration) linear infinite",
+        "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
       },
     },
   },
@@ -129,7 +140,7 @@ const config = {
     },
     addVariablesForColors
   ],
-} satisfies Config
+}) satisfies Config
 
 function addVariablesForColors({ addBase, theme }: any) {
   let allColors = flattenColorPalette(theme("colors"));
@@ -141,5 +152,3 @@ function addVariablesForColors({ addBase, theme }: any) {
     ":root": newVars,
   });
 }
-
-export default config

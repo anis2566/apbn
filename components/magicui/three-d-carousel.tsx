@@ -8,6 +8,7 @@ import {
   useMotionValue,
   useTransform,
 } from "framer-motion"
+import { Gallery } from "@prisma/client"
 
 export const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect
@@ -173,13 +174,17 @@ Carousel.displayName = "Carousel"
 const hiddenMask = `repeating-linear-gradient(to right, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 30px, rgba(0,0,0,1) 30px, rgba(0,0,0,1) 30px)`
 const visibleMask = `repeating-linear-gradient(to right, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 0px, rgba(0,0,0,1) 0px, rgba(0,0,0,1) 30px)`
 
-export function ThreeDPhotoCarousel() {
+interface Props {
+  images: Gallery[]
+}
+
+export function ThreeDPhotoCarousel({images}:Props) {
   const [activeImg, setActiveImg] = useState<string | null>(null)
   const [isCarouselActive, setIsCarouselActive] = useState(true)
   const controls = useAnimation()
   const cards = useMemo(
-    () => keywords.map((keyword) => `https://picsum.photos/200/300?${keyword}`),
-    []
+    () => images.map((image) => image.imageUrl), 
+    [images]
   )
 
   useEffect(() => {

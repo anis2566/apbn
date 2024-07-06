@@ -22,3 +22,8 @@ export function formattedStr(str: string) {
 export function formatString(input:string) {
   return input.replace(/([A-Z])/g, ' $1').trim();
 }
+
+export const extractFileIdFromUrl = (url:string) => {
+  const segments = url.split("/");
+  return segments[segments.length - 1]
+};

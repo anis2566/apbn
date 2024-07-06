@@ -76,6 +76,7 @@ const EventDetails = async ({ params: { eventId } }: Props) => {
                                 src={event.imageUrl}
                                 alt="Banner"
                                 fill
+                                className="rounded-md object-contain"
                             />
                         </div>
                         <div className="space-y-4">

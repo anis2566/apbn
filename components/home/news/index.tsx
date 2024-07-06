@@ -28,7 +28,7 @@ export const News = async () => {
                 <NewsItem news={newses[0]} />
                 <Card className="bg-muted">
                     <CardHeader>
-                        <CardTitle>News Board</CardTitle>
+                        <CardTitle>More News</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <Marquee repeat={4} pauseOnHover vertical className="[--duration:10s]">

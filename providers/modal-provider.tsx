@@ -55,9 +55,15 @@ import { DeleteCouponModal } from "@/components/dashboard/modal/coupon/delete-co
 import { UpdateSignatureModal } from "@/components/dashboard/modal/signature/update-signature.modal"
 import { AssignSignatureModal } from "@/components/dashboard/modal/signature/assign-signature.modal"
 import { DeleteSignatureModal } from "@/components/dashboard/modal/signature/delete-signature.modal"
-import { DeleteNewsModal } from "@/components/dashboard/modal/news/delete-news.modal"
+
+// GALLERY
+import { DeleteGalleryModal } from "@/components/dashboard/modal/gallery/delete-gallery.modal"
 
 // NEWS
+import { DeleteNewsModal } from "@/components/dashboard/modal/news/delete-news.modal"
+
+// NOTICE
+import { DeleteNoticeModal } from "@/components/dashboard/modal/notice/delete-notice.modal"
 
 export const ModalProvider = () => {
     return (
@@ -122,6 +128,12 @@ export const ModalProvider = () => {
 
             {/* NEWS */}
             <DeleteNewsModal />
+
+            {/* GALLERY */}
+            <DeleteGalleryModal />
+
+            {/* NOTICE */}
+            <DeleteNoticeModal />
         </>
     )
 }

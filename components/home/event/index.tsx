@@ -5,6 +5,7 @@ import { ArrowRightIcon, Calendar, DollarSign, FilePen, MapPin } from "lucide-re
 import { Button } from "@/components/ui/button"
 
 import { db } from "@/lib/db"
+import Link from "next/link"
 
 export const Events = async () => {
     const events = await db.event.findMany({
@@ -40,8 +41,10 @@ export const Events = async () => {
                                             <p>{event.venue}</p>
                                         </div>
                                     </div>
-                                    <Button variant="expandIcon" Icon={ArrowRightIcon} iconPlacement="right" className="hidden md:flex">
-                                        View
+                                    <Button variant="expandIcon" Icon={ArrowRightIcon} iconPlacement="right" className="hidden md:flex" asChild>
+                                        <Link href={`/event/${event.id}`}>
+                                            View
+                                        </Link>
                                     </Button>
                                 </div>
                                 <div className="text-white hidden md:block">
@@ -61,8 +64,10 @@ export const Events = async () => {
                                         <p>&#2547;{event.entryFee}</p>
                                     </div>
                                 </div>
-                                <Button variant="expandIcon" Icon={ArrowRightIcon} iconPlacement="right" className="md:hidden">
-                                    View
+                                <Button variant="expandIcon" Icon={ArrowRightIcon} iconPlacement="right" className="md:hidden" asChild>
+                                    <Link href={`/event/${event.id}`}>
+                                        View    
+                                    </Link>
                                 </Button>
                             </div>
                         </div>

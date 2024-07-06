@@ -23,6 +23,8 @@ import {
   SquareStack,
   MicVocal,
   GalleryVertical,
+  MessageSquare,
+  Bell,
 } from "lucide-react";
 
 type Submenu = {
@@ -268,6 +270,22 @@ export function getMenuList(pathname: string): Group[] {
           label: "Gallery",
           active: pathname.includes("/dashboard/gallery"),
           icon: GalleryVertical,
+          submenus: [
+          ],
+        },
+        {
+          href: "/dashboard/message",
+          label: "Message",
+          active: pathname.includes("/dashboard/message"),
+          icon: MessageSquare,
+          submenus: [
+          ],
+        },
+        {
+          href: "/dashboard/notice",
+          label: "Notice",
+          active: pathname.includes("/dashboard/notice"),
+          icon: Bell,
           submenus: [
           ],
         },

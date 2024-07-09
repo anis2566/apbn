@@ -25,7 +25,9 @@ export const News = async () => {
                 <p className="text-muted-foreground">Explore the latest update of our community.</p>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
-                <NewsItem news={newses[0]} />
+                {newses[0] && (
+                    <NewsItem news={newses[0]} />
+                )}
                 <Card className="bg-muted">
                     <CardHeader>
                         <CardTitle>More News</CardTitle>

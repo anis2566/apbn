@@ -9,11 +9,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Trash2 } from "lucide-react"
-import Image from "next/image"
 import { useMutation, useQuery } from "@tanstack/react-query"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -21,11 +20,13 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 
-import { Role, ScoutSchema, Section } from "@/schema/scout.schema"
-import { BADGES, BLOODGROUP, MEMBERTYPE, ROLES, SCOUT_SECTION_TYPE } from "@/constant"
+import { ScoutSchema, Section } from "@/schema/scout.schema"
+import { BADGES_ADULT_CUB, BADGES_CUB, BADGES_ROVER, BADGES_SCOUT, BLOODGROUP, MEMBERTYPE, ROLES_ADULT_CUB_ROLE, ROLES_ADULT_ROVER_ROLE, ROLES_CUB_ROLE, ROLES_ROVER_ROLE, ROLES_SCOUT_ROLE, SCOUT_SECTION_TYPE } from "@/constant"
 import { UploadButton } from "@/lib/uploadthing"
 import { GET_UNITS } from "@/actions/unit.action"
 import { UPDATE_SCOUT } from "@/actions/scout.action"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
 
 type Division = {
     id: string;
@@ -43,8 +44,8 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
     const [districts, setDistricts] = useState<Division[]>([])
     const [joinDate, setJoinDate] = useState<Date>(new Date())
     const [section, setSection] = useState<Section>()
-    const [region, setRegion] = useState<string | null>(null)
-    const [scoutDistricts, setScoutDistricts] = useState<Division[]>([])
+    const [courseStart, setCourseStart] = useState<Date>(new Date())
+    const [courseEnd, setCourseEnd] = useState<Date>(new Date())
 
     useEffect(() => {
         const fetchDivisions = async () => {
@@ -74,21 +75,6 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
         fetchDistricts();
     }, [division]);
 
-    useEffect(() => {
-        const fetchDivisions = async () => {
-            const res = await fetch(`https://bdapi.vercel.app/api/v.1/district/${region}`, {
-                mode: 'cors'
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setScoutDistricts(data?.data || []);
-            } else {
-                console.error("Failed to fetch divisions:", res.status);
-            }
-        };
-        fetchDivisions();
-    }, [region]);
-
     const { data: units } = useQuery({
         queryKey: ["scout-units", section],
         queryFn: async () => {
@@ -101,6 +87,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
         resolver: zodResolver(ScoutSchema),
         defaultValues: {
             name: scout.name || "",
+            nameBangla: scout.nameBangla || "",
             apsId: scout.apsId || "",
             fatherName: scout.fatherName || "",
             motherName: scout.motherName || "",
@@ -122,7 +109,10 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
             section: scout.section || "",
             memberType: scout.memberType || "",
             badge: scout.badge || "",
-            role: scout.role.filter(role => role !== Role.Scout)[0] as Role || Role.Scout,
+            role: scout.role || [],
+            certificateNo: scout.certificateNo || "",
+            courseDateEnd: scout.courseDateEnd || undefined,
+            courseDateSatrt: scout.courseDateSatrt || undefined,
             scoutRegion: scout.scoutRegion || "",
             scoutDistrict: scout.scoutDistrict || "",
             scoutUpazilla: scout.scoutUpazilla || "",
@@ -132,7 +122,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
             organization: scout.organization || "",
             designation: scout.designation || "",
             imageUrl: scout.imageUrl || "",
-            preferedUnit: scout.unitId || ""
+            preferedUnit: scout.preferedUnitId || ""
         },
     })
 
@@ -174,7 +164,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     <FormItem>
                                         <FormLabel>Name</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="text" disabled={isPending} />
+                                            <Input {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -182,33 +172,20 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                             />
                             <FormField
                                 control={form.control}
-                                name="dob"
+                                name="nameBangla"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Date of Birth</FormLabel>
-                                        <div>
-                                            <DatePicker
-                                                selected={field.value}
-                                                onChange={(date: Date | null) => {
-                                                    if (date) {
-                                                        setDob(date)
-                                                        field.onChange(date)
-                                                    }
-                                                }}
-                                                disabled={isPending}
-                                                showYearDropdown
-                                                dateFormatCalendar="MMMM"
-                                                yearDropdownItemNumber={30}
-                                                scrollableYearDropdown
-                                                isClearable
-                                                className="border border-input w-full p-2 rounded-md"
-                                            />
-                                        </div>
+                                        <FormLabel>Name Bangla</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} disabled={isPending} />
+                                        </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
+
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -217,7 +194,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     <FormItem>
                                         <FormLabel>Father Name</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="text" disabled={isPending} />
+                                            <Input {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -230,13 +207,14 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     <FormItem>
                                         <FormLabel>Mother Name</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="text" disabled={isPending} />
+                                            <Input {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -246,7 +224,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                         <FormLabel>Gender</FormLabel>
                                         <FormControl>
                                             <RadioGroup
-                                                onValueChange={(value) => field.onChange(value)}
+                                                onValueChange={field.onChange}
                                                 defaultValue={field.value}
                                                 className="flex"
                                                 disabled={isPending}
@@ -275,7 +253,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Religion</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => field.onChange(value)} disabled={isPending}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select religion" />
@@ -294,6 +272,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 )}
                             />
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -302,7 +281,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     <FormItem>
                                         <FormLabel>Phone</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="text" disabled={isPending} />
+                                            <Input {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -310,18 +289,33 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                             />
                             <FormField
                                 control={form.control}
-                                name="email"
+                                name="dob"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} type="text" disabled={isPending} />
-                                        </FormControl>
+                                        <FormLabel>Date of Birth</FormLabel>
+                                        <div>
+                                            <DatePicker
+                                                selected={dob}
+                                                onChange={(date: Date | null) => {
+                                                    if (date) {
+                                                        setDob(date)
+                                                        field.onChange(date)
+                                                    }
+                                                }}
+                                                showYearDropdown
+                                                dateFormatCalendar="MMMM"
+                                                yearDropdownItemNumber={30}
+                                                scrollableYearDropdown
+                                                isClearable
+                                                className="border border-input w-full p-2 rounded-md"
+                                            />
+                                        </div>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -329,7 +323,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Blood Group</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => field.onChange(value)} disabled={isPending}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select blood group" />
@@ -355,16 +349,12 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                         <FormLabel>Image</FormLabel>
                                         {
                                             form.watch("imageUrl") ? (
-                                                <div className="relative aspect-square max-h-[100px]">
-                                                    <Image
-                                                        src={form.getValues("imageUrl")}
-                                                        alt="Profile"
-                                                        width="100"
-                                                        height="100"
-                                                        className="object-contain"
-                                                    />
-                                                    <Button type="button" variant="ghost" size="icon" className="absolute -right-10 top-0" onClick={() => form.setValue("imageUrl", "")} disabled={isPending}>
-                                                        <Trash2 className="h-4 w-4 text-rose-500" />
+                                                <div className="relative">
+                                                    <Avatar>
+                                                        <AvatarImage src={form.getValues("imageUrl")} />
+                                                    </Avatar>
+                                                    <Button type="button" disabled={isPending} onClick={() => form.setValue("imageUrl", "")} variant="ghost" size="icon" className="absolute right-0 top-0">
+                                                        <Trash2 className="w-5 h-5 text-rose-500" />
                                                     </Button>
                                                 </div>
                                             ) : (
@@ -380,6 +370,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                                 />
                                             )
                                         }
+                                        <FormDescription>স্কাউট পোশাক পরিহিত পাসপোর্ট সাইজ ছবি অপলাভ করুন</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -531,7 +522,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                         <FormLabel>Priority</FormLabel>
                                         <FormControl>
                                             <RadioGroup
-                                                onValueChange={(value) => field.onChange(value)}
+                                                onValueChange={field.onChange}
                                                 defaultValue={field.value}
                                                 className="flex gap-x-2"
                                                 disabled={isPending}
@@ -597,9 +588,22 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                         />
                                         <Label htmlFor="terms">Rover Scout</Label>
                                     </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            checked={form.watch("experience").includes("adult")}
+                                            disabled={isPending}
+                                            onCheckedChange={(isChecked) => {
+                                                const currentExperience = form.watch("experience");
+                                                const updatedExperience = isChecked ? [...currentExperience, "adult"] : currentExperience.filter(exp => exp !== "adult");
+                                                form.setValue("experience", updatedExperience);
+                                            }}
+                                        />
+                                        <Label htmlFor="terms">Adult Experience</Label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -609,7 +613,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                         <FormLabel>Join Date</FormLabel>
                                         <div>
                                             <DatePicker
-                                                selected={field.value || joinDate}
+                                                selected={joinDate}
                                                 onChange={(date: Date | null) => {
                                                     if (date) {
                                                         setJoinDate(date)
@@ -635,7 +639,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Member Type</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => field.onChange(value)} disabled={isPending}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select member type" />
@@ -654,6 +658,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 )}
                             />
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -661,10 +666,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Section Type</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => {
-                                            field.onChange(value)
-                                            setSection(value as Section)
-                                        }} disabled={isPending}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select member type" />
@@ -688,7 +690,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Badge</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => field.onChange(value)} disabled={isPending}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select member type" />
@@ -696,7 +698,29 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                             </FormControl>
                                             <SelectContent>
                                                 {
-                                                    BADGES.map((v, i) => (
+                                                    form.watch("memberType") !== "adultLeader" && form.watch("section") === "Cub" ?
+                                                        BADGES_CUB.map((v, i) => (
+                                                            <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                        ))
+                                                        : null
+                                                }
+                                                {
+                                                    form.watch("memberType") !== "adultLeader" && form.watch("section") === "Scout" ?
+                                                        BADGES_SCOUT.map((v, i) => (
+                                                            <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                        ))
+                                                        : null
+                                                }
+                                                {
+                                                    form.watch("memberType") !== "adultLeader" && form.watch("section") === "Rover" ?
+                                                        BADGES_ROVER.map((v, i) => (
+                                                            <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                        ))
+                                                        : null
+                                                }
+                                                {
+                                                    form.watch("memberType") === "adultLeader" &&
+                                                    BADGES_ADULT_CUB.map((v, i) => (
                                                         <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
                                                     ))
                                                 }
@@ -707,6 +731,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 )}
                             />
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -714,7 +739,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Role</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => field.onChange(value as Role)} disabled={isPending}>
+                                        <Select defaultValue={field.value[0]} onValueChange={(value) => field.onChange([value])} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select scout role" />
@@ -722,9 +747,39 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                             </FormControl>
                                             <SelectContent>
                                                 {
-                                                    Object.values(Role).map((v, i) => (
-                                                        <SelectItem value={v} key={i}>{v}</SelectItem>
-                                                    ))
+                                                    form.watch("memberType") !== "adultLeader" && form.watch("section") === "Cub" ?
+                                                        ROLES_CUB_ROLE.map((v, i) => (
+                                                            <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                        ))
+                                                        : null
+                                                }
+                                                {
+                                                    form.watch("memberType") !== "adultLeader" && form.watch("section") === "Scout" ?
+                                                        ROLES_SCOUT_ROLE.map((v, i) => (
+                                                            <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                        ))
+                                                        : null
+                                                }
+                                                {
+                                                    form.watch("memberType") !== "adultLeader" && form.watch("section") === "Rover" ?
+                                                        ROLES_ROVER_ROLE.map((v, i) => (
+                                                            <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                        ))
+                                                        : null
+                                                }
+                                                {
+                                                    form.watch("memberType") === "adultLeader" && form.watch("section") === "Cub" || form.watch("memberType") === "adultLeader" && form.watch("section") === "Scout" ?
+                                                        ROLES_ADULT_CUB_ROLE.map((v, i) => (
+                                                            <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                        ))
+                                                        : null
+                                                }
+                                                {
+                                                    form.watch("memberType") === "adultLeader" && form.watch("section") === "Rover" ?
+                                                        ROLES_ADULT_ROVER_ROLE.map((v, i) => (
+                                                            <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                        ))
+                                                        : null
                                                 }
                                             </SelectContent>
                                         </Select>
@@ -742,11 +797,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                             value={field.value}
                                             disabled={isPending}
                                             defaultValue={field.value}
-                                            onValueChange={(value) => {
-                                                field.onChange(value)
-                                                const div = divisions.find(item => item.name === value)
-                                                setRegion(div?.id || null)
-                                            }}
+                                            onValueChange={field.onChange}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -754,11 +805,24 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {divisions.map((division, i) => (
-                                                    <SelectItem value={division.name} key={i}>
-                                                        {division.name}
+                                                {
+                                                    form.watch("section") === "Scout" &&
+                                                    <SelectItem value="Dhaka">
+                                                        Bangladesh Scouts, Dhaka Region
                                                     </SelectItem>
-                                                ))}
+                                                }
+                                                {
+                                                    form.watch("section") === "Cub" &&
+                                                    <SelectItem value="Dhaka">
+                                                        Bangladesh Scouts, Dhaka Region
+                                                    </SelectItem>
+                                                }
+                                                {
+                                                    form.watch("section") === "Rover" &&
+                                                    <SelectItem value="Dhaka">
+                                                        Bangladesh Scouts, Rover Region
+                                                    </SelectItem>
+                                                }
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -766,6 +830,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                 )}
                             />
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -775,7 +840,8 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                         <FormLabel>Scout District</FormLabel>
                                         <Select
                                             value={field.value}
-                                            onValueChange={(value) => field.onChange(value)}
+                                            defaultValue={field.value}
+                                            onValueChange={field.onChange}
                                             disabled={isPending}
                                         >
                                             <FormControl>
@@ -784,11 +850,24 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {scoutDistricts.map((district, i) => (
-                                                    <SelectItem value={district.name} key={i}>
-                                                        {district.name}
+                                                {form.watch("section") === "Cub" && (
+                                                    <SelectItem value="DhakaMetroPoliton">
+                                                        Bangladesh Scouts, Dhaka Metro Politon
                                                     </SelectItem>
-                                                ))}
+                                                )
+                                                }
+                                                {form.watch("section") === "Scout" && (
+                                                    <SelectItem value="DhakaMetroPoliton">
+                                                        Bangladesh Scouts, Dhaka Metro Politon
+                                                    </SelectItem>
+                                                )
+                                                }
+                                                {form.watch("section") === "Rover" && (
+                                                    <SelectItem value="DhakaDistrict">
+                                                        Bangladesh Scouts, Dhaka District Rover
+                                                    </SelectItem>
+                                                )
+                                                }
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -797,32 +876,23 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                             />
                             <FormField
                                 control={form.control}
-                                name="scoutUpazilla"
+                                name="institute"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Scout Upazilla</FormLabel>
+                                        <FormLabel>Institute</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="text" disabled={isPending} />
+                                            <Input {...field} onChange={(e) => {
+                                                field.onChange(e.target.value)
+                                                trigger("institute")
+                                            }} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField
-                                control={form.control}
-                                name="institute"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Institute</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} type="text" disabled={isPending} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                             <FormField
                                 control={form.control}
                                 name="class"
@@ -830,14 +900,12 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     <FormItem>
                                         <FormLabel>Class</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="text" disabled={isPending} />
+                                            <Input {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="roll"
@@ -845,19 +913,22 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     <FormItem>
                                         <FormLabel>Roll</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="text" disabled={isPending} />
+                                            <Input {...field} disabled={isPending} type="number" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="preferedUnit"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Unit</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => field.onChange(value)} disabled={isPending}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select unit" />
@@ -875,25 +946,100 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     </FormItem>
                                 )}
                             />
+                            <div>
+                                <FormField
+                                    control={form.control}
+                                    name="apsId"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>APS ID</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled={isPending} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+
+                        <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 items-center", form.watch("memberType") === "adultLeader" ? "grid" : "hidden")}>
                             <FormField
                                 control={form.control}
-                                name="apsId"
+                                name="certificateNo"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>APS ID</FormLabel>
+                                        <FormLabel>Cetificate No</FormLabel>
                                         <FormControl>
-                                            <Input {...field} type="text" disabled={isPending} />
+                                            <Input {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" disabled={isPending} className="max-w-[130px]">Update</Button>
+                            <FormField
+                                control={form.control}
+                                name="courseDateSatrt"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Course Start</FormLabel>
+                                        <div>
+                                            <DatePicker
+                                                selected={courseStart}
+                                                onChange={(date: Date | null) => {
+                                                    if (date) {
+                                                        setCourseStart(date)
+                                                        field.onChange(date)
+                                                    }
+                                                }}
+                                                showYearDropdown
+                                                dateFormatCalendar="MMMM"
+                                                yearDropdownItemNumber={30}
+                                                scrollableYearDropdown
+                                                isClearable
+                                                disabled={isPending}
+                                                className="border border-input w-full p-2 rounded-md"
+                                            />
+                                        </div>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 items-center", form.watch("memberType") === "adultLeader" ? "grid" : "hidden")}>
+                            <FormField
+                                control={form.control}
+                                name="courseDateEnd"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Course End</FormLabel>
+                                        <div>
+                                            <DatePicker
+                                                selected={courseEnd}
+                                                onChange={(date: Date | null) => {
+                                                    if (date) {
+                                                        setCourseEnd(date)
+                                                        field.onChange(date)
+                                                    }
+                                                }}
+                                                showYearDropdown
+                                                dateFormatCalendar="MMMM"
+                                                yearDropdownItemNumber={30}
+                                                scrollableYearDropdown
+                                                isClearable
+                                                disabled={isPending}
+                                                className="border border-input w-full p-2 rounded-md"
+                                            />
+                                        </div>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
                     </CardContent>
                 </Card>
+
+                <Button type="submit" disabled={isPending}>Update</Button>
             </form>
         </Form>
     )

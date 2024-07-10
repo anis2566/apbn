@@ -5,18 +5,23 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 
 import { Card, CardContent } from "@/components/ui/card"
+import { useAuth } from "@clerk/nextjs"
 
 const PaymentSuccess = () => {
-    const callback = useSearchParams().get("callback")
+
+    const register = useSearchParams().get("register")
     const router = useRouter()
+    const {signOut} = useAuth()
 
     useEffect(() => {
-        if(callback) {
-            setTimeout(() => {
-                router.push(callback)
-            },5000)
+        if(register && register === "complete") {
+            setTimeout(() => {},5000)
+            signOut({
+                redirectUrl: "/scout"
+            })
         }
-    },[callback, router])
+
+    },[register, router])
 
     return (
         <div className="flex flex-col items-center justify-center h-screen">

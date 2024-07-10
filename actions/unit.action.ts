@@ -100,7 +100,6 @@ export const GET_UNITS = async (section: Section | undefined) => {
       createdAt: "desc",
     },
   });
-  console.log(units);
 
   return {
     units,

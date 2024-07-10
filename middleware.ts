@@ -10,7 +10,7 @@ const isProtectedRoute = createRouteMatcher([
 export default clerkMiddleware((auth, req) => {
   if (isProtectedRoute(req)) {
     const role = auth().sessionClaims?.role as string;
-    const isScout = role?.split(" ")?.includes("Scout")
+    const isScout = role?.split(" ")?.includes("scout")
     if (!auth().userId) {
       auth().protect(); 
     } else {

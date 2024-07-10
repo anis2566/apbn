@@ -12,7 +12,7 @@ import {
 
 import { db } from "@/lib/db";
 import { ContentLayout } from "@/components/scout"
-import { EditScoutForm } from "@/components/dashboard/scout/edit-scout";
+import { EditScoutForm } from "@/components/scout/profile/edit-scout";
 
 interface Props {
     params: {

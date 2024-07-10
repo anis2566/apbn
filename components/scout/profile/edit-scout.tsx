@@ -1,80 +1,51 @@
 "use client"
 
-import { Check, Contact, Edit, Home, Trash2, User } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Scout } from "@prisma/client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
-import { useSession } from "@clerk/nextjs"
+import { Trash2 } from "lucide-react"
+import { useMutation, useQuery } from "@tanstack/react-query"
 
-import { Separator } from "@/components/ui/separator"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { Switch } from "@/components/ui/switch"
-import {
-    Collapsible,
-    CollapsibleContent,
-} from "@/components/ui/collapsible"
+import { Button } from "@/components/ui/button"
 
-import { cn } from "@/lib/utils"
-import { ScoutSchema, ScoutSchemaType } from "@/schema/scout.schema"
+import { EditScoutSchema, Section } from "@/schema/scout.schema"
 import { BADGES_ADULT_CUB, BADGES_CUB, BADGES_ROVER, BADGES_SCOUT, BLOODGROUP, MEMBERTYPE, ROLES_ADULT_CUB_ROLE, ROLES_ADULT_ROVER_ROLE, ROLES_CUB_ROLE, ROLES_ROVER_ROLE, ROLES_SCOUT_ROLE, SCOUT_SECTION_TYPE } from "@/constant"
 import { UploadButton } from "@/lib/uploadthing"
 import { GET_UNITS } from "@/actions/unit.action"
-import { Section } from "@/schema/unit.schema"
-import { CREATE_SCOUT } from "@/actions/scout.action"
-
-const steps = [
-    {
-        id: 1,
-        name: 'Personal Information',
-        fields: ["name", "nameBangla", "fatherName", "motherName", "dob", "gender", "phone", "religion", "email", "bloodGroup", "imageUrl"],
-        Icon: User
-    },
-    {
-        id: 2,
-        name: 'Address',
-        fields: ["villageHouse", "roadBlockSector", "division", "district", "thana", "postCode"],
-        Icon: Home
-    },
-    {
-        id: 3,
-        name: 'Scout Information',
-        fields: ["scoutType", "experience", "certificateNo", "courseDateSatrt", "courseDateEnd", "joinDate", "memberType", "section", "badge", "role", "scoutRegion", "scoutDistrict", "scoutUpazilla", "institute", "class", "roll", "organization", "designation", "preferedUnit", "apsId"],
-        Icon: Contact
-    },
-]
+import { UPDATE_SCOUT } from "@/actions/scout.action"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
 
 type Division = {
     id: string;
     name: string;
 };
 
-const Apply = () => {
-    const [currentStep, setCurrentStep] = useState(0)
+interface EditScoutFormProps {
+    scout: Scout
+}
+
+export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
     const [dob, setDob] = useState<Date>(new Date())
-    const [joinDate, setJoinDate] = useState<Date>(new Date())
-    const [courseStart, setCourseStart] = useState<Date>(new Date())
-    const [courseEnd, setCourseEnd] = useState<Date>(new Date())
     const [divisions, setDivisions] = useState<Division[]>([]);
     const [division, setDivision] = useState<string | null>(null)
     const [districts, setDistricts] = useState<Division[]>([])
+    const [joinDate, setJoinDate] = useState<Date>(new Date())
     const [section, setSection] = useState<Section>()
-    const [hasAps, setHasAps] = useState<boolean>(false)
-
-    const router = useRouter()
-    const { session } = useSession()
+    const [courseStart, setCourseStart] = useState<Date>(new Date())
+    const [courseEnd, setCourseEnd] = useState<Date>(new Date())
 
     useEffect(() => {
         const fetchDivisions = async () => {
@@ -110,152 +81,80 @@ const Apply = () => {
             const res = await GET_UNITS(section)
             return res.units
         },
-        enabled: !!section
     })
 
-    const form = useForm<z.infer<typeof ScoutSchema>>({
-        resolver: zodResolver(ScoutSchema),
+    const form = useForm<z.infer<typeof EditScoutSchema>>({
+        resolver: zodResolver(EditScoutSchema),
         defaultValues: {
-            name: "",
-            nameBangla: "",
-            apsId: "",
-            fatherName: "",
-            motherName: "",
-            dob: new Date(),
-            gender: "",
-            phone: "",
-            religion: "",
-            email: "",
-            bloodGroup: "",
-            villageHouse: "",
-            roadBlockSector: "",
-            district: "",
-            division: "",
-            thana: "",
-            postCode: "",
-            scoutType: "",
-            experience: [],
-            joinDate: new Date(),
-            section: "",
-            memberType: "",
-            badge: "",
-            role: [],
-            scoutRegion: "",
-            scoutDistrict: "",
-            scoutUpazilla: "",
-            institute: "",
-            class: "",
-            roll: "",
-            organization: "",
-            designation: "",
-            imageUrl: "",
-            preferedUnit: "",
-            certificateNo: "",
-            courseDateSatrt: undefined,
-            courseDateEnd: undefined,
+            name: scout.name || "",
+            nameBangla: scout.nameBangla || "",
+            apsId: scout.apsId || "",
+            fatherName: scout.fatherName || "",
+            motherName: scout.motherName || "",
+            dob: scout.dob || new Date(),
+            gender: scout.gender || "",
+            phone: scout.phone || "",
+            religion: scout.religion || "",
+            email: scout.email || "",
+            bloodGroup: scout.bloodGroup || "",
+            villageHouse: scout.villageHouse || "",
+            roadBlockSector: scout.roadBlockSector || "",
+            district: scout.district || "",
+            division: scout.division || "",
+            thana: scout.thana || "",
+            postCode: scout.postCode || "",
+            scoutType: scout.scoutType || "",
+            experience: scout.experience || [],
+            joinDate: scout.joinDate || new Date(),
+            section: scout.section || "",
+            memberType: scout.memberType || "",
+            badge: scout.badge || "",
+            role: scout.role || [],
+            certificateNo: scout.certificateNo || "",
+            courseDateEnd: scout.courseDateEnd || undefined,
+            courseDateSatrt: scout.courseDateSatrt || undefined,
+            scoutRegion: scout.scoutRegion || "",
+            scoutDistrict: scout.scoutDistrict || "",
+            scoutUpazilla: scout.scoutUpazilla || "",
+            institute: scout.institute || "",
+            class: scout.class || "",
+            roll: scout.roll || "",
+            organization: scout.organization || "",
+            designation: scout.designation || "",
+            imageUrl: scout.imageUrl || "",
         },
     })
 
-    const { trigger, handleSubmit, formState: { errors }, setValue } = form;
-    console.log(errors)
-
-    type FieldName = keyof ScoutSchemaType
-
-    const { mutate: createScout, isPending } = useMutation({
-        mutationFn: CREATE_SCOUT,
+    const { mutate: updateScout, isPending } = useMutation({
+        mutationFn: UPDATE_SCOUT,
         onSuccess: (data) => {
-            router.push(`/apply/payment/${data?.id}`)
-            session?.reload()
             toast.success(data.success, {
-                id: "create-scout"
+                id: "update-scout"
             });
         },
         onError: (error) => {
             toast.error(error.message, {
-                id: "create-scout"
+                id: "update-scout"
             });
         }
     })
 
-    function onSubmit(values: z.infer<typeof ScoutSchema>) {
-        toast.loading("Registering...", {
-            id: "create-scout"
+    function onSubmit(values: z.infer<typeof EditScoutSchema>) {
+        toast.loading("Scout updating...", {
+            id: "update-scout"
         })
-        createScout(values)
-    }
-
-    const next = async () => {
-        const fields = steps[currentStep].fields
-        const output = await trigger(fields as FieldName[], { shouldFocus: true })
-
-        if (!output) return
-
-        setCurrentStep(step => step + 1)
+        updateScout({ values, id: scout.id })
     }
 
     return (
-        <div className="py-5 space-y-6 px-6 w-full max-w-screen-xl mx-auto">
-            <div className="w-full flex flex-col items-center justify-center space-y-2">
-                <div className="w-[100px] h-[100px] rounded-full shadow-md shadow-primary flex items-center justify-center">
-                    <img
-                        src="/logo.png"
-                        alt="Logo"
-                        className="w-22 h-22"
-                    />
-                </div>
-                <h1 className="text-xl font-bold text-primary">APBn Scouts</h1>
-                <p className="text-muted-foreground">Register as a Scout to unlock exclusive opportunities and join a community.</p>
-            </div>
-
-            <Separator />
-
-            <nav aria-label='Progress'>
-                <ol role='list' className='space-y-4 md:flex md:space-x-8 md:space-y-0'>
-                    {steps.map((step, index) => (
-                        <li key={step.name} className='md:flex-1'>
-                            {currentStep > index ? (
-                                <div className='group flex w-full flex-col border-l-4 border-green-500 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4'>
-                                    <div className="flex items-center gap-x-2">
-                                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-
-                                            <Check className="w-6 h-6 text-white" />
-                                        </div>
-                                        {step.name}
-                                    </div>
-                                </div>
-                            ) : currentStep === index ? (
-                                <div
-                                    className='flex w-full flex-col border-l-4 border-amber-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4'
-                                    aria-current='step'
-                                >
-                                    <div className="flex items-center gap-x-2">
-                                        <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center">
-
-                                            <Edit className="w-6 h-6 text-white" />
-                                        </div>
-                                        {step.name}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className='group flex w-full flex-col border-l-4 border-gray-200 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4'>
-                                    <div className="flex items-center gap-x-2">
-                                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-
-                                            <step.Icon className="w-6 h-6 text-indigo-500" />
-                                        </div>
-                                        {step.name}
-                                    </div>
-                                </div>
-                            )}
-                        </li>
-                    ))}
-                </ol>
-            </nav>
-
-            <Form {...form}>
-                <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-
-                    <div className={cn("hidden space-y-6", currentStep === 0 && "block")}>
+        <Form {...form}>
+            <form className="space-y-8 mt-4" onSubmit={form.handleSubmit(onSubmit)}>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Personal Information</CardTitle>
+                        <CardDescription>Fill up the personal information.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -264,10 +163,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Name</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("name")
-                                            }} />
+                                            <Input {...field} disabled={true} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -280,10 +176,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Name Bangla</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("nameBangla")
-                                            }} />
+                                            <Input {...field} disabled={true} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -300,10 +193,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Father Name</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("fatherName")
-                                            }} />
+                                            <Input {...field} disabled={true} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -316,10 +206,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Mother Name</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("motherName")
-                                            }} />
+                                            <Input {...field} disabled={true} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -336,12 +223,10 @@ const Apply = () => {
                                         <FormLabel>Gender</FormLabel>
                                         <FormControl>
                                             <RadioGroup
-                                                onValueChange={(value) => {
-                                                    field.onChange(value)
-                                                    trigger("gender")
-                                                }}
+                                                onValueChange={field.onChange}
                                                 defaultValue={field.value}
                                                 className="flex"
+                                                disabled={true}
                                             >
                                                 {
                                                     ["Male", "Female", "Other"].map((v, i) => (
@@ -367,10 +252,7 @@ const Apply = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Religion</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => {
-                                            field.onChange(value)
-                                            trigger("religion")
-                                        }}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={true}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select religion" />
@@ -398,10 +280,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Phone</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("phone")
-                                            }} />
+                                            <Input {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -428,6 +307,7 @@ const Apply = () => {
                                                 scrollableYearDropdown
                                                 isClearable
                                                 className="border border-input w-full p-2 rounded-md"
+                                                disabled
                                             />
                                         </div>
                                         <FormMessage />
@@ -443,10 +323,7 @@ const Apply = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Blood Group</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => {
-                                            field.onChange(value)
-                                            trigger("bloodGroup")
-                                        }}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={true}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select blood group" />
@@ -476,7 +353,7 @@ const Apply = () => {
                                                     <Avatar>
                                                         <AvatarImage src={form.getValues("imageUrl")} />
                                                     </Avatar>
-                                                    <Button type="button" disabled={isPending} onClick={() => form.setValue("imageUrl", "")} variant="ghost" size="icon" className="absolute right-0 top-0">
+                                                    <Button type="button" disabled={true} onClick={() => form.setValue("imageUrl", "")} variant="ghost" size="icon" className="absolute right-0 top-0">
                                                         <Trash2 className="w-5 h-5 text-rose-500" />
                                                     </Button>
                                                 </div>
@@ -486,7 +363,6 @@ const Apply = () => {
                                                     onClientUploadComplete={(res) => {
                                                         field.onChange(res[0].url)
                                                         toast.success("Image uploaded")
-                                                        trigger("imageUrl")
                                                     }}
                                                     onUploadError={(error: Error) => {
                                                         toast.error("Image upload failed")
@@ -494,15 +370,21 @@ const Apply = () => {
                                                 />
                                             )
                                         }
-                                        <FormDescription>অবশ্যই স্কাউট পোশাক পরিহিত পাসপোর্ট সাইজ ছবি অপলাভ করুন</FormDescription>
+                                        <FormDescription>স্কাউট পোশাক পরিহিত পাসপোর্ট সাইজ ছবি অপলাভ করুন</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
-                    </div>
+                    </CardContent>
+                </Card>
 
-                    <div className={cn("hidden space-y-6", currentStep === 1 && "block")}>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Address</CardTitle>
+                        <CardDescription>Fill up the address.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -511,10 +393,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Village / House</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("villageHouse")
-                                            }} />
+                                            <Input {...field} type="text" disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -527,10 +406,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Road / Block / Sector</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("roadBlockSector")
-                                            }} />
+                                            <Input {...field} type="text" disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -551,8 +427,8 @@ const Apply = () => {
                                                 field.onChange(value)
                                                 const div = divisions.find(item => item.name === value)
                                                 setDivision(div?.id || null)
-                                                trigger("division")
                                             }}
+                                            disabled={isPending}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -579,11 +455,8 @@ const Apply = () => {
                                         <FormLabel>District</FormLabel>
                                         <Select
                                             value={field.value}
-                                            defaultValue={field.value}
-                                            onValueChange={(value) => {
-                                                field.onChange(value)
-                                                trigger("district")
-                                            }}
+                                            onValueChange={(value) => field.onChange(value)}
+                                            disabled={isPending}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -611,10 +484,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Thana</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("thana")
-                                            }} />
+                                            <Input {...field} type="text" disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -627,19 +497,22 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Post Code</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("postCode")
-                                            }} type="number" />
+                                            <Input {...field} type="text" disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         </div>
-                    </div>
+                    </CardContent>
+                </Card>
 
-                    <div className={cn("hidden space-y-6", currentStep === 2 && "block")}>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Scout Information</CardTitle>
+                        <CardDescription>Fill up the scout information.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
@@ -649,13 +522,10 @@ const Apply = () => {
                                         <FormLabel>Priority</FormLabel>
                                         <FormControl>
                                             <RadioGroup
-                                                onValueChange={(value) => {
-                                                    field.onChange(value)
-                                                    trigger("scoutType")
-                                                }}
+                                                onValueChange={field.onChange}
                                                 defaultValue={field.value}
                                                 className="flex gap-x-2"
-                                                disabled={isPending}
+                                                disabled={true}
                                             >
                                                 <FormItem className="flex items-center space-x-3 space-y-0">
                                                     <FormControl>
@@ -685,7 +555,7 @@ const Apply = () => {
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
                                             checked={form.watch("experience").includes("cubScout")}
-                                            disabled={isPending}
+                                            disabled={true}
                                             onCheckedChange={(isChecked) => {
                                                 const currentExperience = form.watch("experience");
                                                 const updatedExperience = isChecked ? [...currentExperience, "cubScout"] : currentExperience.filter(exp => exp !== "cubScout");
@@ -697,7 +567,7 @@ const Apply = () => {
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
                                             checked={form.watch("experience").includes("scout")}
-                                            disabled={isPending}
+                                            disabled={true}
                                             onCheckedChange={(isChecked) => {
                                                 const currentExperience = form.watch("experience");
                                                 const updatedExperience = isChecked ? [...currentExperience, "scout"] : currentExperience.filter(exp => exp !== "scout");
@@ -709,7 +579,7 @@ const Apply = () => {
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
                                             checked={form.watch("experience").includes("roverScout")}
-                                            disabled={isPending}
+                                            disabled={true}
                                             onCheckedChange={(isChecked) => {
                                                 const currentExperience = form.watch("experience");
                                                 const updatedExperience = isChecked ? [...currentExperience, "roverScout"] : currentExperience.filter(exp => exp !== "roverScout");
@@ -721,7 +591,7 @@ const Apply = () => {
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
                                             checked={form.watch("experience").includes("adult")}
-                                            disabled={isPending}
+                                            disabled={true}
                                             onCheckedChange={(isChecked) => {
                                                 const currentExperience = form.watch("experience");
                                                 const updatedExperience = isChecked ? [...currentExperience, "adult"] : currentExperience.filter(exp => exp !== "adult");
@@ -755,7 +625,7 @@ const Apply = () => {
                                                 yearDropdownItemNumber={30}
                                                 scrollableYearDropdown
                                                 isClearable
-                                                disabled={isPending}
+                                                disabled={true}
                                                 className="border border-input w-full p-2 rounded-md"
                                             />
                                         </div>
@@ -769,10 +639,7 @@ const Apply = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Member Type</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => {
-                                            field.onChange(value)
-                                            trigger("memberType")
-                                        }} disabled={isPending}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={true}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select member type" />
@@ -799,11 +666,7 @@ const Apply = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Section Type</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => {
-                                            field.onChange(value)
-                                            setSection(value as Section)
-                                            trigger("section")
-                                        }} disabled={isPending}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={true}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select member type" />
@@ -827,10 +690,7 @@ const Apply = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Badge</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => {
-                                            field.onChange(value)
-                                            trigger("badge")
-                                        }} disabled={isPending}>
+                                        <Select defaultValue={field.value} onValueChange={field.onChange} disabled={true}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select member type" />
@@ -879,10 +739,7 @@ const Apply = () => {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Role</FormLabel>
-                                        <Select onValueChange={(value) => {
-                                            field.onChange([value])
-                                            trigger("role")
-                                        }} disabled={isPending}>
+                                        <Select defaultValue={field.value[0]} onValueChange={(value) => field.onChange([value])} disabled={true}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select scout role" />
@@ -938,12 +795,9 @@ const Apply = () => {
                                         <FormLabel>Scout Region</FormLabel>
                                         <Select
                                             value={field.value}
-                                            disabled={isPending}
+                                            disabled={true}
                                             defaultValue={field.value}
-                                            onValueChange={(value) => {
-                                                field.onChange(value)
-                                                trigger("scoutRegion")
-                                            }}
+                                            onValueChange={field.onChange}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -987,11 +841,8 @@ const Apply = () => {
                                         <Select
                                             value={field.value}
                                             defaultValue={field.value}
-                                            onValueChange={(value) => {
-                                                field.onChange(value)
-                                                trigger("scoutDistrict")
-                                            }}
-                                            disabled={isPending}
+                                            onValueChange={field.onChange}
+                                            disabled={true}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
@@ -1030,10 +881,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Institute</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("institute")
-                                            }} disabled={isPending} />
+                                            <Input {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -1049,10 +897,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Class</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("class")
-                                            }} disabled={isPending} />
+                                            <Input {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -1065,10 +910,7 @@ const Apply = () => {
                                     <FormItem>
                                         <FormLabel>Roll</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("roll")
-                                            }} disabled={isPending} type="number" />
+                                            <Input {...field} disabled={isPending} type="number" />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -1077,81 +919,37 @@ const Apply = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField
-                                control={form.control}
-                                name="preferedUnit"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Unit</FormLabel>
-                                        <Select defaultValue={field.value} onValueChange={(value) => {
-                                            field.onChange(value)
-                                            trigger("preferedUnit")
-                                        }} disabled={isPending}>
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select unit" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {
-                                                    units?.map((unit, i) => (
-                                                        <SelectItem value={unit.id} key={i}>{unit.name}</SelectItem>
-                                                    ))
-                                                }
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                             <div>
-                                <div className="flex items-center space-x-2">
-                                    <Switch id="airplane-mode" onCheckedChange={(checked) => setHasAps(checked)} disabled={isPending} />
-                                    <Label htmlFor="airplane-mode">Do you have APS ID?</Label>
-                                </div>
-                                <Collapsible
-                                    open={hasAps}
-                                    className="w-full space-y-2"
-                                >
-                                    <CollapsibleContent className="space-y-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="apsId"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>APS ID</FormLabel>
-                                                    <FormControl>
-                                                        <Input {...field} onChange={(e) => {
-                                                            field.onChange(e.target.value)
-                                                            trigger("apsId")
-                                                        }} disabled={isPending} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </CollapsibleContent>
-                                </Collapsible>
+                                <FormField
+                                    control={form.control}
+                                    name="apsId"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>APS ID</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled={true} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="certificateNo"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Cetificate No</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled={true} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                             </div>
                         </div>
 
                         <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 items-center", form.watch("memberType") === "adultLeader" ? "grid" : "hidden")}>
-                            <FormField
-                                control={form.control}
-                                name="certificateNo"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Cetificate No</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("certificateNo")
-                                            }} disabled={isPending} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
                             <FormField
                                 control={form.control}
                                 name="courseDateSatrt"
@@ -1172,7 +970,7 @@ const Apply = () => {
                                                 yearDropdownItemNumber={30}
                                                 scrollableYearDropdown
                                                 isClearable
-                                                disabled={isPending}
+                                                disabled={true}
                                                 className="border border-input w-full p-2 rounded-md"
                                             />
                                         </div>
@@ -1180,8 +978,6 @@ const Apply = () => {
                                     </FormItem>
                                 )}
                             />
-                        </div>
-                        <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 items-center", form.watch("memberType") === "adultLeader" ? "grid" : "hidden")}>
                             <FormField
                                 control={form.control}
                                 name="courseDateEnd"
@@ -1202,7 +998,7 @@ const Apply = () => {
                                                 yearDropdownItemNumber={30}
                                                 scrollableYearDropdown
                                                 isClearable
-                                                disabled={isPending}
+                                                disabled={true}
                                                 className="border border-input w-full p-2 rounded-md"
                                             />
                                         </div>
@@ -1211,17 +1007,11 @@ const Apply = () => {
                                 )}
                             />
                         </div>
-                    </div>
+                    </CardContent>
+                </Card>
 
-                    <div className="flex justify-center items-center gap-x-4">
-                        <Button type="button" variant="outline" onClick={() => setCurrentStep(currentStep - 1)} disabled={currentStep === 0 || isPending}>Back</Button>
-                        <Button type="button" onClick={next} className={cn("", currentStep === 2 && "hidden")}>{currentStep === 2 ? "Submit" : "Next"}</Button>
-                        <Button type="submit" className={cn("hidden", currentStep === 2 && "flex")} disabled={isPending}>Submit</Button>
-                    </div>
-                </form>
-            </Form>
-        </div>
+                <Button type="submit" disabled={isPending}>Update</Button>
+            </form>
+        </Form>
     )
 }
-
-export default Apply

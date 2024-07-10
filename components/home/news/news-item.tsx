@@ -17,15 +17,15 @@ export const NewsItem = ({news}:Props) => {
             <CardContent className="pt-4 space-y-3">
                 <div className="relative aspect-video">
                     <Image
-                        src={news.imageUrl}
+                        src={news?.imageUrl}
                         alt="banner"
                         fill
                         className="object-cover rounded-md"
                     />
                 </div>
-                <h4 className="text-xl font-semibold">{news.title}</h4>
+                <h4 className="text-xl font-semibold">{news?.title}</h4>
                 <div className="flex justify-between items-center">
-                    <p className="text-xs text-muted-foreground">{format(news.createdAt, ("dd MMM yyyy"))}</p>
+                    <p className="text-xs text-muted-foreground">{format(news?.createdAt, ("dd MMM yyyy"))}</p>
                     <Button variant="expandIcon" Icon={ArrowRightIcon} iconPlacement="right" asChild>
                         <Link href={`/news/${news.id}`}>
                             Read More

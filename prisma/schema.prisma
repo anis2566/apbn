@@ -91,6 +91,7 @@ model User {
 model Scout {
   id String @id @default(uuid())
   name String
+  nameBangla String
   apsId String?
   fatherName String
   motherName String
@@ -112,7 +113,7 @@ model Scout {
   section String
   memberType String
   badge String?
-  role Role[] @default([Scout])
+  role String[] @default([])
   scoutRegion String
   scoutDistrict String
   scoutUpazilla String?
@@ -122,13 +123,17 @@ model Scout {
   organization String?
   designation String?
   imageUrl String
+  certificateNo String?
+  courseDateSatrt DateTime?
+  courseDateEnd DateTime?
   status Status @default(Pending)
   isVerified Boolean @default(false)
   isPaid Boolean @default(false)
   allowCard Boolean @default(false)
 
-  preferedUnit String
-
+  preferedUnitId String?
+  preferedUnitName String?
+  
   userId String @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

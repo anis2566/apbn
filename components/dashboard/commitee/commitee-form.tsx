@@ -64,6 +64,10 @@ export const CommiteeForm = () => {
         createCommitee(values)
     }
 
+    // TODO
+    // 1. Add start date
+    // 2. Add end date
+
     return (
         <Card className="mt-4">
             <CardHeader>
@@ -92,9 +96,26 @@ export const CommiteeForm = () => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Designation</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter designation" {...field} disabled={isPending} />
-                                    </FormControl>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a verified email to display" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="president">সভাপতি</SelectItem>
+                                            <SelectItem value="vicePresident">সহ সভাপতি</SelectItem>
+                                            <SelectItem value="secretary">সম্পাদক</SelectItem>
+                                            <SelectItem value="jointSecretary">যুগ্ম-সম্পাদক</SelectItem>
+                                            <SelectItem value="Treasrer">কোষাধ্যক্ষ</SelectItem>
+                                            <SelectItem value="groupScoutLeader">গ্রুপ স্কাউট লিডার</SelectItem>
+                                            <SelectItem value="advisor">উপদেষ্টা</SelectItem>
+                                            <SelectItem value="sponsor">পৃষ্ঠপোষক</SelectItem>
+                                            <SelectItem value="unitLeader">ইউনিট লিডার</SelectItem>
+                                            <SelectItem value="assistantUnitLeader">সহকারী ইউনিট লিডার</SelectItem>
+                                            <SelectItem value="member">সদস্য</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}

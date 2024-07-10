@@ -39,6 +39,9 @@ export const getScout = async () => {
             user: {
                 clerkId: userId
             }
+        },
+        include: {
+            unit: true
         }
     })
 

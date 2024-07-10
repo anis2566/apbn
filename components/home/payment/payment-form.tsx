@@ -4,6 +4,7 @@ import { GET_SCOUT } from "@/actions/scout.action";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { useAuth} from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +15,7 @@ import {
 
 import { GET_FEE_BY_TITLE } from "@/actions/fee.action";
 import { APPLY_COUPON } from "@/actions/coupon.action";
-import { CREATE_PAYMENT_FOR_REGISTER, GENERATE_BKASH_TOKEN } from "@/services/bkash.service";
+import { CONFIRM_PAYMENT, CREATE_PAYMENT_FOR_REGISTER, GENERATE_BKASH_TOKEN } from "@/services/bkash.service";
 
 interface PaymentFormProps {
     scoutId: string;
@@ -24,6 +25,8 @@ export const PaymentForm = ({ scoutId }: PaymentFormProps) => {
     const [fee, setFee] = useState<number>(500)
     const [coupon, setCoupon] = useState<string>("")
     const [open, setOpen] = useState<boolean>(true)
+
+    const {signOut} = useAuth()
 
     const {data:regFee} = useQuery({
         queryKey: ["scout-payment-fee"],
@@ -73,7 +76,7 @@ export const PaymentForm = ({ scoutId }: PaymentFormProps) => {
         }
     }, [scout?.apsId, regFee])
 
-    const {mutate: createPayment} = useMutation({
+    const {mutate: createPayment, isPending:isPendingCreatePayment} = useMutation({
         mutationFn: CREATE_PAYMENT_FOR_REGISTER,
         onSuccess: (data) => {
             if(data?.url) {
@@ -85,13 +88,11 @@ export const PaymentForm = ({ scoutId }: PaymentFormProps) => {
         }
     })
 
-    const {mutate: generateToken} = useMutation({
-        mutationFn: GENERATE_BKASH_TOKEN,
+    const {mutate: generateToken, isPending:isPendingGenerate} = useMutation({
+        mutationFn: (variables: { scoutId: string, amount: number }) => GENERATE_BKASH_TOKEN(),
         onSuccess: (data) => {
-            console.log(data)
             if (data?.token) {
-               localStorage.setItem("bkash_token", data?.token)
-                createPayment({scoutId, amount:fee, token: data?.token})
+                createPayment({ scoutId, amount: fee, token: data?.token })
             }
         },
         onError: (error) => {
@@ -99,8 +100,21 @@ export const PaymentForm = ({ scoutId }: PaymentFormProps) => {
         }
     })
 
+    const {mutate: confirmPayment, isPending: isPeying} = useMutation({
+        mutationFn: CONFIRM_PAYMENT,
+        onSuccess: (data) => {
+            toast.success("Payment successfull")
+            signOut({
+                redirectUrl: "/scout"
+            })
+        },
+        onError: (error) => {
+            toast.error(error.message)
+        }
+    })
+
     const handlePay = () => {
-        generateToken()
+        generateToken({scoutId, amount:fee})
     }
 
     return (
@@ -114,7 +128,13 @@ export const PaymentForm = ({ scoutId }: PaymentFormProps) => {
                     </div>
                 </CollapsibleContent>
             </Collapsible>
-            <Button onClick={handlePay}>Pay with Bkash</Button>
+            {
+                fee === 0 ? (
+                    <Button disabled={isPeying} onClick={() => confirmPayment(scoutId)}>Confirm Payment</Button>
+                ) : (
+                    <Button onClick={handlePay} disabled={isPendingGenerate || isPendingCreatePayment}>Pay with Bkash</Button>
+                )
+            }
         </div>
     )
 }

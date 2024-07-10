@@ -1,10 +1,10 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { Role, ScoutSchema, ScoutSchemaType, Status } from "@/schema/scout.schema"
+import { EditScoutSchema, EditScoutSchemaType, Role, ScoutSchema, ScoutSchemaType, Status } from "@/schema/scout.schema"
 import { sendNotification } from "@/services/notification.service"
 import { getAdmin, getScout, getUser } from "@/services/user.service"
-import { clerkClient } from "@clerk/nextjs/server"
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server"
 import { revalidatePath } from "next/cache"
 
 export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
@@ -63,12 +63,15 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
     }
 
     const { userId, clerkId } = await getUser()
+    const user = await currentUser()
     
     const newScout = await db.scout.create({
         data: {
             ...data,
             userId,
-            role: data.role === Role.Scout ? [data.role] : [Role.Scout, data.role]
+            preferedUnitId: data.preferedUnit,
+            preferedUnitName: unit.name,
+            email: user?.emailAddresses[0]?.emailAddress,
         }
     })
 
@@ -83,9 +86,9 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
 
     await clerkClient.users.updateUser(clerkId, {
         publicMetadata: {
-            role: newScout.role.join(" "),
+            role: "scout",
             status: "pending"
-        }
+        } 
     })
 
     const {adminClerkId} = await getAdmin()
@@ -98,7 +101,7 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
         recipients: [adminClerkId],
         data: {
             name: newScout.name,
-            redirectUrl: `/dashboard/scout/${newScout.id}`
+            redirectUrl: `/dashboard/scout/request`
         }
     })
     
@@ -112,7 +115,7 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
             recipients: [unit.leader?.user?.clerkId || ""],
             data: {
                 name: newScout.name,
-                redirectUrl: `/scout/unit/scout/${newScout.id}`
+                redirectUrl: `/scout/unit/request`
             }
         })
     }
@@ -128,6 +131,23 @@ export const GET_SCOUT = async (scoutId: string) => {
     const scout = await db.scout.findUnique({
         where: {
             id: scoutId
+        }
+    })
+
+    if (!scout) {
+        throw new Error("Scout not found")
+    }
+
+    return {scout}
+}
+
+
+export const GET_SCOUT_BY_CLERKID = async (clerkId: string) => {
+    const scout = await db.scout.findFirst({
+        where: {
+            user: {
+                clerkId
+            }
         }
     })
 
@@ -166,13 +186,15 @@ export const UPDATE_SCOUT_STATUS = async ({id, status}:UpdateStatus) => {
                 id
             },
             data: {
-                unitId: scout.preferedUnit
+                unitId: scout.preferedUnitId,
+                preferedUnitId: null,
+                preferedUnitName: null
             }
         })
 
         await clerkClient.users.updateUser(scout.user?.clerkId, {
             publicMetadata: {
-                role: scout.role.join(" "),
+                role: "scout",
                 status: "active"
             }
         })
@@ -230,25 +252,6 @@ export const UPDATE_SCOUT_STATUS_LEADER = async ({id, status}:UpdateStatus) => {
         throw new Error("Scout not found")
     }
 
-    if(status === Status.Active) {
-        await db.scout.update({
-            where: {
-                id
-            },
-            data: {
-                unitId: scout.preferedUnit
-            }
-        })
-
-        await clerkClient.users.updateUser(scout.user?.clerkId, {
-            publicMetadata: {
-                role: scout.role.join(" "),
-                status: "active"
-            }
-        })
-
-    }
-
     const {clerkId} = await getUser()
     await sendNotification({
         trigger: "scout-response-leader",
@@ -283,11 +286,11 @@ export const UPDATE_SCOUT_STATUS_LEADER = async ({id, status}:UpdateStatus) => {
 
 
 type UpdateScout = {
-    values: ScoutSchemaType;
+    values: EditScoutSchemaType;
     id: string;
 }
 export const UPDATE_SCOUT = async ({values, id}:UpdateScout) => {
-    const {success, data} = ScoutSchema.safeParse(values)
+    const {success, data} = EditScoutSchema.safeParse(values)
     if (!success) {
         throw new Error("Invalid input value")
     }
@@ -309,13 +312,22 @@ export const UPDATE_SCOUT = async ({values, id}:UpdateScout) => {
         throw new Error("Scout not found")
     }
 
+    const unit = await db.unit.findUnique({
+        where: {
+            id: data.preferedUnit
+        }
+    })
+
+    const {preferedUnit, ...rest} = data;
+
     await db.scout.update({
         where: {
             id
         },
         data: {
-            ...data,
-            role: data.role === Role.Scout ? [Role.Scout] : [Role.Scout, data.role]
+            ...rest,
+            preferedUnitId: preferedUnit,
+            preferedUnitName: unit?.name
         }
     })
 
@@ -348,9 +360,9 @@ export const DELETE_SCOUT = async (scoutId: string) => {
     await clerkClient.users.deleteUser(scout?.user.clerkId || "")
 
     revalidatePath("/dashboard/scout/request")
-    // revalidatePath("/dashboard/scout/list")
-    // revalidatePath("/dashboard/scout/verified")
-    // revalidatePath("/dashboard/scout/cancelled")
+    revalidatePath("/dashboard/scout/list")
+    revalidatePath("/dashboard/scout/verified")
+    revalidatePath("/dashboard/scout/cancelled")
 
     return {
         success: "Scout deleted"

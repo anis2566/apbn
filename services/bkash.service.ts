@@ -1,5 +1,6 @@
 "use server"
 
+import { db } from "@/lib/db"
 import axios from "axios"
 
 export const GENERATE_BKASH_TOKEN = async () => {
@@ -95,4 +96,30 @@ export const CREATE_PAYMENT_FOR_EVENT = async ({token, appId, amount, scoutId}:C
         succes: true,
         url: res.data?.bkashURL
     }
+}
+
+
+export const CONFIRM_PAYMENT = async (id: string) => {
+  const scout = await db.scout.findUnique({
+    where: {
+      id
+    }
+  })
+
+  if(!scout) {
+    throw new Error("Scout not found")
+  }
+
+  await db.scout.update({
+    where: {
+      id
+    },
+    data: {
+      isPaid: true
+    }
+  })
+
+  return {
+    success: "Payment confirmed"
+  }
 }

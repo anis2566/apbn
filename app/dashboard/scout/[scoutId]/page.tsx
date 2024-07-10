@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Image from "next/image";
-import { Activity, Antenna, Building, Building2, Calendar, Ear, FileType2, FlaskRound, HeartPulse, House, LayoutPanelTop, Mailbox, Medal, PersonStanding, ScanFace, School, Shell, Store, University, User, Users } from "lucide-react";
+import { Activity, Antenna, Building, Building2, Calendar, Ear, FileBadge2, FileType2, FlaskRound, HeartPulse, House, KeyRound, Layers3, LayoutPanelTop, Mailbox, Medal, PersonStanding, ScanFace, School, Shell, Store, University, User, Users } from "lucide-react";
 import { format } from "date-fns";
 
 import {
@@ -114,6 +114,7 @@ const ScoutDetails = async ({ params: { scoutId } }: Props) => {
                         <CardContent className="space-y-4">
                             <div className="grid md:grid-cols-2 gap-6">
                                 <ListBox icon={User} title="Name" description={scout.name} />
+                                <ListBox icon={User} title="Name Bangla" description={scout.nameBangla} />
                                 <ListBox icon={ScanFace} title="APS ID" description={scout.apsId || ""} />
                                 <ListBox icon={Calendar} title="Date of Birth" date={scout.dob} />
                                 <ListBox icon={Users} title="Father's Name" description={scout.fatherName} />
@@ -145,14 +146,17 @@ const ScoutDetails = async ({ params: { scoutId } }: Props) => {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid md:grid-cols-2 gap-6">
+                                <ListBox icon={Layers3} title="Unit" description={scout.unit?.name || scout.preferedUnitName || ""} />
+                                <ListBox icon={FileType2} isFormatedStr title="Priority" description={scout.scoutType} />
                                 <ListBox icon={FileType2} isFormatedStr title="Scout Type" description={scout.scoutType} />
                                 <ListBox icon={FlaskRound} title="Experience" badge={scout.experience} />
                                 <ListBox icon={Calendar} title="Join Date" date={scout.joinDate || undefined} />
                                 <ListBox icon={FileType2} isFormatedStr title="Member Type" description={scout.memberType} />
                                 <ListBox icon={LayoutPanelTop} isFormatedStr title="Section" description={scout.section} />
+                                <ListBox icon={FileBadge2} isFormatedStr title="Badge" description={scout.badge || ""} />
                                 <div className="flex gap-x-4">
                                     <div className="bg-slate-500 flex items-center justify-center w-10 h-10 rounded-md flex-shrink-0">
-                                        <Ear className="text-white" />
+                                        <KeyRound className="text-white" />
                                     </div>
                                     <div className="space-y-1">
                                         <h4 className="font-semibold">Role</h4>
@@ -164,7 +168,7 @@ const ScoutDetails = async ({ params: { scoutId } }: Props) => {
                                     </div>
                                 </div>
                                 <ListBox icon={Building2} title="Region" description={scout.scoutRegion} />
-                                <ListBox icon={Building} title="District" description={scout.scoutDistrict} />
+                                <ListBox icon={Building} title="District" description={formattedStr(scout.scoutDistrict)} />
                                 <ListBox icon={University} title="Upazilla" description={scout.scoutUpazilla || ""} />
                                 <ListBox icon={School} title="Institute" description={scout.institute || ""} />
                                 <ListBox icon={Activity} title="Class" description={scout.class || ""} />

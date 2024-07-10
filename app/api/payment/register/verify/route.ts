@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
                 isPaid: true
             }
         })
-        redirect("/payment/success")
+        redirect("/payment/success?register=complete")
       } else {
         redirect("/payment/failed")
       }

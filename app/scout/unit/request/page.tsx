@@ -48,7 +48,7 @@ const Unit = async ({ searchParams }: Props) => {
             id: {
                 not: scoutId
             },
-            preferedUnit: unit.id,
+            preferedUnitId: unit.id,
             status: Status.Pending
         },
         orderBy: {
@@ -64,7 +64,7 @@ const Unit = async ({ searchParams }: Props) => {
             id: {
                 not: scoutId
             },
-            preferedUnit: unit.id,
+            preferedUnitId: unit.id,
             status: Status.Pending
         }
     })

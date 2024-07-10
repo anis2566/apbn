@@ -881,10 +881,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     <FormItem>
                                         <FormLabel>Institute</FormLabel>
                                         <FormControl>
-                                            <Input {...field} onChange={(e) => {
-                                                field.onChange(e.target.value)
-                                                trigger("institute")
-                                            }} disabled={isPending} />
+                                            <Input {...field} disabled={isPending} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

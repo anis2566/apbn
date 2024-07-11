@@ -3,6 +3,8 @@
 import { db } from "@/lib/db";
 import { Role } from "@/schema/scout.schema";
 import { Section, UnitSchema, UnitSchemaType } from "@/schema/unit.schema";
+import { sendNotification } from "@/services/notification.service";
+import { getAdmin } from "@/services/user.service";
 import { clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
@@ -106,169 +108,190 @@ export const GET_UNITS = async (section: Section | undefined) => {
   };
 };
 
-
 type AssigLeader = {
   unitId: string;
   leaderId: string;
-}
-export const ASSIGN_LEADER = async ({unitId, leaderId}:AssigLeader) => {
+};
+export const ASSIGN_LEADER = async ({ unitId, leaderId }: AssigLeader) => {
   const unit = await db.unit.findUnique({
     where: {
-      id: unitId
-    }
-  })
+      id: unitId,
+    },
+  });
 
-  if(!unit) {
-    throw new Error("Unit not found")
+  if (!unit) {
+    throw new Error("Unit not found");
   }
 
   const scout = await db.scout.findUnique({
     where: {
-      id: leaderId
+      id: leaderId,
     },
     include: {
       user: {
         select: {
-          clerkId: true
-        }
-      }
-    }
-  })
+          clerkId: true,
+        },
+      },
+    },
+  });
 
-  if(!scout) {
-    throw new Error("Scout not found")
+  if (!scout) {
+    throw new Error("Scout not found");
   }
 
   await db.unit.update({
     where: {
-      id: unitId
+      id: unitId,
     },
     data: {
       leaderId,
-    }
-  })
+    },
+  });
 
   const updatedScout = await db.scout.update({
     where: {
-      id: leaderId
+      id: leaderId,
     },
     data: {
-      role: scout.role?.includes(Role.ScoutLeader) ? scout?.role : [...scout?.role, Role.ScoutLeader]
-    }
-  })
+      role: ["scout", "unitLeader"],
+    },
+  });
 
   await clerkClient.users.updateUser(scout?.user?.clerkId, {
     publicMetadata: {
       role: updatedScout?.role?.join(" "),
-      status: "active"
-    }
-  })
+      status: "active",
+    },
+  });
 
-  revalidatePath(`/dashboard/unit/${unitId}`)
+  const { adminClerkId } = await getAdmin();
+  await sendNotification({
+    trigger: "scout-leader-assign",
+    actor: {
+      id: adminClerkId,
+    },
+    recipients: [scout.user?.clerkId || ""],
+    data: {
+      unit: unit.name,
+    },
+  });
+
+  revalidatePath(`/dashboard/unit/${unitId}`);
 
   return {
-    success: "Leader assigned"
-  }
-}
-
+    success: "Leader assigned",
+  };
+};
 
 export const REMOVE_LEADER = async (unitId: string) => {
   const unit = await db.unit.findUnique({
     where: {
-      id: unitId
+      id: unitId,
     },
     include: {
       leader: {
         include: {
           user: {
             select: {
-              clerkId: true
-            }
-          }
-        }
-      }
-    }
-  })
+              clerkId: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
-  if(!unit) {
-    throw new Error("Unit not found")
+  if (!unit) {
+    throw new Error("Unit not found");
   }
 
-  if(unit.leader) {
+  if (unit.leader) {
     await db.scout.update({
       where: {
-        id: unit.leader.id
+        id: unit.leader.id,
       },
       data: {
-        role: unit.leader.role.filter(role => role !== Role.ScoutLeader)
-      }
-    })
+        role: ["scout"],
+      },
+    });
 
     await clerkClient.users.updateUser(unit.leader.user.clerkId, {
       publicMetadata: {
-        role: unit.leader.role.filter(role => role !== Role.ScoutLeader).join(" "),
-        status: "active"
-      }
-    })
+        role: ["scout"],
+        status: "active",
+      },
+    });
   }
 
   await db.unit.update({
     where: {
-      id: unitId
+      id: unitId,
     },
     data: {
-      leaderId: null
-    }
-  })
+      leaderId: null,
+    },
+  });
 
-  revalidatePath(`/dashboard/unit/${unitId}`)
+  const { adminClerkId } = await getAdmin();
+  await sendNotification({
+    trigger: "scout-leader-remove",
+    actor: {
+      id: adminClerkId,
+    },
+    recipients: [unit?.leader?.user?.clerkId || ""],
+    data: {
+      unit: unit.name,
+    },
+  });
+
+  revalidatePath(`/dashboard/unit/${unitId}`);
 
   return {
-    success: "Leader removed"
-  }
-}
+    success: "Leader removed",
+  };
+};
 
 export const GET_UNITS_BY_SECTION = async (section: Section) => {
   const units = await db.unit.findMany({
     where: {
-      section: section
+      section: section,
     },
     orderBy: {
-      createdAt: "desc"
-    }
-  })
+      createdAt: "desc",
+    },
+  });
 
-  return {units}
-}
-
+  return { units };
+};
 
 type RemoveScout = {
   scoutId: string;
   unitId: string;
-}
-export const REMOVE_SCOUT = async ({scoutId, unitId}: RemoveScout) => {
+};
+export const REMOVE_SCOUT = async ({ scoutId, unitId }: RemoveScout) => {
   const scout = await db.scout.findUnique({
     where: {
-      id: scoutId
-    }
-  })
+      id: scoutId,
+    },
+  });
 
-  if(!scout) {
-    throw new Error("Scout not found")
+  if (!scout) {
+    throw new Error("Scout not found");
   }
 
   await db.scout.update({
     where: {
-      id: scoutId
+      id: scoutId,
     },
     data: {
-      unitId: null
-    }
-  })
+      unitId: null,
+    },
+  });
 
-  revalidatePath(`/dashboard/unit/${unitId}`)
+  revalidatePath(`/dashboard/unit/${unitId}`);
 
   return {
-    success: "Scout removed"
-  }
-}
+    success: "Scout removed",
+  };
+};

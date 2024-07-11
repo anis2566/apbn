@@ -27,7 +27,7 @@ export function Menu({ isOpen }: MenuProps) {
   const menuList = getMenuListScout(pathname);
   const { user } = useUser()
   const role = user?.publicMetadata?.role as string;
-  const isLeader = role?.split(" ")?.includes(Role.ScoutLeader)
+  const isLeader = role?.split(" ")?.includes("unitLeader")
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">

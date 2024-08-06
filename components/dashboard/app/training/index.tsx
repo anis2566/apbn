@@ -51,9 +51,9 @@ export const TrainingList = ({ trainings }: Props) => {
                                             {" "} {format(training.trainingEnd, "dd MMM yyyy")}
                                         </TableCell>
                                         <TableCell className="py-3">
-                                            <Button size="icon" asChild>
+                                            <Button asChild variant="expandIcon" Icon={MoveRight} iconPlacement="right">
                                                 <Link href={`/dashboard/app/training/${training.id}`}>
-                                                    <MoveRight className="w-5 h-5" />
+                                                    View Apps
                                                 </Link>
                                             </Button>
                                         </TableCell>

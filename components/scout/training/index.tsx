@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
 import { Empty } from "@/components/empty"
+import { MoveRight, MoveRightIcon } from "lucide-react"
 
 interface Props {
     trainings: Training[]
@@ -50,9 +51,9 @@ export const TrainingList = ({ trainings }: Props) => {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="py-3">
-                                            <Button asChild variant="outline">
+                                            <Button asChild variant="expandIcon" Icon={MoveRight} iconPlacement="right">
                                                 <Link href={`/scout/training/apply/${training.id}`}>
-                                                    Get Certifite
+                                                    Get Certify
                                                 </Link>
                                             </Button>
                                         </TableCell>

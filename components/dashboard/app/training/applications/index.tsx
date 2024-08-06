@@ -42,7 +42,7 @@ export const TrainingApplicationList = ({ applications }: Props) => {
                     <Empty title="No Application Found" />
                 ) : (
                     <Table>
-                        <TableHeader>
+                        <TableHeader> 
                             <TableRow>
                                 <TableHead>Image</TableHead>
                                 <TableHead>Name</TableHead>
@@ -86,7 +86,7 @@ export const TrainingApplicationList = ({ applications }: Props) => {
                                                     <DropdownMenuItem asChild>
                                                         <Link href={`/dashboard/app/training/${application.trainingId}/${application.id}`} className="flex items-center gap-x-3">
                                                             <Eye className="w-4 h-4" />
-                                                            View
+                                                            View documents
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>

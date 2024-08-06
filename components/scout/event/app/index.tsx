@@ -72,13 +72,13 @@ export const ApplicationList = ({ applications }: Props) => {
                                         <TableCell className="py-1">{format(application.createdAt, "dd MMM yyyy")}</TableCell>
                                         <TableCell>
                                             {
-                                                application.paymentStatus === PaymentStatus.Paid ? null : (
+                                                application.event?.entryFee !== 0 && application.paymentStatus === PaymentStatus.Unpaid ? (
                                                     <Button className="h-8" asChild>
                                                         <Link href={`/scout/event/apply/${application.eventId}`}>
                                                             Pay
                                                         </Link>
                                                     </Button>
-                                                )
+                                                ) : null
                                             }
                                         </TableCell>
                                     </TableRow>

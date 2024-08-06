@@ -110,7 +110,7 @@ model Scout {
   scoutType String
   experience String[] @default([])
   joinDate DateTime?
-  section String
+  section Section
   memberType String
   badge String?
   role String[] @default([])

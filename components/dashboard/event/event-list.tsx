@@ -58,7 +58,7 @@ export const EventList = ({ events }: EventListProps) => {
                                     <TableRow key={event.id}>
                                         <TableCell className="py-3">{event.title}</TableCell>
                                         <TableCell className="py-3">{format(event.eventStart, "dd MMM yyyy")} - {format(event.eventEnd, "dd MMM yyyy")}</TableCell>
-                                        <TableCell className="py-3">&#2547;{event.entryFee > 0 ? event.entryFee : "Free"}</TableCell>
+                                        <TableCell className="py-3">&#2547;{event.entryFee}</TableCell>
                                         <TableCell className="py-3">{event.applications.length}</TableCell>
                                         <TableCell className="py-3">
                                             <Badge

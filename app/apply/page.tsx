@@ -70,7 +70,7 @@ const Apply = () => {
     const [divisions, setDivisions] = useState<Division[]>([]);
     const [division, setDivision] = useState<string | null>(null)
     const [districts, setDistricts] = useState<Division[]>([])
-    const [section, setSection] = useState<Section>()
+    const [section, setSection] = useState<Section>(Section.Scout)
     const [hasAps, setHasAps] = useState<boolean>(false)
 
     const router = useRouter()
@@ -136,7 +136,7 @@ const Apply = () => {
             scoutType: "",
             experience: [],
             joinDate: new Date(),
-            section: "",
+            section: undefined,
             memberType: "",
             badge: "",
             role: [],
@@ -157,7 +157,6 @@ const Apply = () => {
     })
 
     const { trigger, handleSubmit, formState: { errors }, setValue } = form;
-    console.log(errors)
 
     type FieldName = keyof ScoutSchemaType
 
@@ -806,13 +805,13 @@ const Apply = () => {
                                         }} disabled={isPending}>
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select member type" />
+                                                    <SelectValue placeholder="Select section" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
                                                 {
-                                                    SCOUT_SECTION_TYPE.map((v, i) => (
-                                                        <SelectItem value={v.value} key={i}>{v.label}</SelectItem>
+                                                    Object.values(Section).map((v, i) => (
+                                                        <SelectItem value={v} key={i}>{v}</SelectItem>
                                                     ))
                                                 }
                                             </SelectContent>

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import {Section as PrismaSection} from "@prisma/client"
 
 export enum Role {
   Admin = "Admin",
@@ -43,7 +44,11 @@ export const ScoutSchema = z.object({
   joinDate: z.date().optional(),
   courseDateSatrt: z.date().optional(),
   courseDateEnd: z.date().optional(),
-  section: z.string().min(1, { message: "required" }),
+  section: z
+  .nativeEnum(PrismaSection)
+  .refine((val) => Object.values(PrismaSection).includes(val), {
+    message: "required",
+  }),
   memberType: z.string().min(1, { message: "required" }),
   badge: z.string().optional(),
   role: z.array(z.string()).min(1, {message: "required"}),
@@ -86,7 +91,11 @@ export const EditScoutSchema = z.object({
   joinDate: z.date().optional(),
   courseDateSatrt: z.date().optional(),
   courseDateEnd: z.date().optional(),
-  section: z.string().min(1, { message: "required" }),
+  section: z
+  .nativeEnum(PrismaSection)
+  .refine((val) => Object.values(PrismaSection).includes(val), {
+    message: "required",
+  }),
   memberType: z.string().min(1, { message: "required" }),
   badge: z.string().optional(),
   role: z.array(z.string()).min(1, {message: "required"}),

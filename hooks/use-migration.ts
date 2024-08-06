@@ -1,4 +1,4 @@
-import { Migration, Unit } from "@prisma/client";
+import { Migration, Section, Unit } from "@prisma/client";
 import { create } from "zustand";
 
 interface MigrationState {
@@ -16,10 +16,21 @@ export const useMigration = create<MigrationState>()((set) => ({
 }));
 
 
-export const useMigrationLeader = create<MigrationState>()((set) => ({
+interface MigrationStateLeader {
+  open: boolean;
+  scoutId: string;
+  section: Section | null;
+  unitId: string;
+  onOpen: (scoutId: string, section:Section, unitId: string) => void;
+  onClose: () => void;
+}
+
+export const useMigrationLeader = create<MigrationStateLeader>()((set) => ({
   open: false,
   scoutId: "",
-  onOpen: (scoutId) => set({ open: true, scoutId }),
+  section: null,
+  unitId: "",
+  onOpen: (scoutId, section, unitId) => set({ open: true, scoutId, section, unitId }),
   onClose: () => set({ open: false, scoutId: "" }),
 }));
 

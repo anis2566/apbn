@@ -1,5 +1,5 @@
 import { Scout } from "@prisma/client"
-import { EllipsisVertical, Eye, Pen } from "lucide-react"
+import { EllipsisVertical, Eye } from "lucide-react"
 import Link from "next/link"
 
 import {
@@ -88,16 +88,7 @@ export const ScoutList = ({ scouts }: ScoutListProps) => {
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <Link href={`/scout/unit/scout/edit/${scout.id}`} className="flex items-center gap-x-3">
-                                                            <Pen className="w-4 h-4" />
-                                                            Edit
-                                                        </Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
                                                         <EditStatusButton scoutId={scout.id} />
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
-                                                        <DeleteButton scoutId={scout.id} />
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

@@ -28,11 +28,10 @@ import { APPLY_MIGRATION } from "@/actions/migration.action"
 
 
 export const MigrationModalLeader = () => {
-    const [section, setSection] = useState<Section>()
     const [unit, setUnit] = useState<string>("")
     const [reason, setReason] = useState<string>("")
 
-    const { open, onClose, scoutId } = useMigrationLeader()
+    const { open, onClose, scoutId, section, unitId } = useMigrationLeader()
 
     const { data: units } = useQuery({
         queryKey: ["get-units-by-section", section],
@@ -40,7 +39,7 @@ export const MigrationModalLeader = () => {
             const res = await GET_UNITS_BY_SECTION(section as Section)
             return res.units
         },
-        enabled: open
+        enabled: open && !!section
     })
 
     const { mutate: migrateScout, isPending } = useMutation({
@@ -76,7 +75,7 @@ export const MigrationModalLeader = () => {
                 <div className="space-y-6 mt-4">
                     <div>
                         <Label>Section</Label>
-                        <Select onValueChange={(value) => setSection(value as Section)} disabled={isPending}>
+                        <Select value={section || Section.Scout} disabled={true}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Section" />
                             </SelectTrigger>
@@ -91,7 +90,7 @@ export const MigrationModalLeader = () => {
                     </div>
 
                     <div>
-                        <Label>Unit</Label>
+                        <Label>Prefered Unit</Label>
                         <Select onValueChange={(value) => setUnit(value)} disabled={isPending}>
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Unit" />
@@ -99,7 +98,7 @@ export const MigrationModalLeader = () => {
                             <SelectContent>
                                 {
                                     units?.map((unit) => (
-                                        <SelectItem key={unit.id} value={unit.id}>{unit.name}</SelectItem>
+                                        <SelectItem key={unit.id} value={unit.id} disabled={unit.id === unitId}>{unit.name}</SelectItem>
                                     ))
                                 }
                             </SelectContent>

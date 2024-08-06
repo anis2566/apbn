@@ -93,7 +93,7 @@ export const DELETE_UNIT = async (id: string) => {
   };
 };
 
-export const GET_UNITS = async (section: Section | undefined) => {
+export const GET_UNITS = async (section: Section) => {
   const units = await db.unit.findMany({
     where: {
       ...(section && { section: section }),

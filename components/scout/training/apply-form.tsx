@@ -21,14 +21,14 @@ import {
 } from "@/components/ui/form"
 
 import { UploadDropzone } from "@/lib/uploadthing"
-import { CREATE_APPLICATION } from "@/actions/training-application.action"
 import { TrainingApplicationSchema } from "@/schema/training-application.schema"
+import { APPLY_TRAINING } from "@/actions/training.action"
 
 interface Props {
     trainingId: string;
 }
 
-export const ApplyForm = ({trainingId}:Props) => {
+export const ApplyForm = ({ trainingId }: Props) => {
 
     const router = useRouter()
 
@@ -40,24 +40,24 @@ export const ApplyForm = ({trainingId}:Props) => {
         },
     })
 
-    const {mutate: createTrainingApp, isPending} = useMutation({
-        mutationFn: CREATE_APPLICATION,
+    const { mutate: createTrainingApp, isPending } = useMutation({
+        mutationFn: APPLY_TRAINING,
         onSuccess: (data) => {
-            router.push("/scout/training")
+            router.push("/scout/training/app")
             toast.success(data?.success, {
-                id: "create-app"
+                id: "apply-training"
             })
         },
         onError: (error) => {
             toast.error(error.message, {
-                id: "create-app"
+                id: "apply-training"
             });
         }
     })
 
     function onSubmit(values: z.infer<typeof TrainingApplicationSchema>) {
         toast.loading("Applying...", {
-            id: "create-app"
+            id: "apply-training"
         })
         createTrainingApp(values)
     }

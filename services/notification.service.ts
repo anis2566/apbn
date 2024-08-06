@@ -16,7 +16,9 @@ type SendNotification = {
         withdraw?: number;
         unit?: string;
         currentUnit?: string;
+        training?: string;
         migrateUnit?: string;
+        event?: string;
     }
 }
 

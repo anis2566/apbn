@@ -5,7 +5,7 @@ export const EventSchema = z.object({
   description: z.string().min(1, { message: "required" }),
   venue: z.string().min(1, { message: "required" }),
   imageUrl: z.string().min(1, { message: "required" }),
-  entryFee: z.number().min(1, {message: "required"}),
+  entryFee: z.number().optional(),
   eventStart: z.date().refine(date => date !== null, { message: "required" }),
   eventEnd: z.date().refine(date => date !== null, { message: "required" }),
   registrationStart: z.date().refine(date => date !== null, { message: "required" }),

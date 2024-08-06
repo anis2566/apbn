@@ -111,7 +111,7 @@ export const ScoutList = ({ scouts }: ScoutListProps) => {
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
-                                                        <MigrationButton scoutId={scout.id} />
+                                                        <MigrationButton scoutId={scout.id} section={scout.section} unitId={scout.unitId} />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
                                                         <BanButton scoutId={scout.id} />

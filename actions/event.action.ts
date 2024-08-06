@@ -2,6 +2,9 @@
 
 import { db } from "@/lib/db"
 import { EventSchema, EventSchemaType } from "@/schema/event.schema"
+import { sendNotification } from "@/services/notification.service"
+import { getAdmin } from "@/services/user.service"
+import { Status } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
 export const CREATE_EVENT = async (values: EventSchemaType) => {
@@ -10,9 +13,34 @@ export const CREATE_EVENT = async (values: EventSchemaType) => {
         throw new Error("Invalid input value")
     }
 
-    await db.event.create({
+    const newEvent = await db.event.create({
         data: {
             ...data
+        }
+    })
+
+    const scouts = await db.scout.findMany({
+        where: {
+            status: Status.Active
+        },
+        include: {
+            user: {
+                select: {
+                    clerkId: true
+                }
+            }
+        }
+    })
+
+    const {adminClerkId} = await getAdmin()
+    await sendNotification({
+        trigger: "new-event",
+        actor: {
+            id: adminClerkId,
+        },
+        recipients: scouts.map(scout => scout.user?.clerkId),
+        data: {
+            redirectUrl: `/scout/event/${newEvent.id}`
         }
     })
 

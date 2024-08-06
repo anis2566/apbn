@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button"
 
 import { MigrationStatus } from "@/schema/migration.schema"
 import { useTrainingAppStatus } from "@/hooks/use-training-app"
-import { UPDATE_APPLICATION_STATUS } from "@/actions/training-application.action"
+import { UPDATE_STATUS } from "@/actions/training.action"
 
 
 export const TrainingAppStatusModal = () => {
@@ -30,7 +30,7 @@ export const TrainingAppStatusModal = () => {
     const { open, onClose, id } = useTrainingAppStatus()
 
     const { mutate: updateStatus, isPending } = useMutation({
-        mutationFn: UPDATE_APPLICATION_STATUS,
+        mutationFn: UPDATE_STATUS,
         onSuccess: (data) => {
             onClose()
             toast.success(data.success, {

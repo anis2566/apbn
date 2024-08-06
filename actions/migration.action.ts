@@ -172,7 +172,6 @@ export const UPDATE_MIGRATION_STATUS = async ({migrationId, status}:MigrationSta
         })
     }
 
-
     revalidatePath("/dashboard/app/migration")
 
     return {

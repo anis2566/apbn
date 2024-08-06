@@ -4,6 +4,7 @@ import { Event } from "@prisma/client"
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,13 +17,15 @@ interface EventAppplyFormProps {
     scoutId: string;
 }
 
-export const EventAppplyForm = ({event, scoutId}:EventAppplyFormProps) => {
+export const EventAppplyForm = ({ event, scoutId }: EventAppplyFormProps) => {
     const [appId, setAppId] = useState<string>("")
 
-    const {mutate: createApplication, isPending} = useMutation({
+    const router = useRouter()
+
+    const { mutate: createApplication, isPending } = useMutation({
         mutationFn: CREATE_APPLICATION,
         onSuccess: (data) => {
-            if(data?.application) {
+            if (data?.application) {
                 setAppId(data?.application?.id)
                 generateToken()
             }
@@ -32,11 +35,26 @@ export const EventAppplyForm = ({event, scoutId}:EventAppplyFormProps) => {
         }
     })
 
-    const {mutate: generateToken} = useMutation({
+    const { mutate: createApplicationFree, isPending:isLoading } = useMutation({
+        mutationFn: CREATE_APPLICATION,
+        onSuccess: (data) => {
+            router.push("/scout/event/app")
+            toast.success("Application successful", {
+                id: "apply-event"
+            })
+        },
+        onError: (error) => {
+            toast.success(error.message, {
+                id: "apply-event"
+            })
+        }
+    })
+
+    const { mutate: generateToken } = useMutation({
         mutationFn: GENERATE_BKASH_TOKEN,
         onSuccess: (data) => {
             if (data?.token) {
-                createPayment({amount:event.entryFee, token: data?.token, appId, scoutId})
+                createPayment({ amount: event.entryFee, token: data?.token, appId, scoutId })
             }
         },
         onError: (error) => {
@@ -44,10 +62,10 @@ export const EventAppplyForm = ({event, scoutId}:EventAppplyFormProps) => {
         }
     })
 
-    const {mutate: createPayment} = useMutation({
+    const { mutate: createPayment } = useMutation({
         mutationFn: CREATE_PAYMENT_FOR_EVENT,
         onSuccess: (data) => {
-            if(data?.url) {
+            if (data?.url) {
                 window.location.replace(data?.url)
             }
         },
@@ -57,7 +75,14 @@ export const EventAppplyForm = ({event, scoutId}:EventAppplyFormProps) => {
     })
 
     const handlePay = () => {
-        createApplication({scoutId, eventId:event.id})
+        createApplication({ scoutId, eventId: event.id })
+    }
+
+    const handleJoin = () => {
+        toast.loading("Applying", {
+            id: "apply-event"
+        })
+        createApplicationFree({ scoutId, eventId: event.id })
     }
 
     return (
@@ -71,7 +96,12 @@ export const EventAppplyForm = ({event, scoutId}:EventAppplyFormProps) => {
                                 <p className="text-xl font-semibold">Amount: <span className="font-bold text-primary">&#2547;{event.entryFee}</span></p>
                                 <Button className="w-full" onClick={handlePay} disabled={isPending}>Pay with Bkash</Button>
                             </div>
-                        ) : null
+                        ) : (
+                            <div className="space-y-2">
+                                <p>This event is free. Feel free to join.</p>
+                                <Button className="w-full" onClick={handleJoin} disabled={isLoading}>Confirm</Button>
+                            </div>
+                        )
                     }
                 </CardContent>
             </Card>

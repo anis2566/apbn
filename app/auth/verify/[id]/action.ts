@@ -22,7 +22,7 @@ export const VERIFY_USER = async ({ id, code }: VerifyUser) => {
   }
 
   const isExpired = new Date() > new Date(token.expires);
-  
+
   if (isExpired) {
     throw new Error("Verification token has expired");
   }
@@ -38,7 +38,7 @@ export const VERIFY_USER = async ({ id, code }: VerifyUser) => {
 
   await db.verificationToken.delete({
     where: {
-      identifier: id,
+      id: token.id,
     },
   });
 

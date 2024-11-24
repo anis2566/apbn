@@ -143,6 +143,7 @@ model VerificationToken {
   expires    DateTime
  
   @@unique([identifier, token])
+  @@index([identifier])
 }
  
 

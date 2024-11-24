@@ -9,8 +9,13 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { Menu } from "../sidebar/menu";
+import { Role } from "@prisma/client";
 
-export function SheetMenu() {
+interface SheetMenuProps {
+    role: Role;
+}
+
+export function SheetMenu({ role }: SheetMenuProps) {
     return (
         <Sheet>
             <SheetTrigger className="lg:hidden" asChild>
@@ -31,7 +36,7 @@ export function SheetMenu() {
                         </Link>
                     </Button>
                 </SheetHeader>
-                <Menu isOpen />
+                <Menu isOpen role={role} />
             </SheetContent>
         </Sheet>
     );

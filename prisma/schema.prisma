@@ -1,0 +1,499 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "mongodb"
+  url  	    = env("DATABASE_URL")
+}
+
+
+enum Role {
+  Admin
+  Moderator
+  User
+  Scout
+  ScoutLeader
+}
+
+enum Status {
+  Pending
+  Active
+  Verified
+  Suspended
+}
+
+enum Section {
+  Cub
+  Scout
+  Rover 
+}
+
+enum CommiteeSection {
+  PackCouncil
+  TroopCouncil
+  CrewCouncil
+  GroupCommitee
+}
+
+enum CouponStatus {
+  Active
+  Inactive
+}
+
+enum NoticeStatus {
+  Active
+  Inactive
+}
+
+enum AppStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum PaymentStatus {
+  Paid
+  Unpaid
+}
+
+enum TrainingType {
+  National 
+  Region
+  District
+}
+
+enum PublishStatus {
+  Publish
+  Unpublish
+}
+
+enum Designation {
+  President
+  VicePresident
+  Secretary
+  JointSecretary
+  Treasrer
+  GroupScoutLeader
+  Advisor
+  Sponsor
+  UnitLeader
+  AssistantUnitLeader
+  Member
+}
+
+enum SignatureAuthor {
+  President
+  Secretary
+}
+
+model User {
+  id               String           @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String          @unique
+  password      String?         
+  emailVerified DateTime?
+  image         String?
+  role          Role            @default(User)
+  status        Status          @default(Pending)
+
+  fcmToken      String?         
+  scout Scout?
+  accounts      Account[]
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([email, id])
+}
+ 
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@unique([provider, providerAccountId])
+}
+ 
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+}
+ 
+
+ model Unit {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  limit Int
+  section Section
+
+  leaderId String? @unique @db.ObjectId
+  leader Scout? @relation(name: "UnitLeader", fields: [leaderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  scouts Scout[]
+  migrations Migration[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Scout {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  nameBangla String
+  apsId String?
+  fatherName String
+  fatherNameBangla String
+  motherName String
+  motherNameBangla String
+  dob DateTime
+  gender String
+  phone String
+  religion String 
+  email String?
+  bloodGroup String?
+  villageHouse String
+  roadBlockSector String
+  district String
+  division String
+  thana String
+  postCode String?
+  scoutType String
+  experience String[] @default([])
+  joinDate DateTime?
+  section Section
+  memberType String
+  badge String?
+  role String[] @default([])
+  scoutRegion String
+  scoutDistrict String
+  scoutUpazilla String?
+  institute String?
+  class String?
+  roll String?
+  organization String?
+  designation String?
+  imageUrl String
+  certificateNo String?
+  courseDateSatrt DateTime?
+  courseDateEnd DateTime?
+  status Status @default(Pending)
+  isVerified Boolean @default(false)
+  isPaid Boolean @default(false)
+  allowCard Boolean @default(false)
+
+  preferedUnitId String?
+  preferedUnitName String?
+  
+  userId String @unique @db.ObjectId
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  unitId String? @db.ObjectId
+  unit Unit? @relation(fields: [unitId], references: [id])
+
+  leadingUnit Unit? @relation(name: "UnitLeader")
+
+  migrations Migration[]
+  bans Ban[]
+  eventApplications EventApplication[]
+  trainingApplications TrainingApplication[]
+  awards ScoutAward[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Fee {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  amount Int
+  discountAmount Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Coupon {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  code String
+  value Int
+  expire DateTime @default(now())
+  status CouponStatus @default(Inactive)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Event {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  description String
+  venue String
+  imageUrl String
+  entryFee Int
+  eventStart DateTime
+  eventEnd DateTime
+  registrationStart DateTime
+  registrationEnd DateTime
+
+  applications EventApplication[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model EventApplication {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  scoutId String? @db.ObjectId
+  scout Scout? @relation(fields: [scoutId], references: [id])
+
+  eventId String? @db.ObjectId
+  event Event? @relation(fields: [eventId], references: [id])
+
+  paymentStatus PaymentStatus @default(Unpaid)
+  status AppStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Training {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  description String
+  venue String
+  imageUrl String
+  limit Int
+  type TrainingType
+  trainingStart DateTime
+  trainingEnd DateTime
+
+  applications TrainingApplication[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model TrainingApplication {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  attachments String[]
+
+  scoutId String? @db.ObjectId
+  scout Scout? @relation(fields: [scoutId], references: [id])
+
+  trainingId String? @db.ObjectId
+  training Training? @relation(fields: [trainingId], references: [id])
+  
+  status AppStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Award {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  imageUrl String
+
+  awards ScoutAward[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Migration {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  reason String
+
+  scoutId String? @db.ObjectId
+  scout Scout? @relation(fields: [scoutId], references: [id])
+
+  unitId String? @db.ObjectId
+  unit Unit? @relation(fields: [unitId], references: [id])
+
+  status AppStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Ban {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  reason String
+
+  scoutId String? @db.ObjectId
+  scout Scout? @relation(fields: [scoutId], references: [id])
+
+  status AppStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model ScoutAward {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  scoutId String @db.ObjectId
+  scout Scout @relation(fields: [scoutId], references: [id])
+
+  awardId String @db.ObjectId
+  award Award @relation(fields: [awardId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([scoutId, awardId])
+}
+
+
+model Committee {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  section CommiteeSection
+  start DateTime @default(now())
+  end DateTime
+
+  members CommitteeMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model CommitteeMember {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  designation Designation
+  imageUrl String
+
+  committeeId String @db.ObjectId
+  committee Committee @relation(fields: [committeeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model News {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  news String 
+  imageUrl String
+
+  status PublishStatus @default(Unpublish)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Notice {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  notice String 
+
+  status NoticeStatus @default(Inactive)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Gallery {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  imageUrl String
+
+  media GalleryMedia[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model GalleryMedia {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String
+  imageUrl String
+
+  galleryId String @db.ObjectId
+  gallery Gallery @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Signature {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  author SignatureAuthor
+  imageUrl String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Counter {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  count Int @default(600)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Todo {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  title String  
+  isCompleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Message {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  email String
+  message String 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

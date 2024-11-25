@@ -26,6 +26,8 @@ export function Menu({ isOpen, role }: MenuProps) {
   const pathname = usePathname();
   const menuList = getMenuList(pathname);
 
+  console.log(role)
+
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
       <nav className="mt-8 h-full w-full">

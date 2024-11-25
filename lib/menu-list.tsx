@@ -396,6 +396,14 @@ export function getMenuList(pathname: string): Group[] {
             },
           ],
         },
+        {
+          href: "/dashboard/setting",
+          label: "Setting",
+          active: pathname.includes("/dashboard/setting"),
+          icon: Settings,
+          role: [Role.Admin],
+          submenus: [],
+        },
       ],
     },
   ];

@@ -70,6 +70,8 @@ import { PasswordModal } from "@/app/auth/forgot-password/[id]/_components/passw
 import { AssignSignatureModal } from "@/app/dashboard/utils/signature/_components/create-signature-modal"
 import { UpdateSignatureModal } from "@/app/dashboard/utils/signature/_components/update-signature-modal"
 import { DeleteSignatureModal } from "@/app/dashboard/utils/signature/_components/delete-signature-modal"
+import { RoleModal } from "@/app/dashboard/setting/_components/role-modal"
+import { DeleteUserModal } from "@/app/dashboard/setting/_components/delete-modal"
 
 // SIGNATURE
 
@@ -150,6 +152,10 @@ export const ModalProvider = () => {
             <AssignSignatureModal />
             <UpdateSignatureModal />
             <DeleteSignatureModal />
+
+            {/* USER */}
+            <RoleModal />
+            <DeleteUserModal />
         </>
     )
 }

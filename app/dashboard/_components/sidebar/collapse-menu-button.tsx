@@ -70,8 +70,6 @@ export function CollapseMenuButton({
           className={cn(
             "w-full justify-start h-10",
             active && "bg-muted/30",
-            !submenus.find(({ role: menuRole }) => !menuRole.includes(role)) &&
-            "hidden"
           )}
         >
           <div className="w-full items-center flex justify-between">

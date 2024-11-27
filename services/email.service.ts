@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 
 export const SEND_VERIFICATION_EMAIL = async () => {
   const emailHtml = render(VerifyEmail());
-
+ 
   const options = {
     from: "apbnscoutsit@gmail.com",
     to: "anichuranis1000@gmail.com",

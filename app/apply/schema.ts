@@ -1,14 +1,25 @@
 import { z } from "zod";
-import {Section as PrismaSection} from "@prisma/client"
+import { Section as PrismaSection } from "@prisma/client";
 
 export const ScoutSchema = z.object({
   name: z.string().min(1, { message: "required" }),
-  nameBangla: z.string().min(1, { message: "required" }),
+  nameBangla: z
+    .string()
+    .min(1, { message: "required" })
+    .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" }),
   apsId: z.string().optional(),
   fatherName: z.string().min(1, { message: "required" }),
-  fatherNameBangla: z.string().min(1, { message: "required" }),
+  fatherNameBangla: z
+    .string()
+    .min(1, { message: "required" })
+    .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" })
+    .optional(),
   motherName: z.string().min(1, { message: "required" }),
-  motherNameBangla: z.string().min(1, { message: "required" }),
+  motherNameBangla: z
+    .string()
+    .min(1, { message: "required" })
+    .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" })
+    .optional(),
   dob: z.date(),
   gender: z.string().min(1, { message: "required" }),
   phone: z.string().min(11, { message: "required" }),
@@ -27,13 +38,13 @@ export const ScoutSchema = z.object({
   courseDateSatrt: z.date().optional(),
   courseDateEnd: z.date().optional(),
   section: z
-  .nativeEnum(PrismaSection)
-  .refine((val) => Object.values(PrismaSection).includes(val), {
-    message: "required",
-  }),
+    .nativeEnum(PrismaSection)
+    .refine((val) => Object.values(PrismaSection).includes(val), {
+      message: "required",
+    }),
   memberType: z.string().min(1, { message: "required" }),
   badge: z.string().optional(),
-  role: z.array(z.string()).min(1, {message: "required"}),
+  role: z.array(z.string()).min(1, { message: "required" }),
   scoutRegion: z.string().min(1, { message: "required" }),
   certificateNo: z.string().optional(),
   scoutDistrict: z.string().min(1, { message: "required" }),
@@ -49,13 +60,23 @@ export const ScoutSchema = z.object({
 
 export type ScoutSchemaType = z.infer<typeof ScoutSchema>;
 
-
 export const EditScoutSchema = z.object({
   name: z.string().min(1, { message: "required" }),
-  nameBangla: z.string().min(1, { message: "required" }),
+  nameBangla: z
+    .string()
+    .min(1, { message: "required" })
+    .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" }),
   apsId: z.string().optional(),
   fatherName: z.string().min(1, { message: "required" }),
+  fatherNameBangla: z
+    .string()
+    .min(1, { message: "required" })
+    .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" }),
   motherName: z.string().min(1, { message: "required" }),
+  motherNameBangla: z
+    .string()
+    .min(1, { message: "required" })
+    .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" }),
   dob: z.date(),
   gender: z.string().min(1, { message: "required" }),
   phone: z.string().min(11, { message: "required" }),
@@ -74,13 +95,13 @@ export const EditScoutSchema = z.object({
   courseDateSatrt: z.date().optional(),
   courseDateEnd: z.date().optional(),
   section: z
-  .nativeEnum(PrismaSection)
-  .refine((val) => Object.values(PrismaSection).includes(val), {
-    message: "required",
-  }),
+    .nativeEnum(PrismaSection)
+    .refine((val) => Object.values(PrismaSection).includes(val), {
+      message: "required",
+    }),
   memberType: z.string().min(1, { message: "required" }),
   badge: z.string().optional(),
-  role: z.array(z.string()).min(1, {message: "required"}),
+  role: z.array(z.string()).min(1, { message: "required" }),
   scoutRegion: z.string().min(1, { message: "required" }),
   certificateNo: z.string().optional(),
   scoutDistrict: z.string().min(1, { message: "required" }),

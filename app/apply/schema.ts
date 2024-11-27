@@ -12,14 +12,12 @@ export const ScoutSchema = z.object({
   fatherNameBangla: z
     .string()
     .min(1, { message: "required" })
-    .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" })
-    .optional(),
+    .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" }),
   motherName: z.string().min(1, { message: "required" }),
   motherNameBangla: z
     .string()
     .min(1, { message: "required" })
-    .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" })
-    .optional(),
+    .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" }),
   dob: z.date(),
   gender: z.string().min(1, { message: "required" }),
   phone: z.string().min(11, { message: "required" }),

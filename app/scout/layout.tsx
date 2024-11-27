@@ -16,6 +16,7 @@ export default async function DemoLayout({
     if (!session?.status || !session.userId || !admin) {
         redirect("/")
     }
+
     return (
         <AppKnockProviders userId={session.userId}>
             <ScoutLayout status={session.status} adminId={admin.id}>{children}</ScoutLayout>

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-import { PAY_FOR_EVENT } from "@/services/payment.service";
+import { CREATE_PAYMENT_FOR_EVENT } from "@/services/payment.service";
 import { EVENT_JOIN } from "../action";
 
 interface EventAppplyFormProps {
@@ -21,7 +21,7 @@ export const EventAppplyForm = ({ event, scoutId }: EventAppplyFormProps) => {
     const router = useRouter()
 
     const { mutate: createPayment, isPending } = useMutation({
-        mutationFn: PAY_FOR_EVENT,
+        mutationFn: CREATE_PAYMENT_FOR_EVENT,
         onSuccess: (data) => {
             if (data?.url) {
                 window.location.replace(data?.url)

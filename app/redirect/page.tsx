@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import { Suspense, useEffect } from "react"
 
 const ReidrectPage = () => {
     const searchParams = useSearchParams()
@@ -15,9 +15,9 @@ const ReidrectPage = () => {
     }, [redirectUrl])
 
     return (
-        <div className="w-full h-screen flex items-center justify-center text-muted-foreground">
+        <Suspense fallback="Loading...">
             Redirecting...
-        </div>
+        </Suspense>
     )
 }
 

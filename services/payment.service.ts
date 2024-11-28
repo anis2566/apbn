@@ -2,74 +2,111 @@
 
 import axios from "axios";
 
-type PayForRegistration = {
-  scoutId: string;
-  amount: string;
-}
+export const GENERATE_BKASH_TOKEN = async () => {
+  const res = await axios.post(
+    process.env.NEXT_PUBLIC_PGW_BKASH_GRANT_TOKEN_URL!,
+    {
+      app_key: process.env.NEXT_PUBLIC_PGW_BKASH_API_KEY,
+      app_secret: process.env.NEXT_PUBLIC_PGW_BKASH_API_SECRET,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        username: process.env.NEXT_PUBLIC_PGW_BKASH_USERNAME,
+        password: process.env.NEXT_PUBLIC_PGW_BKASH_PASSWORD,
+      },
+    }
+  );
 
-export const PAY_FOR_REGISTRATION = async ({scoutId, amount}:PayForRegistration) => {
-  const transactionId = Math.floor(100000 + Math.random() * 900000).toString();
-  try {
-    const res = await axios.post("https://sandbox.aamarpay.com/jsonpost.php", {
-      store_id: "aamarpaytest",
-      signature_key: "dbb74894e82415a2f7ff0ec3a97e4183",
-      cus_name: "Imtiaz Akil",
-      cus_email: "imtiaz.akil@softbd.com",
-      cus_phone: "01870762472",
-      cus_add1: "53, Gausul Azam Road, Sector-14, Dhaka, Bangladesh",
-      cus_add2: "Dhaka",
-      cus_city: "Dhaka",
-      cus_country: "Bangladesh",
-      amount: amount,
-      tran_id: transactionId,
-      currency: "BDT",
-      success_url: `https://www.apbnscouts.org/api/payment/verify?id=${scoutId}`,
-      fail_url: "https://example.com/fail.php",
-      cancel_url: "https://example.com/cancel.php",
-      desc: "Lend Money",
-      type: "json",
-    });
-    return {
-      url: res.data?.payment_url,
-    };
-  } catch (error) {
-    console.log(error);
-  }
+  return {
+    success: true,
+    token: res.data?.id_token,
+  };
 };
 
-
-type PayForEvent = {
+type CreatePaymentRegister = {
+  token: string;
   scoutId: string;
-  amount: string;
-  eventId: string;
-}
-
-export const PAY_FOR_EVENT = async ({scoutId, amount, eventId}:PayForEvent) => {
-  const transactionId = Math.floor(100000 + Math.random() * 900000).toString();
-  try {
-    const res = await axios.post("https://sandbox.aamarpay.com/jsonpost.php", {
-      store_id: "aamarpaytest",
-      signature_key: "dbb74894e82415a2f7ff0ec3a97e4183",
-      cus_name: "Imtiaz Akil",
-      cus_email: "imtiaz.akil@softbd.com",
-      cus_phone: "01870762472",
-      cus_add1: "53, Gausul Azam Road, Sector-14, Dhaka, Bangladesh",
-      cus_add2: "Dhaka",
-      cus_city: "Dhaka",
-      cus_country: "Bangladesh",
+  amount: number;
+};
+export const CREATE_PAYMENT_FOR_REGISTER = async ({
+  token,
+  scoutId,
+  amount,
+}: CreatePaymentRegister) => {
+  const res = await axios.post(
+    process.env.NEXT_PUBLIC_PGW_BKASH_CREATE_PAYMENT_URL!,
+    {
+      mode: "0011",
+      payerReference: " ",
+      callbackURL: `${
+        process.env.NEXT_PUBLIC_NODE_ENV === "development"
+          ? "http://localhost:3000"
+          : "https://apbnscouts.org"
+      }/api/payment/verify?token=${token}&scoutId=${scoutId}`,
       amount: amount,
-      tran_id: transactionId,
       currency: "BDT",
-      success_url: `https://www.apbnscouts.org/api/payment/event/verify?id=${scoutId}&eventId=${eventId}`,
-      fail_url: "https://example.com/fail.php",
-      cancel_url: "https://example.com/cancel.php",
-      desc: "Lend Money",
-      type: "json",
-    });
-    return {
-      url: res.data?.payment_url,
-    };
-  } catch (error) {
-    console.log(error);
-  }
+      intent: "sale",
+      merchantInvoiceNumber:
+        "Inv" + Math.floor(100000 + Math.random() * 900000),
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        authorization: token,
+        "x-app-key": process.env.NEXT_PUBLIC_PGW_BKASH_API_KEY,
+      },
+    }
+  );
+
+  return {
+    succes: true,
+    url: res.data?.bkashURL,
+  };
+};
+
+type CreatePaymentEvent = {
+  token: string;
+  amount: number;
+  appId: string;
+  scoutId: string;
+};
+export const CREATE_PAYMENT_FOR_EVENT = async ({
+  token,
+  appId,
+  amount,
+  scoutId,
+}: CreatePaymentEvent) => {
+  const res = await axios.post(
+    process.env.NEXT_PUBLIC_PGW_BKASH_CREATE_PAYMENT_URL!,
+    {
+      mode: "0011",
+      payerReference: " ",
+      callbackURL: `${
+        process.env.NEXT_PUBLIC_NODE_ENV === "development"
+          ? "http://localhost:3000"
+          : "https://apbnscouts.org"
+      }/api/payment/event/verify?token=${token}&scoutId=${scoutId}&appId=${appId}`,
+      amount: amount,
+      currency: "BDT",
+      intent: "sale",
+      merchantInvoiceNumber:
+        "Inv" + Math.floor(100000 + Math.random() * 900000),
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        authorization: token,
+        "x-app-key": process.env.NEXT_PUBLIC_PGW_BKASH_API_KEY,
+      },
+    }
+  );
+
+  return {
+    succes: true,
+    url: res.data?.bkashURL,
+  };
 };

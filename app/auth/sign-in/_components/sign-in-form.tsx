@@ -8,7 +8,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -29,6 +29,7 @@ export const SignInForm = () => {
 
     const searchParams = useSearchParams()
     const callback = searchParams.get("callback")
+    const router = useRouter()
 
     const togglePassword = () => {
         setShowPassword(prev => !prev)
@@ -39,7 +40,8 @@ export const SignInForm = () => {
         onSuccess: (data) => {
             toast.success(data?.success, {
                 id: "sign-in-user"
-            })
+            }),
+            router.push(`/redirect?redirectUrl=${callback ? callback : "/"}`)
         },
         onError: (error) => {
             toast.error(error.message, {

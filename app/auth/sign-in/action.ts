@@ -49,7 +49,8 @@ export const SIGN_IN_USER = async ({ values, callback }: SignInUser) => {
       await signIn("credentials", {
         email: values.email,
         password: values.password,
-        redirectTo: callback ? callback : "/",
+        redirect: false,
+        // redirectTo: callback ? callback : "/",
       });
 
       return { success: "Login successful", user };

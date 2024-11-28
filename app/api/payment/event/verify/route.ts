@@ -1,42 +1,44 @@
+import { NextRequest } from "next/server";
+
+import axios from "axios";
 import { db } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 import { AppStatus, PaymentStatus } from "@prisma/client";
-import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
-  try {
-    // Get the URL from the request
-    const url = new URL(request.url);
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const paymentID = searchParams.get("paymentID");
+  const token = searchParams.get("token");
+  const scoutId = searchParams.get("scoutId");
+  const appId = searchParams.get("appId");
 
-    // Extract query parameters
-    const queryParams = Object.fromEntries(url.searchParams.entries());
+  if (!scoutId || !appId) redirect("/");
 
-    // Parse the POST body (URL-encoded data)
-    const data = await request.text();
-    const params = new URLSearchParams(data);
-    const paymentData = Object.fromEntries(params.entries());
-
-    // Construct the base URL dynamically
-    const baseUrl = `${url.protocol}//${url.host}`;
-
-    if (paymentData.pay_status === "Successful") {
-      if (queryParams.eventId && queryParams.id) {
-        await db.eventApplication.create({
-          data: {
-            scoutId: queryParams.id,
-            eventId: queryParams.eventId,
-            paymentStatus: PaymentStatus.Paid,
-            status: AppStatus.Approved,
-          },
-        });
-      }
-      return NextResponse.redirect(
-        `${baseUrl}/payment/success?callback=/scout`,
-        303
-      );
-    } else {
-      return NextResponse.redirect(`${baseUrl}/payment/fail`, 303);
+  const res = await axios.post(
+    process.env.NEXT_PUBLIC_PGW_BKASH_EXECUTE_PAYMENT_URL!,
+    { paymentID },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        authorization: token,
+        "x-app-key": process.env.NEXT_PUBLIC_PGW_BKASH_API_KEY,
+      },
     }
-  } catch (error) {
-    console.log(error);
+  );
+
+  if (res.data && res.data?.statusCode === "0000") {
+    await db.eventApplication.update({
+      where: {
+        id: appId,
+      },
+      data: {
+        paymentStatus: PaymentStatus.Paid,
+        status: AppStatus.Approved,
+      },
+    });
+    redirect("/payment/success?callback=/scout/event");
+  } else {
+    redirect("/payment/failed");
   }
 }

@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -12,8 +13,7 @@ import {
 } from "@/components/ui/collapsible"
 
 import { APPLY_COUPON, CONFIRM_PAYMENT, GET_FEE_BY_TITLE, GET_SCOUT } from "../action";
-import { useRouter } from "next/navigation";
-import { PAY_FOR_REGISTRATION } from "@/services/payment.service";
+import { CREATE_PAYMENT_FOR_REGISTER, GENERATE_BKASH_TOKEN } from "@/services/payment.service";
 
 interface PaymentFormProps {
     scoutId: string;
@@ -74,8 +74,20 @@ export const PaymentForm = ({ scoutId }: PaymentFormProps) => {
         }
     }, [scout?.apsId, regFee])
 
+    const { mutate: createToken, isPending: isPendingCreateToken } = useMutation({
+        mutationFn: GENERATE_BKASH_TOKEN,
+        onSuccess: (data) => {
+            if (data?.token) {
+                createPayment({ token: data.token, scoutId, amount: fee })
+            }
+        },
+        onError: () => {
+            toast.error("Something went wrong")
+        }
+    })
+
     const { mutate: createPayment, isPending: isPendingCreatePayment } = useMutation({
-        mutationFn: PAY_FOR_REGISTRATION,
+        mutationFn: CREATE_PAYMENT_FOR_REGISTER,
         onSuccess: (data) => {
             if (data?.url) {
                 window.location.replace(data?.url)
@@ -98,9 +110,7 @@ export const PaymentForm = ({ scoutId }: PaymentFormProps) => {
     })
 
     const handlePay = () => {
-        if (scout?.id) {
-            createPayment({scoutId:scout.id, amount:fee.toString()})
-        }
+        createToken()
     }
 
     return (
@@ -118,7 +128,7 @@ export const PaymentForm = ({ scoutId }: PaymentFormProps) => {
                 fee === 0 ? (
                     <Button disabled={isPaying} onClick={() => confirmPayment(scoutId)}>Confirm Payment</Button>
                 ) : (
-                    <Button onClick={handlePay} disabled={isPendingCreatePayment}>Pay Now</Button>
+                    <Button onClick={handlePay} disabled={isPendingCreateToken || isPendingCreatePayment}>Pay Now</Button>
                 )
             }
         </div>

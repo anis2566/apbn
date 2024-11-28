@@ -1,38 +1,41 @@
+import { NextRequest } from "next/server";
+
+import axios from "axios";
 import { db } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { redirect } from "next/navigation";
 
-export async function POST(request: Request) {
-  try {
-    // Get the URL from the request
-    const url = new URL(request.url);
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const paymentID = searchParams.get("paymentID");
+  const token = searchParams.get("token");
+  const scoutId = searchParams.get("scoutId");
 
-    // Extract query parameters
-    const queryParams = Object.fromEntries(url.searchParams.entries());
+  if (!scoutId) redirect("/");
 
-    // Parse the POST body (URL-encoded data)
-    const data = await request.text();
-    const params = new URLSearchParams(data);
-    const paymentData = Object.fromEntries(params.entries());
-
-    // Construct the base URL dynamically
-    const baseUrl = `${url.protocol}//${url.host}`;
-
-    if (paymentData.pay_status === "Successful") {
-      if (queryParams.id) {
-        await db.scout.update({
-          where: {
-            id: queryParams.id,
-          },
-          data: {
-            isPaid: true,
-          },
-        });
-      }
-      return NextResponse.redirect(`${baseUrl}/payment/success?callback=/scout`, 303); // Use 303 status for GET request
-    } else {
-      return NextResponse.redirect(`${baseUrl}/payment/fail`, 303); // Use 303 status for GET request
+  const res = await axios.post(
+    process.env.NEXT_PUBLIC_PGW_BKASH_EXECUTE_PAYMENT_URL!,
+    { paymentID },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        authorization: token,
+        "x-app-key": process.env.NEXT_PUBLIC_PGW_BKASH_API_KEY,
+      },
     }
-  } catch (error) {
-    console.log(error);
+  );
+
+  if (res.data && res.data?.statusCode === "0000") {
+    await db.scout.update({
+      where: {
+        id: scoutId,
+      },
+      data: {
+        isPaid: true,
+      },
+    });
+    redirect("/payment/success");
+  } else {
+    redirect("/payment/fail");
   }
 }

@@ -8,19 +8,32 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-import { CREATE_PAYMENT_FOR_EVENT } from "@/services/payment.service";
+import { CREATE_PAYMENT_FOR_EVENT, GENERATE_BKASH_TOKEN } from "@/services/payment.service";
 import { EVENT_JOIN } from "../action";
 
 interface EventAppplyFormProps {
     event: Event;
     scoutId: string;
+    appId: string;
 }
 
-export const EventAppplyForm = ({ event, scoutId }: EventAppplyFormProps) => {
+export const EventAppplyForm = ({ event, scoutId, appId }: EventAppplyFormProps) => {
 
     const router = useRouter()
 
-    const { mutate: createPayment, isPending } = useMutation({
+    const { mutate: createToken, isPending: isPendingCreateToken } = useMutation({
+        mutationFn: GENERATE_BKASH_TOKEN,
+        onSuccess: (data) => {
+            if (data?.token) {
+                createPayment({ token: data.token, appId, scoutId, amount: event.entryFee })
+            }
+        },
+        onError: () => {
+            toast.error("Something went wrong")
+        }
+    })
+
+    const { mutate: createPayment, isPending: isPendingCreatePayment } = useMutation({
         mutationFn: CREATE_PAYMENT_FOR_EVENT,
         onSuccess: (data) => {
             if (data?.url) {
@@ -50,7 +63,7 @@ export const EventAppplyForm = ({ event, scoutId }: EventAppplyFormProps) => {
     })
 
     const handlePay = () => {
-        createPayment({ scoutId, eventId: event.id, amount: event.entryFee.toString() })
+        createToken()
     }
 
     const handleJoin = () => {
@@ -69,7 +82,7 @@ export const EventAppplyForm = ({ event, scoutId }: EventAppplyFormProps) => {
                             <div className="space-y-2">
                                 <p>You need to pay the entry fee to join.</p>
                                 <p className="text-xl font-semibold">Amount: <span className="font-bold text-primary">&#2547;{event.entryFee}</span></p>
-                                <Button className="w-full" onClick={handlePay} disabled={isPending}>Pay Now</Button>
+                                <Button className="w-full" onClick={handlePay} disabled={isPendingCreateToken || isPendingCreatePayment}>Pay Now</Button>
                             </div>
                         ) : (
                             <div className="space-y-2">

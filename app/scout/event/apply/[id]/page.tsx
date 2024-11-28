@@ -65,7 +65,7 @@ const EventApply = async ({ params: { id } }: Props) => {
                 </BreadcrumbList>
             </Breadcrumb>
 
-            <EventAppplyForm event={event} scoutId={scout.id} />
+            <EventAppplyForm event={event} scoutId={scout.id} appId={id} />
 
         </ContentLayout>
     )

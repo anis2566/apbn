@@ -1,24 +1,14 @@
-"use client"
+import React from 'react'
+import { Suspense } from 'react'
 
-import { useSearchParams } from "next/navigation"
-import { Suspense, useEffect } from "react"
+import { ReidrectPage } from './_components/redirect-page'
 
-const ReidrectPage = () => {
-    const searchParams = useSearchParams()
-    const redirectUrl = searchParams.get("redirectUrl")
-
-
-    useEffect(() => {
-        if (redirectUrl) {
-            window.location.href = redirectUrl
-        }
-    }, [redirectUrl])
-
+const Page = () => {
     return (
         <Suspense fallback="Loading...">
-            Redirecting...
+            <ReidrectPage />
         </Suspense>
     )
 }
 
-export default ReidrectPage
+export default Page

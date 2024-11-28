@@ -74,7 +74,7 @@ const ScoutPdf = ({ scout }: Props) => {
                     <View style={{ flexDirection: "column", alignItems: "center" }}>
                         <Text>Armed Police Battalion Scout Group</Text>
                         <View style={{ backgroundColor: "black", color: "white", padding: "5px 3px", width: "150px", margin: "5px auto", fontSize: "16px" }}>
-                            <Text style={{ textAlign: 'center' }}>Admission Form</Text>
+                            <Text style={{ textAlign: 'center' }}>Application Form</Text>
                         </View>
                         <Text style={{ fontSize: "14px", }}>A.P.S: {scout.apsId ? scout.apsId : "N/A"}</Text>
                     </View>

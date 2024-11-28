@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Trash2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { useMutation, useQuery } from "@tanstack/react-query"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -46,6 +47,8 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
     const [section, setSection] = useState<Section>()
     const [courseStart, setCourseStart] = useState<Date>(new Date())
     const [courseEnd, setCourseEnd] = useState<Date>(new Date())
+
+    const router = useRouter()
 
     useEffect(() => {
         const fetchDivisions = async () => {
@@ -90,7 +93,9 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
             nameBangla: scout.nameBangla || "",
             apsId: scout.apsId || "",
             fatherName: scout.fatherName || "",
+            fatherNameBangla: scout.fatherNameBangla || "",
             motherName: scout.motherName || "",
+            motherNameBangla: scout.motherNameBangla || "",
             dob: scout.dob || new Date(),
             gender: scout.gender || "",
             phone: scout.phone || "",
@@ -132,6 +137,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
             toast.success(data.success, {
                 id: "update-scout"
             });
+            router.push("/dashboard/scout")
         },
         onError: (error) => {
             toast.error(error.message, {
@@ -202,10 +208,39 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                             />
                             <FormField
                                 control={form.control}
+                                name="fatherNameBangla"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Father Name Bangla</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} disabled={isPending} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormField
+                                control={form.control}
                                 name="motherName"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Mother Name</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} disabled={isPending} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="motherNameBangla"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Mother Name Bangla</FormLabel>
                                         <FormControl>
                                             <Input {...field} disabled={isPending} />
                                         </FormControl>

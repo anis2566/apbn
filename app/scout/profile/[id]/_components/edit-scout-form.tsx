@@ -82,7 +82,9 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
             nameBangla: scout.nameBangla || "",
             apsId: scout.apsId || "",
             fatherName: scout.fatherName || "",
+            fatherNameBangla: scout.fatherNameBangla || "",
             motherName: scout.motherName || "",
+            motherNameBangla: scout.motherNameBangla || "",
             dob: scout.dob || new Date(),
             gender: scout.gender || "",
             phone: scout.phone || "",
@@ -135,7 +137,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
         toast.loading("Scout updating...", {
             id: "update-scout"
         })
-        updateScout({id: scout.id, values:values})
+        updateScout({ id: scout.id, values: values })
     }
 
     return (
@@ -191,12 +193,43 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     </FormItem>
                                 )}
                             />
+
+                            <FormField
+                                control={form.control}
+                                name="fatherNameBangla"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Father Name Bangla</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} disabled={true} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField
                                 control={form.control}
                                 name="motherName"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Mother Name</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} disabled={true} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="motherNameBangla"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Mother Name Bangla</FormLabel>
                                         <FormControl>
                                             <Input {...field} disabled={true} />
                                         </FormControl>

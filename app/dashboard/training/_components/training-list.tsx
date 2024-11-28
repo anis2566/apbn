@@ -25,12 +25,18 @@ import { Button } from "@/components/ui/button"
 import { Empty } from "@/components/empty"
 import { useTraining } from "@/hooks/use-training"
 
+interface TrainingWithApplications extends Training {
+    applications: {
+        id: string
+    }[]
+}
+
 interface Props {
-    trainings: Training[]
+    trainings: TrainingWithApplications[]
 }
 
 export const TrainingList = ({ trainings }: Props) => {
-    const {onOpen} = useTraining()
+    const { onOpen } = useTraining()
 
     return (
         <>
@@ -60,7 +66,7 @@ export const TrainingList = ({ trainings }: Props) => {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="py-3">{training.limit}</TableCell>
-                                        <TableCell className="py-3">20</TableCell>
+                                        <TableCell className="py-3">{training.applications.length}</TableCell>
                                         <TableCell className="py-3">
                                             {format(training.trainingStart, "dd MMM yyyy")} -
                                             {" "} {format(training.trainingEnd, "dd MMM yyyy")}

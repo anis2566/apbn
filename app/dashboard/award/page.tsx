@@ -39,6 +39,13 @@ const Awards = async ({ searchParams }: Props) => {
         where: {
             ...(search && { title: { contains: search, mode: "insensitive" } })
         },
+        include: {
+            awards: {
+                select: {
+                    id: true
+                }
+            }
+        },
         orderBy: {
             createdAt: "desc"
         },

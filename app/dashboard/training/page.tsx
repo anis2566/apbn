@@ -39,6 +39,13 @@ const Trainings = async ({ searchParams }: Props) => {
         where: {
             ...(search && { title: { contains: search, mode: "insensitive" } })
         },
+        include: {
+            applications: {
+                select: {
+                    id: true
+                }
+            }
+        },
         orderBy: {
             createdAt: "desc"
         },

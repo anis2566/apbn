@@ -24,8 +24,14 @@ import { Empty } from "@/components/empty"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAward } from "@/hooks/use-award"
 
+interface AwardWithAwards extends Award {
+    awards: {
+        id: string
+    }[]
+}
+
 interface Props {
-    awards: Award[]
+    awards: AwardWithAwards[]
 }
 
 export const AwardList = ({ awards }: Props) => {
@@ -42,7 +48,7 @@ export const AwardList = ({ awards }: Props) => {
                             <TableRow>
                                 <TableHead>Image</TableHead>
                                 <TableHead>Title</TableHead>
-                                <TableHead>Participants</TableHead>
+                                <TableHead>Achieved</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -57,7 +63,7 @@ export const AwardList = ({ awards }: Props) => {
                                             </Avatar>
                                         </TableCell>
                                         <TableCell className="py-3">{award.title}</TableCell>
-                                        <TableCell className="py-3">20</TableCell>
+                                        <TableCell className="py-3">{award.awards.length}</TableCell>
                                         <TableCell className="py-3">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>

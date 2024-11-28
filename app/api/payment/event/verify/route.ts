@@ -39,6 +39,6 @@ export async function GET(req: NextRequest) {
     });
     redirect("/payment/success?callback=/scout/event");
   } else {
-    redirect("/payment/failed");
+    redirect(`/payment/fail?redirectUrl=/scout/event`);
   }
 }

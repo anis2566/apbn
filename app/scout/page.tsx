@@ -1,7 +1,9 @@
 import { format } from "date-fns"
-import { Calendar, Download, Medal } from "lucide-react"
+import { Calendar, Download, GitCompareArrows, Medal } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { AppStatus, Status } from "@prisma/client"
+import { Metadata } from "next"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -11,8 +13,7 @@ import { cn } from "@/lib/utils"
 import { GET_SCOUT } from "@/services/user.service"
 import { db } from "@/lib/prisma"
 import { ContentLayout } from "./_components/content-layout"
-import { Status } from "@prisma/client"
-import { Metadata } from "next"
+
 
 export const metadata: Metadata = {
   title: "APBn Scouts | Dashboard",
@@ -39,6 +40,17 @@ const ScoutDashboard = async () => {
     orderBy: {
       createdAt: "desc"
     }
+  })
+
+  const trainings = await db.training.findMany({
+    where: {
+      applications: {
+        some: {
+          scoutId: scout.id,
+          status: AppStatus.Approved
+        }
+      }
+    },
   })
 
   return (
@@ -107,7 +119,7 @@ const ScoutDashboard = async () => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle>Awards</CardTitle>
+              <CardTitle>Awards & Training</CardTitle>
               <Medal className="w-5 h-5 text-muted-foreground" />
             </CardHeader>
             <CardContent className="space-y-8">
@@ -125,6 +137,25 @@ const ScoutDashboard = async () => {
 
                       <h1 className="text-lg font-semibold text-primary">{item.award.title}</h1>
                       <p className="text-muted-foreground">{format(item.createdAt, "dd MMM yyyy")}</p>
+                    </div>
+                  </div>
+                ))
+              }
+
+              {
+                trainings.length < 1 ? (
+                  <div className="min-h-[20vh] flex items-center justify-center">
+                    <p className="italic text-muted-foreground">No Training Yet.</p>
+                  </div>
+                ) : trainings.map((item) => (
+                  <div className="flex gap-x-4" key={item.id}>
+                    <div className="bg-green-800 flex items-center justify-center w-16 h-16 rounded-full flex-shrink-0">
+                      <GitCompareArrows className="text-white w-10 h-10" />
+                    </div>
+                    <div>
+
+                      <h1 className="text-lg font-semibold text-primary">{item.title}</h1>
+                      <p className="text-muted-foreground">{format(item.trainingStart, "dd MMM yyyy")}</p>
                     </div>
                   </div>
                 ))

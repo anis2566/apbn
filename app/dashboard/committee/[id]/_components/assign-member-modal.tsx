@@ -37,6 +37,7 @@ import { CommitteeMember } from "../schema"
 import { useCommitteeMember } from "@/hooks/use-committee-member"
 import { UploadButton } from "@/lib/uploadthing"
 import { ADD_MEMBER } from "../action"
+import { formatString } from "@/lib/utils"
 
 export const AssignMemberModal = () => {
     const { open, onClose, id } = useCommitteeMember()
@@ -110,7 +111,7 @@ export const AssignMemberModal = () => {
                                         <SelectContent>
                                             {Object.values(Designation).map((designation) => (
                                                 <SelectItem key={designation} value={designation}>
-                                                    {designation}
+                                                    {formatString(designation)}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

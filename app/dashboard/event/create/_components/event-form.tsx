@@ -192,8 +192,8 @@ export const EventForm = () => {
                 <div className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Event Time</CardTitle>
-                            <CardDescription>Define event time.</CardDescription>
+                            <CardTitle>Event Date</CardTitle>
+                            <CardDescription>Define event date.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <FormField
@@ -282,8 +282,8 @@ export const EventForm = () => {
                     </Card>
                     <Card>
                         <CardHeader>
-                            <CardTitle>Registration Time</CardTitle>
-                            <CardDescription>Define registration time.</CardDescription>
+                            <CardTitle>Registration Date</CardTitle>
+                            <CardDescription>Define registration date.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <FormField

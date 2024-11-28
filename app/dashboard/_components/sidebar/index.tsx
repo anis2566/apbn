@@ -47,7 +47,7 @@ export function Sidebar({ role }: SidebarProps) {
                   : "translate-x-0 opacity-100"
               )}
             >
-              APBN Scouts
+              APBn Scouts
             </h1>
           </Link>
         </Button>

@@ -19,11 +19,7 @@ export const UPDATE_MIGRATION_STATUS = async ({
       id: migrationId,
     },
     include: {
-      unit: {
-        include: {
-          leader: true,
-        },
-      },
+      unit: true,
       scout: {
         include: {
           unit: true,
@@ -72,13 +68,18 @@ export const UPDATE_MIGRATION_STATUS = async ({
     },
   });
 
-  if (migration.unit?.leader?.userId) {
+  if (migration.unit?.leaderId) {
+    const leader = await db.scout.findUnique({
+      where: {
+        id: migration.unit.leaderId,
+      },
+    });
     await sendNotification({
       trigger: "migration-response-leader",
       actor: {
         id: user.id,
       },
-      recipients: [migration.unit.leader.userId || ""],
+      recipients: [leader?.userId || ""],
       data: {
         name: migration?.scout?.name,
         status,

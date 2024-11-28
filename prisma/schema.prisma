@@ -153,8 +153,7 @@ model VerificationToken {
   limit Int
   section Section
 
-  leaderId String? @unique @db.ObjectId
-  leader Scout? @relation(name: "UnitLeader", fields: [leaderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  leaderId String? @db.ObjectId
 
   scouts Scout[]
   migrations Migration[]
@@ -217,8 +216,6 @@ model Scout {
 
   unitId String? @db.ObjectId
   unit Unit? @relation(fields: [unitId], references: [id])
-
-  leadingUnit Unit? @relation(name: "UnitLeader")
 
   migrations Migration[]
   bans Ban[]

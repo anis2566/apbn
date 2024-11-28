@@ -45,12 +45,19 @@ const Unit = async ({ params: { id }, searchParams }: Props) => {
         where: {
             id: id
         },
-        include: {
-            leader: true,
-        }
     })
 
     if (!unit) redirect("/dashboard")
+
+    let leader = null
+
+    if (unit.leaderId) {
+        leader = await db.scout.findUnique({
+            where: {
+                id: unit.leaderId,
+            },
+        })
+    }
 
     const { search, page, perPage } = searchParams
     const itemsPerPage = parseInt(perPage) || 5;
@@ -121,7 +128,7 @@ const Unit = async ({ params: { id }, searchParams }: Props) => {
                                 alt="Avatar"
                                 className="rounded-full"
                                 height="100"
-                                src={unit.leader?.imageUrl || ""}
+                                src={leader?.imageUrl || ""}
                                 style={{
                                     aspectRatio: "100/100",
                                     objectFit: "cover",
@@ -129,13 +136,13 @@ const Unit = async ({ params: { id }, searchParams }: Props) => {
                                 width="100"
                             />
                             <div className="space-y-1">
-                                <div className="font-semibold text-xl text-primary">{unit.leader?.name}</div>
-                                <p>{unit.leader?.phone}</p>
-                                <p>{unit.leader?.apsId}</p>
+                                <div className="font-semibold text-xl text-primary">{leader?.name}</div>
+                                <p>{leader?.phone}</p>
+                                <p>{leader?.apsId}</p>
                             </div>
                         </div>
 
-                        {!unit?.leader?.id && (
+                        {!unit?.leaderId && (
                             <p className="text-muted-foreground text-center text-lx italic">No Unit Leader</p>
                         )}
                     </CardContent>

@@ -19,11 +19,7 @@ export const UPDATE_BAN_STATUS = async ({ banId, status }: UpdateStatus) => {
     include: {
       scout: {
         include: {
-          unit: {
-            include: {
-              leader: true,
-            },
-          },
+          unit: true,
         },
       },
     },
@@ -63,13 +59,19 @@ export const UPDATE_BAN_STATUS = async ({ banId, status }: UpdateStatus) => {
 
   const { user } = await GET_USER();
 
-  if (ban.scout?.unit?.leader?.userId) {
+  if (ban.scout?.unit?.leaderId) {
+    const leader = await db.scout.findUnique({
+      where: {
+        id: ban.scout?.unit?.leaderId,
+      },
+    });
+
     await sendNotification({
       trigger: "ban-response",
       actor: {
         id: user.id,
       },
-      recipients: [ban.scout.unit.leader.userId],
+      recipients: [leader?.userId || ""],
       data: {
         name: ban.scout?.name,
         status,

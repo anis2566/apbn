@@ -106,19 +106,26 @@ export const REMOVE_LEADER = async (unitId: string) => {
     where: {
       id: unitId,
     },
-    include: {
-      leader: true,
+  });
+
+  if (!unit || !unit.leaderId) {
+    throw new Error("Unit not found");
+  }
+
+  const leader = await db.scout.findUnique({
+    where: {
+      id: unit.leaderId,
     },
   });
 
-  if (!unit || !unit.leader) {
-    throw new Error("Unit not found");
+  if (!leader) {
+    throw new Error("Leader not found");
   }
 
   await db.$transaction(async (ctx) => {
     await ctx.scout.update({
       where: {
-        id: unit.leader?.id,
+        id: leader.id,
       },
       data: {
         role: ["scout"],
@@ -127,7 +134,7 @@ export const REMOVE_LEADER = async (unitId: string) => {
 
     await ctx.user.update({
       where: {
-        id: unit.leader?.userId,
+        id: leader.userId,
       },
       data: {
         role: Role.Scout,
@@ -151,7 +158,7 @@ export const REMOVE_LEADER = async (unitId: string) => {
     actor: {
       id: user.id,
     },
-    recipients: [unit.leader.userId],
+    recipients: [leader.userId],
     data: {
       unit: unit.name,
     },
@@ -236,8 +243,8 @@ export const MIGRATE_SCOUT = async ({ scoutId, unitId }: MigrateScout) => {
     throw new Error("Unit not found");
   }
 
-  if(scout.unitId === unitId) {
-    throw new Error("Migration can not be done on same unit")
+  if (scout.unitId === unitId) {
+    throw new Error("Migration can not be done on same unit");
   }
 
   await db.scout.update({

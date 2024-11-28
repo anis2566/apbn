@@ -29,6 +29,7 @@ export const DeleteUserModal = () => {
             });
         },
         onError: (error) => {
+            console.log(error)
             toast.error(error.message, {
                 id: "delete-user"
             });

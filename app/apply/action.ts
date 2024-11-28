@@ -55,11 +55,6 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
           id: true,
         },
       },
-      leader: {
-        include: {
-          user: true,
-        },
-      },
     },
   });
 
@@ -112,13 +107,19 @@ export const CREATE_SCOUT = async (values: ScoutSchemaType) => {
   });
 
   if (unit.leaderId) {
+    const leader = await db.scout.findUnique({
+      where: {
+        id: unit.leaderId,
+      },
+    });
+
     await sendNotification({
       trigger: "scout-request-leader",
       actor: {
         id: user.id,
         name: newScout.name,
       },
-      recipients: [unit.leader?.userId || ""],
+      recipients: [leader?.userId || ""],
       data: {
         name: newScout.name,
         redirectUrl: `/scout/unit/request`,

@@ -40,7 +40,7 @@ const Unit = async ({ searchParams }: Props) => {
 
     const { scout } = await GET_SCOUT()
 
-    const unit = await db.unit.findUnique({
+    const unit = await db.unit.findFirst({
         where: {
             leaderId: scout.id
         },

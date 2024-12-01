@@ -78,7 +78,7 @@ export const PaymentForm = ({ scoutId }: PaymentFormProps) => {
         mutationFn: GENERATE_BKASH_TOKEN,
         onSuccess: (data) => {
             if (data?.token) {
-                createPayment({ token: data.token, scoutId, amount: fee })
+                createPayment({ token: data.token, scoutId, amount: 51 })
             }
         },
         onError: () => {
@@ -115,15 +115,15 @@ export const PaymentForm = ({ scoutId }: PaymentFormProps) => {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-xl">Your payment amount is <span className="text-2xl font-bold text-primary">&#2547;{fee}</span></h1>
-            <Collapsible open={open}>
+            <h1 className="text-xl">Your payment amount is <span className="text-2xl font-bold text-primary">&#2547;{51}</span></h1>
+            {/* <Collapsible open={open}>
                 <CollapsibleContent>
                     <div className="flex items-center gap-x-2">
                         <Input type="text" placeholder="Appply Coupon Code" className="flex-1" onChange={(e) => setCoupon(e.target.value)} />
                         <Button disabled={!coupon || isPending} onClick={handleApply}>Apply</Button>
                     </div>
                 </CollapsibleContent>
-            </Collapsible>
+            </Collapsible> */}
             {
                 fee === 0 ? (
                     <Button disabled={isPaying} onClick={() => confirmPayment(scoutId)}>Confirm Payment</Button>

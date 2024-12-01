@@ -40,11 +40,7 @@ export const CREATE_PAYMENT_FOR_REGISTER = async ({
     {
       mode: "0011",
       payerReference: " ",
-      callbackURL: `${
-        process.env.NEXT_PUBLIC_NODE_ENV === "development"
-          ? "http://localhost:3000"
-          : "https://apbnscouts.org"
-      }/api/payment/verify?token=${token}&scoutId=${scoutId}`,
+      callbackURL: `https://apbnscouts.org/api/payment/verify?token=${token}&scoutId=${scoutId}`,
       amount: amount,
       currency: "BDT",
       intent: "sale",

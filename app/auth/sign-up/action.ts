@@ -25,6 +25,21 @@ export const SIGN_UP = async (values: SignInSchemaType) => {
     },
   });
 
+  if (user && !user.emailVerified) {
+    await axios.post(
+      `${
+        process.env.NODE_ENV === "production"
+          ? "https://scout-org.vercel.app/api/send-email"
+          : "http://localhost:3000/api/send-email"
+      }`,
+      {
+        email: user.email,
+        id: user.id,
+      }
+    );
+    redirect(`/auth/verify/${user.id}`);
+  }
+
   if (user) {
     throw new Error("User already exists");
   }
@@ -50,7 +65,7 @@ export const SIGN_UP = async (values: SignInSchemaType) => {
       username: data.name,
     });
 
-    return newUser; 
+    return newUser;
   });
 
   const { data: res } = await axios.post(

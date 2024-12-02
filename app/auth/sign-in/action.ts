@@ -67,7 +67,7 @@ export const SIGN_IN_USER = async ({ values, callback }: SignInUser) => {
         case "CredentialsSignin":
           throw new Error("Invalid credentials");
         case "CallbackRouteError":
-          throw new Error(cause?.err?.toString());
+          throw new Error("Invalid credentials");
         default:
           throw new Error("Something went wrong");
       }

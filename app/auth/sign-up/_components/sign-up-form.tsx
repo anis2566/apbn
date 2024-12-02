@@ -67,7 +67,7 @@ export const SignUpForm = () => {
                         <FormItem>
                             <FormLabel>Name</FormLabel>
                             <FormControl>
-                                <Input placeholder="Enter your email" {...field} type="text" disabled={isPending} />
+                                <Input placeholder="Enter your name" {...field} type="text" disabled={isPending} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

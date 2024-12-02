@@ -20,7 +20,7 @@ export const Navbar = () => {
             <div className="flex items-center gap-x-2">
                 <ModeToggle />
                 <Button asChild>
-                    <Link href="/scout">
+                    <Link href="/auth/sign-in">
                         Login
                     </Link>
                 </Button>

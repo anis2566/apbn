@@ -1,14 +1,13 @@
 "use client"
 
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { SocialLogin } from "./_components/social-login";
 import { Loader } from "@/components/loader";
-import { redirect, usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 interface Props {
     children: React.ReactNode;
@@ -17,13 +16,6 @@ interface Props {
 const AuthLayout = ({ children }: Props) => {
     const pathname = usePathname()
     const isNoLayout = pathname.split("/").includes("verify") || pathname.split("/").includes("forgot-password")
-    const { data: session } = useSession()
-
-    useEffect(() => {
-        if (session) {
-            redirect("/")
-        }
-    }, [session])
 
     return (
         <section className="container min-h-screen w-full flex items-center justify-center py-4">

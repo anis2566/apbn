@@ -27,7 +27,7 @@ import { UploadButton } from "@/lib/uploadthing"
 import { cn } from "@/lib/utils"
 import { GET_UNITS } from "@/app/apply/action"
 import { ScoutSchema } from "@/app/apply/schema"
-import { UPDATE_SCOUT } from "@/app/scout/edit/[id]/action"
+import { UPDATE_SCOUT } from "../action"
 
 type Division = {
     id: string;

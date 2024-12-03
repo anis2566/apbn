@@ -239,6 +239,10 @@
   
   export const ROLES_ADULT_CUB_ROLE = [
     {
+      label: "স্কাউট লিডার",
+      value: "scoutLeader",
+    },
+    {
       label: "গ্রুপ স্কাউট লিডার",
       value: "roverScoutLeader",
     },

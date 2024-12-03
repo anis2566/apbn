@@ -3,6 +3,7 @@
 import { db } from "@/lib/prisma";
 import { CommitteeSchema, CommitteeSchemaType } from "../../create/schema";
 import { revalidatePath } from "next/cache";
+import { IS_ADMIN } from "@/services/user.service";
 
 type UpdateCommittee = {
   id: string;
@@ -10,6 +11,12 @@ type UpdateCommittee = {
 };
 
 export const UPDATE_COMMITTEE = async ({ id, values }: UpdateCommittee) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const { data, success } = CommitteeSchema.safeParse(values);
 
   if (!success) {

@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/prisma";
 import { sendNotification } from "@/services/notification.service";
-import { GET_USER } from "@/services/user.service";
+import { GET_USER, IS_ADMIN } from "@/services/user.service";
 import { Role, Section, Status } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
@@ -32,6 +32,12 @@ type AssigLeader = {
   leaderId: string;
 };
 export const ASSIGN_LEADER = async ({ unitId, leaderId }: AssigLeader) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const unit = await db.unit.findUnique({
     where: {
       id: unitId,
@@ -102,6 +108,12 @@ export const ASSIGN_LEADER = async ({ unitId, leaderId }: AssigLeader) => {
 };
 
 export const REMOVE_LEADER = async (unitId: string) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const unit = await db.unit.findUnique({
     where: {
       id: unitId,
@@ -176,6 +188,12 @@ type RemoveScout = {
   unitId: string;
 };
 export const REMOVE_SCOUT = async ({ scoutId, unitId }: RemoveScout) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const scout = await db.scout.findUnique({
     where: {
       id: scoutId,
@@ -220,6 +238,12 @@ type MigrateScout = {
   unitId: string;
 };
 export const MIGRATE_SCOUT = async ({ scoutId, unitId }: MigrateScout) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const scout = await db.scout.findUnique({
     where: {
       id: scoutId,

@@ -5,13 +5,19 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/prisma";
 import { sendNotification } from "@/services/notification.service";
-import { GET_USER } from "@/services/user.service";
+import { GET_USER, IS_ADMIN } from "@/services/user.service";
 
 type UpdateStatus = {
   id: string;
   status: Status;
 };
 export const UPDATE_SCOUT_STATUS = async ({ id, status }: UpdateStatus) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const scout = await db.scout.findUnique({
     where: {
       id,
@@ -116,6 +122,12 @@ export const UPDATE_SCOUT_STATUS = async ({ id, status }: UpdateStatus) => {
 };
 
 export const DELETE_SCOUT = async (scoutId: string) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const scout = await db.scout.findUnique({
     where: {
       id: scoutId,

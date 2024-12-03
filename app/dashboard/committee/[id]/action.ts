@@ -3,13 +3,20 @@
 import { db } from "@/lib/prisma";
 import { CommitteeMember, CommitteeMemberType } from "./schema";
 import { revalidatePath } from "next/cache";
+import { IS_ADMIN } from "@/services/user.service";
 
 type AddMember = {
   committeeId: string;
-  values: CommitteeMemberType
-}
+  values: CommitteeMemberType;
+};
 
-export const ADD_MEMBER = async ({values, committeeId}: AddMember) => {
+export const ADD_MEMBER = async ({ values, committeeId }: AddMember) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const { data, success } = CommitteeMember.safeParse(values);
 
   if (!success) {
@@ -29,7 +36,7 @@ export const ADD_MEMBER = async ({values, committeeId}: AddMember) => {
   await db.committeeMember.create({
     data: {
       ...data,
-      committeeId
+      committeeId,
     },
   });
 
@@ -46,6 +53,12 @@ type UpdateMember = {
 };
 
 export const UPDATE_MEMBER = async ({ id, values }: UpdateMember) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const { data, success } = CommitteeMember.safeParse(values);
 
   if (!success) {
@@ -79,6 +92,12 @@ export const UPDATE_MEMBER = async ({ id, values }: UpdateMember) => {
 };
 
 export const DELETE_MEMBER = async (id: string) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const member = await db.committeeMember.findUnique({
     where: {
       id,

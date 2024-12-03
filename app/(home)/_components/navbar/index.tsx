@@ -10,6 +10,7 @@ import { NavDrawer } from "./drawer"
 import { Navs } from "./nav"
 import { useSession } from "next-auth/react"
 import { Loader2 } from "lucide-react"
+import { Search } from "./search"
 
 export const Navbar = () => {
     const { data: session, status } = useSession()
@@ -23,6 +24,7 @@ export const Navbar = () => {
                 <Logo />
             </div>
             <Navs />
+            <Search />
             <div className="flex items-center gap-x-2">
                 <ModeToggle />
                 {

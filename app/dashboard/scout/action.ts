@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/prisma";
 import { sendNotification } from "@/services/notification.service";
-import { GET_USER } from "@/services/user.service";
+import { GET_USER, IS_ADMIN } from "@/services/user.service";
 
 type CardStatus = {
   scoutId: string;
@@ -14,6 +14,12 @@ export const UPDATE_SCOUT_CARD_STATUS = async ({
   scoutId,
   status,
 }: CardStatus) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const scout = await db.scout.findUnique({
     where: {
       id: scoutId,
@@ -72,6 +78,12 @@ type AssignAward = {
 };
 
 export const ASSIGN_AWARD = async ({ scoutId, awardId }: AssignAward) => {
+  const isAdmin = await IS_ADMIN();
+
+  if (!isAdmin) {
+    throw new Error("Unauthorized");
+  }
+
   const isAwarded = await db.scoutAward.findUnique({
     where: {
       scoutId_awardId: {

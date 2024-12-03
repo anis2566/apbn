@@ -76,3 +76,24 @@ export const GET_SCOUT = async () => {
     scout,
   };
 };
+
+
+export const IS_ADMIN = async () => {
+  const session = await auth();
+
+  if (!session?.userId) {
+    redirect("/auth/sign-in");
+  }
+
+  const user = await db.user.findUnique({
+    where: {
+      id: session.userId,
+    },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user.role === Role.Admin;
+}

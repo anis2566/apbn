@@ -168,6 +168,7 @@ model Scout {
   name String
   nameBangla String
   apsId String?
+  bsId String?
   fatherName String
   fatherNameBangla String
   motherName String

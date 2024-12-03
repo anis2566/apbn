@@ -129,7 +129,7 @@ const ScoutPdf = ({ scout }: Props) => {
                     </View>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: "10px", marginTop: "10px" }}>
                         <Text style={{ fontSize: "14px", width: "150px" }}>02. Unit:</Text>
-                        <Text style={{ fontSize: "14px" }}>{scout?.unit?.name}</Text>
+                        <Text style={{ fontSize: "14px" }}>{scout?.preferedUnitName ? scout.preferedUnitName : scout?.unit?.name}</Text>
                     </View>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: "10px", marginTop: "10px" }}>
                         <Text style={{ fontSize: "14px", width: "150px" }}>03. Role:</Text>

@@ -92,6 +92,7 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
             name: scout.name || "",
             nameBangla: scout.nameBangla || "",
             apsId: scout.apsId || "",
+            bsId: scout.bsId || "",
             fatherName: scout.fatherName || "",
             fatherNameBangla: scout.fatherNameBangla || "",
             motherName: scout.motherName || "",
@@ -993,6 +994,22 @@ export const EditScoutForm = ({ scout }: EditScoutFormProps) => {
                                     )}
                                 />
                             </div>
+                        </div>
+
+                        <div>
+                            <FormField
+                                control={form.control}
+                                name="bsId"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>BS ID</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} disabled={isPending} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
 
                         <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-6 items-center", form.watch("memberType") === "adultLeader" ? "grid" : "hidden")}>

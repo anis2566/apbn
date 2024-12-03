@@ -49,7 +49,7 @@ const steps = [
     {
         id: 3,
         name: 'Scout Information',
-        fields: ["scoutType", "experience", "certificateNo", "courseDateSatrt", "courseDateEnd", "joinDate", "memberType", "section", "badge", "role", "scoutRegion", "scoutDistrict", "scoutUpazilla", "institute", "class", "roll", "organization", "designation", "preferedUnit", "apsId"],
+        fields: ["scoutType", "experience", "certificateNo", "courseDateSatrt", "courseDateEnd", "joinDate", "memberType", "section", "badge", "role", "scoutRegion", "scoutDistrict", "scoutUpazilla", "institute", "class", "roll", "organization", "designation", "preferedUnit", "apsId", "bsId"],
         Icon: Contact
     },
 ]
@@ -70,6 +70,7 @@ export const ApplyForm = () => {
     const [districts, setDistricts] = useState<Division[]>([])
     const [section, setSection] = useState<Section>(Section.Scout)
     const [hasAps, setHasAps] = useState<boolean>(false)
+    const [hasBs, setHasBs] = useState<boolean>(false)
 
     const router = useRouter()
 
@@ -116,6 +117,7 @@ export const ApplyForm = () => {
             name: "",
             nameBangla: "",
             apsId: "",
+            bsId: "",
             fatherName: "",
             fatherNameBangla: "",
             motherName: "",
@@ -1143,6 +1145,35 @@ export const ApplyForm = () => {
                                                         <Input {...field} onChange={(e) => {
                                                             field.onChange(e.target.value)
                                                             trigger("apsId")
+                                                        }} disabled={isPending} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </CollapsibleContent>
+                                </Collapsible>
+                            </div>
+                            <div>
+                                <div className="flex items-center space-x-2">
+                                    <Switch id="airplane-mode" onCheckedChange={(checked) => setHasBs(checked)} disabled={isPending} />
+                                    <Label htmlFor="airplane-mode">Do you have BS ID?</Label>
+                                </div>
+                                <Collapsible
+                                    open={hasBs}
+                                    className="w-full space-y-2"
+                                >
+                                    <CollapsibleContent className="space-y-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="bsId"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>BS ID</FormLabel>
+                                                    <FormControl>
+                                                        <Input {...field} onChange={(e) => {
+                                                            field.onChange(e.target.value)
+                                                            trigger("bsId")
                                                         }} disabled={isPending} />
                                                     </FormControl>
                                                     <FormMessage />

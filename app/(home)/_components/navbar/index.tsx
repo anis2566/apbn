@@ -11,6 +11,7 @@ import { Navs } from "./nav"
 import { useSession } from "next-auth/react"
 import { Loader2 } from "lucide-react"
 import { Search } from "./search"
+import { Role } from "@prisma/client"
 
 export const Navbar = () => {
     const { data: session, status } = useSession()
@@ -42,7 +43,7 @@ export const Navbar = () => {
                 {
                     status !== "loading" && session && (
                         <Button asChild>
-                            <Link href="/scout">Dashboard</Link>
+                            <Link href={session.role === Role.Admin ? "/dashboard" : "/scout"}>Dashboard</Link>
                         </Button>
                     )
                 }

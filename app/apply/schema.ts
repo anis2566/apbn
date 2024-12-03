@@ -8,6 +8,7 @@ export const ScoutSchema = z.object({
     .min(1, { message: "required" })
     .regex(/^[\u0980-\u09FF\s]+$/, { message: "must be in Bangla" }),
   apsId: z.string().optional(),
+  bsId: z.string().optional(),
   fatherName: z.string().min(1, { message: "required" }),
   fatherNameBangla: z
     .string()

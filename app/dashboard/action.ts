@@ -9,7 +9,11 @@ import { TodoSchema, TodoSchemaType } from "./schema";
 export const GET_DASHBOARD_DATA = async () => {
   const { scoutCount, unitCount, eventCount, commiteeCount, scouts, todos } =
     await Promise.all([
-      db.scout.count(),
+      db.scout.count({
+        where: {
+          status: Status.Active,
+        },
+      }),
       db.unit.count(),
       db.event.count(),
       db.committee.count(),

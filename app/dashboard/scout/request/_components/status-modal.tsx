@@ -14,13 +14,16 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible"
 
 import { useScoutStatus } from "@/hooks/use-scout"
 import { UPDATE_SCOUT_STATUS } from "../action"
+import { Textarea } from "@/components/ui/textarea"
 
 
 export const ScoutStatusModal = () => {
     const [status, setStatus] = useState<Status>(Status.Pending)
+    const [suspendReason, setSuspendReason] = useState<string>("")
 
     const { open, scoutId, onClose } = useScoutStatus()
 
@@ -43,7 +46,7 @@ export const ScoutStatusModal = () => {
         toast.loading("Status updating...", {
             id: "update-status"
         })
-        updateStatus({ id: scoutId, status })
+        updateStatus({ id: scoutId, status, suspendReason })
     }
 
     return (
@@ -65,6 +68,13 @@ export const ScoutStatusModal = () => {
                             }
                         </SelectContent>
                     </Select>
+
+                    <Collapsible open={status === Status.Suspended}>
+                        <CollapsibleContent>
+                            <Textarea value={suspendReason} onChange={(e) => setSuspendReason(e.target.value)} placeholder="Describe suspension reason" />
+                        </CollapsibleContent>
+                    </Collapsible>
+
                     <Button disabled={status === Status.Pending || isPending} onClick={handleUpdate}>Update</Button>
 
                 </div>

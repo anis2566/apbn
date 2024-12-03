@@ -10,8 +10,13 @@ import { GET_USER, IS_ADMIN } from "@/services/user.service";
 type UpdateStatus = {
   id: string;
   status: Status;
+  suspendReason?: string;
 };
-export const UPDATE_SCOUT_STATUS = async ({ id, status }: UpdateStatus) => {
+export const UPDATE_SCOUT_STATUS = async ({
+  id,
+  status,
+  suspendReason,
+}: UpdateStatus) => {
   const isAdmin = await IS_ADMIN();
 
   if (!isAdmin) {
@@ -75,6 +80,7 @@ export const UPDATE_SCOUT_STATUS = async ({ id, status }: UpdateStatus) => {
       data: {
         preferedUnitId: scout.unitId || null,
         preferedUnitName: scout.unit?.name || null,
+        suspendReason,
       },
     });
   }
@@ -94,6 +100,7 @@ export const UPDATE_SCOUT_STATUS = async ({ id, status }: UpdateStatus) => {
     },
     data: {
       status,
+      suspendReason,
     },
   });
 

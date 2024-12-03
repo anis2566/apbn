@@ -208,6 +208,9 @@ model Scout {
   isVerified Boolean @default(false)
   isPaid Boolean @default(false)
   allowCard Boolean @default(false)
+  suspendReason String?
+  cardSignatureUrl String?
+  cardSignatureAuthor String?
 
   preferedUnitId String?
   preferedUnitName String?

@@ -9,10 +9,14 @@ import { GET_USER, IS_ADMIN } from "@/services/user.service";
 type CardStatus = {
   scoutId: string;
   status: boolean;
+  signature: string;
+  signatureAuthor: string;
 };
 export const UPDATE_SCOUT_CARD_STATUS = async ({
   scoutId,
   status,
+  signature,
+  signatureAuthor,
 }: CardStatus) => {
   const isAdmin = await IS_ADMIN();
 
@@ -36,6 +40,8 @@ export const UPDATE_SCOUT_CARD_STATUS = async ({
     },
     data: {
       allowCard: status,
+      cardSignatureUrl: signature,
+      cardSignatureAuthor: signatureAuthor,
     },
   });
 
@@ -109,4 +115,14 @@ export const ASSIGN_AWARD = async ({ scoutId, awardId }: AssignAward) => {
   return {
     success: "Award assigned",
   };
+};
+
+export const GET_CARD_SIGNATURES = async () => {
+  const signatures = await db.signature.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return { signatures };
 };

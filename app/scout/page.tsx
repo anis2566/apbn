@@ -170,9 +170,15 @@ const ScoutDashboard = async () => {
             <CardContent className="space-y-6 mt-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Scout Card</h3>
-                <Button asChild>
-                  <Link href={`/scout/form/card/${scout.id}`} target="_blank">Download</Link>
-                </Button>
+                {
+                  scout.allowCard ? (
+                    <Button asChild>
+                      <Link href={`/scout/form/card/${scout.id}`} target="_blank">Download</Link>
+                    </Button>
+                  ) : (
+                    <Button variant="default" disabled>Download</Button>
+                  )
+                }
               </div>
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Scout Form</h3>

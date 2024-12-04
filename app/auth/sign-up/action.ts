@@ -25,20 +25,20 @@ export const SIGN_UP = async (values: SignInSchemaType) => {
     },
   });
 
-  if (user && !user.emailVerified) {
-    await axios.post(
-      `${
-        process.env.NODE_ENV === "production"
-          ? "https://scout-org.vercel.app/api/send-email"
-          : "http://localhost:3000/api/send-email"
-      }`,
-      {
-        email: user.email,
-        id: user.id,
-      }
-    );
-    redirect(`/auth/verify/${user.id}`);
-  }
+  // if (user && !user.emailVerified) {
+  //   await axios.post(
+  //     `${
+  //       process.env.NODE_ENV === "production"
+  //         ? "https://scout-org.vercel.app/api/send-email"
+  //         : "http://localhost:3000/api/send-email"
+  //     }`,
+  //     {
+  //       email: user.email,
+  //       id: user.id,
+  //     }
+  //   );
+  //   redirect(`/auth/verify/${user.id}`);
+  // }
 
   if (user) {
     throw new Error("User already exists");
@@ -59,31 +59,32 @@ export const SIGN_UP = async (values: SignInSchemaType) => {
       avatar: newUser.image,
     });
 
-    await streamServerClient.upsertUser({
-      id: newUser.id,
-      name: data.name,
-      username: data.name,
-    });
-
     return newUser;
   });
 
-  const { data: res } = await axios.post(
-    `${
-      process.env.NODE_ENV === "production"
-        ? "https://scout-org.vercel.app/api/send-email"
-        : "http://localhost:3000/api/send-email"
-    }`,
-    {
-      email: newUser.email,
-      id: newUser.id,
-    }
-  );
-  if (res?.success) {
-    redirect(`/auth/verify/${newUser.id}`);
+  if (newUser) {
+    redirect(`/auth/sign-in`);
   } else {
     throw new Error("Something went wrong! Try again!");
   }
+
+  // const { data: res } = await axios.post(
+  //   `${
+  //     process.env.NODE_ENV === "production"
+  //       ? "https://apbnscouts.org/api/send-email"
+  //       : "http://localhost:3000/api/send-email"
+  //   }`,
+  //   {
+  //     email: user.email,
+  //     id: user.id,
+  //   }
+  // );
+
+  // if (res?.success) {
+  //   redirect(`/auth/verify/${newUser.id}`);
+  // } else {
+  //   throw new Error("Something went wrong! Try again!");
+  // }
 };
 
 export const CREATE_STREAM_USER = async (user: User) => {

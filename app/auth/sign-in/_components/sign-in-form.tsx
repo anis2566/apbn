@@ -40,7 +40,7 @@ export const SignInForm = () => {
         onSuccess: (data) => {
             toast.success(data?.success, {
                 id: "sign-in-user"
-            }),
+            })
             router.push(`/redirect?redirectUrl=${callback ? callback : "/"}`)
         },
         onError: (error) => {
@@ -112,7 +112,7 @@ export const SignInForm = () => {
                 <div className="flex justify-between items-center flex-wrap">
                     <Button type="submit" disabled={isPending}>Submit</Button>
                     <Button variant="linkHover2" asChild className="text-primary" disabled={isPending}>
-                        <Link href="/forgot-password">
+                        <Link href="/auth/forgot-password">
                             Forgot Password?
                         </Link>
                     </Button>

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import axios from "axios";
 import { Knock } from "@knocklabs/node";
+import bcrypt from "bcryptjs";
 
 import { signIn } from "@/auth";
 import { SignInSchemaType } from "./schema";
@@ -18,43 +19,57 @@ type SignInUser = {
 };
 
 export const SIGN_IN_USER = async ({ values, callback }: SignInUser) => {
+  const user = await db.user.findUnique({
+    where: {
+      email: values.email,
+    },
+  });
+
+  if (!user) {
+    throw new Error("Invalid credentials");
+  }
+  const isPasswordValid = await bcrypt.compare(
+    values.password,
+    user.password || ""
+  );
+
+  if (!isPasswordValid) {
+    throw new Error("Invalid credentials");
+  }
+
   try {
-    const user = await db.user.findUnique({
-      where: {
-        email: values.email,
-      },
+    await signIn("credentials", {
+      email: values.email,
+      password: values.password,
+      redirect: false,
     });
 
-    if (!user) {
-      throw new Error("Invalid credentials");
-    }
+    // if (!user.emailVerified) {
+    //   const apiUrl =
+    //     process.env.NODE_ENV === "production"
+    //       ? "https://www.apbnscouts.org/api/send-email"
+    //       : "http://localhost:3000/api/send-email";
 
-    if (!user.emailVerified) {
-      const apiUrl =
-        process.env.NODE_ENV === "production"
-          ? "https://www.apbnscouts.org/api/send-email"
-          : "http://localhost:3000/api/send-email";
+    //   const { data } = await axios.post(apiUrl, {
+    //     email: user.email,
+    //     id: user.id,
+    //   });
 
-      const { data } = await axios.post(apiUrl, {
-        email: user.email,
-        id: user.id,
-      });
+    //   if (data?.success) {
+    //     redirect(`/auth/verify/${user.id}`);
+    //   } else {
+    //     throw new Error("Something went wrong! Try again!");
+    //   }
+    // } else {
+    //   await signIn("credentials", {
+    //     email: values.email,
+    //     password: hashedPassword,
+    //     redirect: false,
+    //   });
 
-      if (data?.success) {
-        redirect(`/auth/verify/${user.id}`);
-      } else {
-        throw new Error("Something went wrong! Try again!");
-      }
-    } else {
-      await signIn("credentials", {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-        // redirectTo: callback ? callback : "/",
-      });
+    // }
 
-      return { success: "Login successful", user };
-    }
+    return { success: "Login successful", user };
   } catch (error) {
     if (isRedirectError(error)) {
       throw error;
@@ -69,6 +84,7 @@ export const SIGN_IN_USER = async ({ values, callback }: SignInUser) => {
         case "CallbackRouteError":
           throw new Error("Invalid credentials");
         default:
+          console.log(error);
           throw new Error("Something went wrong");
       }
     }

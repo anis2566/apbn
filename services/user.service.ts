@@ -61,7 +61,7 @@ export const GET_SCOUT = async () => {
 
   const scout = await db.scout.findFirst({
     where: {
-      userId: session.userId
+      userId: session.userId,
     },
     include: {
       unit: true,
@@ -76,7 +76,6 @@ export const GET_SCOUT = async () => {
     scout,
   };
 };
-
 
 export const IS_ADMIN = async () => {
   const session = await auth();
@@ -96,4 +95,33 @@ export const IS_ADMIN = async () => {
   }
 
   return user.role === Role.Admin;
-}
+};
+
+export const GET_USER_ROLE_STATUS = async () => {
+  const session = await auth();
+
+  if (!session?.userId)
+    return {
+      role: null,
+      status: null,
+    };
+
+  const user = await db.user.findUnique({
+    where: {
+      id: session.userId,
+    },
+  });
+
+  if (!user) {
+    return {
+      role: null,
+      status: null,
+    };
+  }
+
+  return {
+    role: user.role,
+    status: user.status,
+    sessionRole: session?.role,
+  };
+};

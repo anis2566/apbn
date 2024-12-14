@@ -93,6 +93,11 @@ enum SignatureAuthor {
   Secretary
 }
 
+enum CampType {
+  Individual
+  Unit
+}
+
 model User {
   id               String           @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
@@ -267,7 +272,7 @@ model Event {
   registrationStart DateTime
   registrationEnd DateTime
 
-  applications EventApplication[]
+  applications CampApplication[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -279,9 +284,6 @@ model EventApplication {
 
   scoutId String? @db.ObjectId
   scout Scout? @relation(fields: [scoutId], references: [id])
-
-  eventId String? @db.ObjectId
-  event Event? @relation(fields: [eventId], references: [id])
 
   paymentStatus PaymentStatus @default(Unpaid)
   status AppStatus @default(Pending)
@@ -495,6 +497,42 @@ model Message {
   name String
   email String
   message String 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model CampApplication {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  type CampType
+  amount Int
+  unitName String?
+  phone String?
+
+  eventId String @db.ObjectId
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  members CampMember[]
+
+  status AppStatus @default(Pending)
+  paymentStatus PaymentStatus @default(Unpaid)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model CampMember {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  class String
+  role String
+  section Section
+  phone String
+
+  campApplicationId String @db.ObjectId
+  campApplication CampApplication @relation(fields: [campApplicationId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

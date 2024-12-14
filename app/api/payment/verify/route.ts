@@ -3,14 +3,15 @@ import { NextRequest } from "next/server";
 import axios from "axios";
 import { db } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import { AppStatus, PaymentStatus } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const paymentID = searchParams.get("paymentID");
   const token = searchParams.get("token");
-  const scoutId = searchParams.get("scoutId");
+  const appId = searchParams.get("appId");
 
-  if (!scoutId) redirect("/");
+  if (!appId) redirect("/");
 
   const res = await axios.post(
     process.env.NEXT_PUBLIC_PGW_BKASH_EXECUTE_PAYMENT_URL!,
@@ -26,12 +27,13 @@ export async function GET(req: NextRequest) {
   );
 
   if (res.data && res.data?.statusCode === "0000") {
-    await db.scout.update({
+    await db.campApplication.update({
       where: {
-        id: scoutId,
+        id: appId,
       },
       data: {
-        isPaid: true,
+        paymentStatus: PaymentStatus.Paid,
+        status: AppStatus.Approved,
       },
     });
     redirect("/payment/success");

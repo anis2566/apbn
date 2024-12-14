@@ -2,6 +2,8 @@ import { CalendarCheck, CalendarDays, CalendarFold, CalendarX, DollarSign, LogIn
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -32,13 +34,20 @@ const EventDetails = async ({ params: { id } }: Props) => {
         <div className="py-4 md:py-16 w-full max-w-screen-xl mx-auto">
             <Card>
                 <CardContent className="grid md:grid-cols-2 gap-6 pt-4">
-                    <div className="w-full aspect-video relative">
-                        <Image
-                            src={event.imageUrl}
-                            alt="Banner"
-                            fill
-                            className="rounded-contain object-cover"
-                        />
+                    <div className="space-y-4">
+                        <div className="w-full aspect-video relative">
+                            <Image
+                                src={event.imageUrl}
+                                alt="Banner"
+                                fill
+                                className="rounded-contain object-cover"
+                            />
+                        </div>
+                        <Button asChild>
+                            <Link href={`/event/${id}/apply`}>
+                                <Button>Apply Now</Button>
+                            </Link>
+                        </Button>
                     </div>
                     <div className="space-y-4">
                         <ListBox title="Title" icon={CalendarDays} description={event.title} />

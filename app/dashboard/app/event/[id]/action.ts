@@ -4,8 +4,6 @@ import { AppStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import { db } from "@/lib/prisma";
-import { sendNotification } from "@/services/notification.service";
-import { GET_USER } from "@/services/user.service";
 
 type UpdateStatus = {
   id: string;
@@ -16,13 +14,12 @@ export const UPDATE_APPLICATION_STATUS = async ({
   id,
   status,
 }: UpdateStatus) => {
-  const app = await db.eventApplication.findUnique({
+  const app = await db.campApplication.findUnique({
     where: {
       id,
     },
     include: {
       event: true,
-      scout: true,
     },
   });
 
@@ -30,25 +27,11 @@ export const UPDATE_APPLICATION_STATUS = async ({
     throw new Error("Application not found");
   }
 
-  await db.eventApplication.update({
+  await db.campApplication.update({
     where: {
       id,
     },
     data: {
-      status,
-    },
-  });
-
-  const { user } = await GET_USER();
-
-  await sendNotification({
-    trigger: "event-application-response",
-    actor: {
-      id: user.id,
-    },
-    recipients: [app.scout?.userId || ""],
-    data: {
-      event: app.event?.title,
       status,
     },
   });
@@ -61,17 +44,17 @@ export const UPDATE_APPLICATION_STATUS = async ({
 };
 
 export const DELETE_APPLICATION = async (id: string) => {
-  const app = await db.eventApplication.findUnique({
+  const app = await db.campApplication.findUnique({
     where: {
       id,
     },
   });
-  
+
   if (!app) {
     throw new Error("Application not found");
   }
 
-  await db.eventApplication.delete({
+  await db.campApplication.delete({
     where: {
       id,
     },

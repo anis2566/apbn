@@ -42,30 +42,6 @@ const EventApps = async ({ searchParams }: Props) => {
 
     if (!scout) redirect("/scout")
 
-    const applications = await db.eventApplication.findMany({
-        where: {
-            scoutId: scout.id,
-            ...(status && { status })
-        },
-        include: {
-            event: true
-        },
-        orderBy: {
-            createdAt: "desc"
-        },
-        skip: (currentPage - 1) * itemsPerPage,
-        take: itemsPerPage,
-    })
-
-    const totalApps = await db.eventApplication.count({
-        where: {
-            scoutId: scout.id,
-            ...(status && { status })
-        }
-    })
-
-    const totalPage = Math.ceil(totalApps / itemsPerPage)
-
     return (
         <ContentLayout title="Event">
             <Breadcrumb>
@@ -94,9 +70,7 @@ const EventApps = async ({ searchParams }: Props) => {
                     <CardDescription>A collection of event application.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <Header />
-                    <ApplicationList applications={applications} />
-                    <CustomPagination totalPage={totalPage} />
+                    <ApplicationList />
                 </CardContent>
             </Card>
         </ContentLayout>

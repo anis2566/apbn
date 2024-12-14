@@ -53,20 +53,22 @@ const EventDetails = async ({ params: { id }, searchParams }: Props) => {
     const itemsPerPage = parseInt(perPage) || 5;
     const currentPage = parseInt(page) || 1;
 
-    const participants = await db.eventApplication.findMany({
+    const participants = await db.campApplication.findMany({
         where: {
             eventId: event.id,
             ...(search && {
-                scout: {
-                    name: {
-                        contains: search, mode: "insensitive"
+                members: {
+                    some: {
+                        name: {
+                            contains: search, mode: "insensitive"
+                        }
                     }
                 }
             }),
             status: AppStatus.Approved
         },
         include: {
-            scout: true
+            members: true
         },
         orderBy: {
             createdAt: "desc"
@@ -75,13 +77,15 @@ const EventDetails = async ({ params: { id }, searchParams }: Props) => {
         take: itemsPerPage,
     })
 
-    const totalParticipant = await db.eventApplication.count({
+    const totalParticipant = await db.campApplication.count({
         where: {
             eventId: event.id,
             ...(search && {
-                scout: {
-                    name: {
-                        contains: search, mode: "insensitive"
+                members: {
+                    some: {
+                        name: {
+                            contains: search, mode: "insensitive"
+                        }
                     }
                 }
             }),

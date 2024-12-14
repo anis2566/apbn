@@ -10,24 +10,24 @@ type EventJoin = {
 };
 
 export const EVENT_JOIN = async ({ id, eventId }: EventJoin) => {
-  const app = await db.eventApplication.findFirst({
-    where: {
-      eventId,
-      scoutId: id,
-    },
-  });
+  // const app = await db.eventApplication.findFirst({
+  //   where: {
+  //     eventId,
+  //     scoutId: id,
+  //   },
+  // });
 
-  if (app) {
-    throw new Error("Already applied");
-  }
+  // if (app) {
+  //   throw new Error("Already applied");
+  // }
 
-  await db.eventApplication.create({
-    data: {
-      scoutId: id,
-      eventId,
-      paymentStatus: PaymentStatus.Paid,
-    },
-  });
+  // await db.eventApplication.create({
+  //   data: {
+  //     scoutId: id,
+  //     eventId,
+  //     paymentStatus: PaymentStatus.Paid,
+  //   },
+  // });
 
   return {
     success: "Application successful",

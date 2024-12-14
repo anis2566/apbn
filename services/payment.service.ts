@@ -67,13 +67,11 @@ type CreatePaymentEvent = {
   token: string;
   amount: number;
   appId: string;
-  scoutId: string;
 };
 export const CREATE_PAYMENT_FOR_EVENT = async ({
   token,
   appId,
   amount,
-  scoutId,
 }: CreatePaymentEvent) => {
   const res = await axios.post(
     process.env.NEXT_PUBLIC_PGW_BKASH_CREATE_PAYMENT_URL!,
@@ -84,7 +82,7 @@ export const CREATE_PAYMENT_FOR_EVENT = async ({
         process.env.NEXT_PUBLIC_NODE_ENV === "development"
           ? "http://localhost:3000"
           : "https://apbnscouts.org"
-      }/api/payment/event/verify?token=${token}&scoutId=${scoutId}&appId=${appId}`,
+      }/api/payment/event/verify?token=${token}&appId=${appId}`,
       amount: amount,
       currency: "BDT",
       intent: "sale",

@@ -1,6 +1,6 @@
 "use client"
 
-import { AppStatus, EventApplication, PaymentStatus, Scout } from "@prisma/client"
+import { AppStatus, CampApplication, CampMember, PaymentStatus,  } from "@prisma/client"
 import { EllipsisVertical, RefreshCcw, Trash2 } from "lucide-react"
 
 import {
@@ -25,8 +25,8 @@ import { Empty } from "@/components/empty"
 import { cn } from "@/lib/utils"
 import { useEventDelete, useEventStatus } from "@/hooks/use-event-app"
 
-interface EventApplicationWithScout extends EventApplication {
-    scout: Scout | null;
+interface EventApplicationWithScout extends CampApplication {
+    members: CampMember[]
 }
 
 interface Props {
@@ -46,9 +46,10 @@ export const EventApplicationList = ({ applications }: Props) => {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Image</TableHead>
+                                <TableHead>Type</TableHead>
                                 <TableHead>Name</TableHead>
-                                <TableHead>ِAPS ID</TableHead>
+                                <TableHead>Phone</TableHead>
+                                <TableHead>Members</TableHead>
                                 <TableHead>ِPayment Status</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Action</TableHead>
@@ -58,14 +59,10 @@ export const EventApplicationList = ({ applications }: Props) => {
                             {
                                 applications.map(application => (
                                     <TableRow key={application.id}>
-                                        <TableCell className="py-3">
-                                            <Avatar>
-                                                <AvatarImage src={application.scout?.imageUrl} />
-                                                <AvatarFallback>{application.scout?.name?.charAt(0)}</AvatarFallback>
-                                            </Avatar>
-                                        </TableCell>
-                                        <TableCell className="py-3">{application.scout?.name}</TableCell>
-                                        <TableCell className="py-3">{application.scout?.apsId}</TableCell>
+                                        <TableCell className="py-3">{application.type}</TableCell>
+                                        <TableCell className="py-3">{application.unitName ? application.unitName : application.members[0].name}</TableCell>
+                                        <TableCell className="py-3">{application.phone ? application.phone : application.members[0].phone}</TableCell>
+                                        <TableCell className="py-3">{application.members.length}</TableCell>
                                         <TableCell className="py-3">
                                             <Badge
                                                 className={cn(

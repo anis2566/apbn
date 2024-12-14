@@ -49,20 +49,22 @@ const EventApplications = async ({ params: { id }, searchParams }: Props) => {
 
     if (!event) redirect("/dashboard")
 
-    const applications = await db.eventApplication.findMany({
+    const applications = await db.campApplication.findMany({
         where: {
             eventId: id,
             ...(search && {
-                scout: {
-                    name: {
-                        contains: search, mode: "insensitive"
+                members: {
+                    some: {
+                        name: {
+                            contains: search, mode: "insensitive"
+                        }
                     }
                 }
             }),
             ...(status && { status }),
         },
         include: {
-            scout: true
+            members: true
         },
         orderBy: {
             createdAt: "desc"
@@ -71,13 +73,15 @@ const EventApplications = async ({ params: { id }, searchParams }: Props) => {
         take: itemsPerPage,
     })
 
-    const totalApplication = await db.eventApplication.count({
+    const totalApplication = await db.campApplication.count({
         where: {
             eventId: id,
             ...(search && {
-                scout: {
-                    name: {
-                        contains: search, mode: "insensitive"
+                members: {
+                    some: {
+                        name: {
+                            contains: search, mode: "insensitive"
+                        }
                     }
                 }
             }),

@@ -25,7 +25,7 @@ export const EventAppplyForm = ({ event, scoutId, appId }: EventAppplyFormProps)
         mutationFn: GENERATE_BKASH_TOKEN,
         onSuccess: (data) => {
             if (data?.token) {
-                createPayment({ token: data.token, appId, scoutId, amount: event.entryFee })
+                createPayment({ token: data.token, appId, amount: event.entryFee })
             }
         },
         onError: () => {
@@ -82,7 +82,7 @@ export const EventAppplyForm = ({ event, scoutId, appId }: EventAppplyFormProps)
                             <div className="space-y-2">
                                 <p>You need to pay the entry fee to join.</p>
                                 <p className="text-xl font-semibold">Amount: <span className="font-bold text-primary">&#2547;{event.entryFee}</span></p>
-                                <Button className="w-full" onClick={handlePay} disabled={isPendingCreateToken || isPendingCreatePayment}>Pay Now</Button>
+                                {/* <Button className="w-full" onClick={handlePay} disabled={isPendingCreateToken || isPendingCreatePayment}>Pay Now</Button> */}
                             </div>
                         ) : (
                             <div className="space-y-2">

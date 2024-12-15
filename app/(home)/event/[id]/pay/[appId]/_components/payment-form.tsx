@@ -28,7 +28,7 @@ export const PaymentForm = ({ app }: PaymentFormProps) => {
         mutationFn: GENERATE_BKASH_TOKEN,
         onSuccess: (data) => {
             if (data?.token) {
-                createPayment({ token: data.token, appId: app.id, amount: app.amount })
+                createPayment({ token: data.token, appId: app.id, amount: app.amount, eventId: app.eventId })
             }
         },
         onError: () => {

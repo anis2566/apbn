@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { AppStatus } from "@prisma/client";
 import { Metadata } from "next";
 
@@ -32,35 +31,17 @@ interface Props {
         status: AppStatus;
         page: string;
         perPage: string;
-        search: string;
     }
 }
 
 const EventApplications = async ({ params: { id }, searchParams }: Props) => {
-    const { status, search, page, perPage } = searchParams
+    const { status, page, perPage } = searchParams
     const itemsPerPage = parseInt(perPage) || 5;
     const currentPage = parseInt(page) || 1;
-
-    const event = await db.event.findUnique({
-        where: {
-            id: id
-        }
-    })
-
-    if (!event) redirect("/dashboard")
 
     const applications = await db.campApplication.findMany({
         where: {
             eventId: id,
-            ...(search && {
-                members: {
-                    some: {
-                        name: {
-                            contains: search, mode: "insensitive"
-                        }
-                    }
-                }
-            }),
             ...(status && { status }),
         },
         include: {
@@ -76,15 +57,6 @@ const EventApplications = async ({ params: { id }, searchParams }: Props) => {
     const totalApplication = await db.campApplication.count({
         where: {
             eventId: id,
-            ...(search && {
-                members: {
-                    some: {
-                        name: {
-                            contains: search, mode: "insensitive"
-                        }
-                    }
-                }
-            }),
             ...(status && { status }),
         }
     })
@@ -115,12 +87,12 @@ const EventApplications = async ({ params: { id }, searchParams }: Props) => {
 
             <Card className="mt-4">
                 <CardHeader>
-                    <CardTitle>{event.title}</CardTitle>
+                    <CardTitle>Application List</CardTitle>
                     <CardDescription>A collection of application.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Header />
-                    <EventApplicationList applications={applications} />
+                    <EventApplicationList applications={applications} eventId={id} />
                     <CustomPagination totalPage={totalPage} />
                 </CardContent>
             </Card>

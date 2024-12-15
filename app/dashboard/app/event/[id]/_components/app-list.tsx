@@ -1,7 +1,7 @@
 "use client"
 
 import { AppStatus, CampApplication, CampMember, PaymentStatus,  } from "@prisma/client"
-import { EllipsisVertical, RefreshCcw, Trash2 } from "lucide-react"
+import { EllipsisVertical, Eye, RefreshCcw, Trash2 } from "lucide-react"
 
 import {
     Table,
@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button"
 import { Empty } from "@/components/empty"
 import { cn } from "@/lib/utils"
 import { useEventDelete, useEventStatus } from "@/hooks/use-event-app"
+import Link from "next/link"
 
 interface EventApplicationWithScout extends CampApplication {
     members: CampMember[]
@@ -31,9 +32,10 @@ interface EventApplicationWithScout extends CampApplication {
 
 interface Props {
     applications: EventApplicationWithScout[]
+    eventId: string;
 }
 
-export const EventApplicationList = ({ applications }: Props) => {
+export const EventApplicationList = ({ applications, eventId }: Props) => {
     const { onOpen } = useEventStatus()
     const { onOpen: onOpenDelete } = useEventDelete()
 
@@ -47,8 +49,9 @@ export const EventApplicationList = ({ applications }: Props) => {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Type</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Phone</TableHead>
+                                <TableHead>Unit Name</TableHead>
+                                <TableHead>Leader Name</TableHead>
+                                <TableHead>Leader Phone</TableHead>
                                 <TableHead>Members</TableHead>
                                 <TableHead>ِPayment Status</TableHead>
                                 <TableHead>Status</TableHead>
@@ -60,8 +63,9 @@ export const EventApplicationList = ({ applications }: Props) => {
                                 applications.map(application => (
                                     <TableRow key={application.id}>
                                         <TableCell className="py-3">{application.type}</TableCell>
-                                        <TableCell className="py-3">{application.unitName ? application.unitName : application.members[0].name}</TableCell>
-                                        <TableCell className="py-3">{application.phone ? application.phone : application.members[0].phone}</TableCell>
+                                        <TableCell className="py-3">{application.unitName}</TableCell>
+                                        <TableCell className="py-3">{application.unitLeaderName}</TableCell>
+                                        <TableCell className="py-3">{application.unitPhone}</TableCell>
                                         <TableCell className="py-3">{application.members.length}</TableCell>
                                         <TableCell className="py-3">
                                             <Badge
@@ -94,6 +98,12 @@ export const EventApplicationList = ({ applications }: Props) => {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem  asChild>
+                                                        <Link href={`/dashboard/app/event/${eventId}/${application.id}`} className="flex items-center gap-x-3">
+                                                            <Eye className="w-5 h-5" />
+                                                            <p>View Members</p>
+                                                        </Link>
+                                                    </DropdownMenuItem>
                                                     <DropdownMenuItem className="flex items-center gap-x-3" onClick={() => onOpen(application.id)}>
                                                         <RefreshCcw className="w-5 h-5" />
                                                         <p>Change Status</p>

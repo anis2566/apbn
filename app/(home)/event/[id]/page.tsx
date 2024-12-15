@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 
 import { ListBox } from "@/components/list-box";
 import { db } from "@/lib/prisma";
+import { SearchModal } from "./_components/search-modal";
 
 export const metadata: Metadata = {
     title: "APBn Scouts | Event Details",
@@ -43,11 +44,16 @@ const EventDetails = async ({ params: { id } }: Props) => {
                                 className="rounded-contain object-cover"
                             />
                         </div>
-                        <Button asChild>
-                            <Link href={`/event/${id}/apply`}>
-                                <Button>Apply Now</Button>
-                            </Link>
-                        </Button>
+                        <div className="flex items-center gap-x-3">
+                            <Button asChild>
+                                <Link href={`/event/${id}/apply`}>
+                                    <Button>Apply Now</Button>
+                                </Link>
+                            </Button>
+                            <SearchModal eventId={id}>
+                                <Button variant="outline">Download Ticket</Button>
+                            </SearchModal>
+                        </div>
                     </div>
                     <div className="space-y-4">
                         <ListBox title="Title" icon={CalendarDays} description={event.title} />

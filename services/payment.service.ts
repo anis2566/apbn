@@ -67,11 +67,13 @@ type CreatePaymentEvent = {
   token: string;
   amount: number;
   appId: string;
+  eventId: string;
 };
 export const CREATE_PAYMENT_FOR_EVENT = async ({
   token,
   appId,
   amount,
+  eventId
 }: CreatePaymentEvent) => {
   const res = await axios.post(
     process.env.NEXT_PUBLIC_PGW_BKASH_CREATE_PAYMENT_URL!,

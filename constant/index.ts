@@ -270,4 +270,4 @@ export const ROLES_ADULT_ROVER_ROLE = [
   },
 ] as const;
 
-export const CLASS = ["3", "4", "5", "6", "7", "8", "9", "10"] as const;
+export const CLASS = ["3", "4", "5", "6", "7", "8", "9", "10", "HSC", "Honours", "Masters"] as const;

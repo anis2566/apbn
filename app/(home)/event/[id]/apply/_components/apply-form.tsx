@@ -14,7 +14,6 @@ import { CLASS } from "@/constant";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
-import { Switch } from "@/components/ui/switch";
 import { CampType, Section } from "@prisma/client";
 import { apply } from "../action";
 import { useMutation } from "@tanstack/react-query";
@@ -49,7 +48,8 @@ export const ApplyForm = ({ id }: ApplyFormProps) => {
             type: CampType.Individual,
             amount: 1470,
             unitName: "",
-            phone: "",
+            unitLeaderName: "",
+            unitPhone: "",
             eventId: id,
             members: [
                 {
@@ -71,8 +71,6 @@ export const ApplyForm = ({ id }: ApplyFormProps) => {
     const onSubmit = (values: CampSchemaType) => {
         mutate(values)
     }
-
-    console.log(form.getValues("members"))
 
     return (
         <Card>
@@ -135,10 +133,23 @@ export const ApplyForm = ({ id }: ApplyFormProps) => {
 
                                         <FormField
                                             control={form.control}
-                                            name="phone"
+                                            name="unitLeaderName"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Phone</FormLabel>
+                                                    <FormLabel>Unit Leader Name</FormLabel>
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+
+                                        <FormField
+                                            control={form.control}
+                                            name="unitPhone"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Unit leader Phone</FormLabel>
                                                     <FormControl>
                                                         <Input {...field} />
                                                     </FormControl>
@@ -147,158 +158,7 @@ export const ApplyForm = ({ id }: ApplyFormProps) => {
                                         />
                                     </CardContent>
                                 </Card>
-                            </CollapsibleContent>
-                        </Collapsible>
 
-                        <Collapsible open={form.watch("type") === CampType.Individual}>
-                            <CollapsibleContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name="unitName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Unit Name</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="members.0.name"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Name</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <div className="flex items-center justify-start gap-x-3">
-                                    <Collapsible open={open === false} onOpenChange={setOpen}>
-                                        <CollapsibleContent>
-                                            <FormField
-                                                control={form.control}
-                                                name="members.0.class"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>Class</FormLabel>
-                                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                            <FormControl>
-                                                                <SelectTrigger className="max-w-full min-w-[200px]">
-                                                                    <SelectValue placeholder="Select a class" />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent>
-                                                                {
-                                                                    CLASS.map((v) => (
-                                                                        <SelectItem value={v} key={v}>{v}</SelectItem>
-                                                                    ))
-                                                                }
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </CollapsibleContent>
-                                    </Collapsible>
-                                    <div>
-                                        <p className="text-sm text-gray-500">Can not find your class?</p>
-                                        <Switch
-                                            checked={open}
-                                            onCheckedChange={setOpen}
-                                        />
-                                        <Collapsible open={open} onOpenChange={setOpen}>
-                                            <CollapsibleContent>
-                                                <FormField
-                                                    control={form.control}
-                                                    name="members.0.role"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Class</FormLabel>
-                                                            <FormControl>
-                                                                <Input {...field} />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </CollapsibleContent>
-                                        </Collapsible>
-                                    </div>
-                                </div>
-
-                                <FormField
-                                    control={form.control}
-                                    name="members.0.section"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Section</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select a section" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {
-                                                        Object.keys(Section).map((v) => (
-                                                            <SelectItem value={v} key={v}>{v}</SelectItem>
-                                                        ))
-                                                    }
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="members.0.role"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Role</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select a role" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="participant">Participant</SelectItem>
-                                                    <SelectItem value="unitLeader">Unit Leader</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="members.0.phone"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Phone</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </CollapsibleContent>
-                        </Collapsible>
-
-                        <Collapsible open={form.watch("type") === CampType.Unit}>
-                            <CollapsibleContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {
                                     fields.map((field, index) => (
                                         <Card key={index}>
@@ -321,67 +181,34 @@ export const ApplyForm = ({ id }: ApplyFormProps) => {
                                                         </FormItem>
                                                     )}
                                                 />
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`members.${index}.class`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Class</FormLabel>
+                                                            <Select onValueChange={value => {
+                                                                field.onChange(value)
+                                                                form.trigger(`members.${index}.section`)
+                                                            }} defaultValue={field.value}>
+                                                                <FormControl>
+                                                                    <SelectTrigger className="max-w-full min-w-[200px]">
+                                                                        <SelectValue placeholder="Select a class" />
+                                                                    </SelectTrigger>
+                                                                </FormControl>
+                                                                <SelectContent>
+                                                                    {
+                                                                        CLASS.map((v) => (
+                                                                            <SelectItem value={v} key={v}>{v}</SelectItem>
+                                                                        ))
+                                                                    }
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
 
-                                                <div className="flex items-center justify-start gap-x-3">
-                                                    <Collapsible open={open === false} onOpenChange={setOpen}>
-                                                        <CollapsibleContent>
-                                                            <FormField
-                                                                control={form.control}
-                                                                name={`members.${index}.class`}
-                                                                render={({ field }) => (
-                                                                    <FormItem>
-                                                                        <FormLabel>Class</FormLabel>
-                                                                        <Select onValueChange={value => {
-                                                                            field.onChange(value)
-                                                                            form.trigger(`members.${index}.section`)
-                                                                        }} defaultValue={field.value}>
-                                                                            <FormControl>
-                                                                                <SelectTrigger className="max-w-full min-w-[200px]">
-                                                                                    <SelectValue placeholder="Select a class" />
-                                                                                </SelectTrigger>
-                                                                            </FormControl>
-                                                                            <SelectContent>
-                                                                                {
-                                                                                    CLASS.map((v) => (
-                                                                                        <SelectItem value={v} key={v}>{v}</SelectItem>
-                                                                                    ))
-                                                                                }
-                                                                            </SelectContent>
-                                                                        </Select>
-                                                                        <FormMessage />
-                                                                    </FormItem>
-                                                                )}
-                                                            />
-                                                        </CollapsibleContent>
-                                                    </Collapsible>
-                                                    <div>
-                                                        <p className="text-sm text-gray-500">Can not find your class?</p>
-                                                        <Switch
-                                                            checked={open}
-                                                            onCheckedChange={setOpen}
-                                                        />
-                                                        <Collapsible open={open} onOpenChange={setOpen}>
-                                                            <CollapsibleContent>
-                                                                <FormField
-                                                                    control={form.control}
-                                                                    name={`members.${index}.role`}
-                                                                    render={({ field }) => (
-                                                                        <FormItem>
-                                                                            <FormLabel>Class</FormLabel>
-                                                                            <FormControl>
-                                                                                <Input {...field} onChange={value => {
-                                                                                    field.onChange(value)
-                                                                                    form.trigger(`members.${index}.phone`)
-                                                                                }} />
-                                                                            </FormControl>
-                                                                            <FormMessage />
-                                                                        </FormItem>
-                                                                    )}
-                                                                />
-                                                            </CollapsibleContent>
-                                                        </Collapsible>
-                                                    </div>
-                                                </div>
 
                                                 <FormField
                                                     control={form.control}
@@ -462,6 +289,149 @@ export const ApplyForm = ({ id }: ApplyFormProps) => {
                             </CollapsibleContent>
                         </Collapsible>
 
+                        <Collapsible open={form.watch("type") === CampType.Individual}>
+                            <CollapsibleContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FormField
+                                    control={form.control}
+                                    name="unitName"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Unit Name</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled={isPending} />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="unitLeaderName"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Unit Leader Name</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled={isPending} />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="unitPhone"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Unit Leader Phone</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled={isPending} />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="members.0.name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Name</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled={isPending} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="members.0.class"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Class</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                <FormControl>
+                                                    <SelectTrigger className="max-w-full min-w-[200px]">
+                                                        <SelectValue placeholder="Select a class" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {
+                                                        CLASS.map((v) => (
+                                                            <SelectItem value={v} key={v}>{v}</SelectItem>
+                                                        ))
+                                                    }
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="members.0.section"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Section</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a section" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {
+                                                        Object.keys(Section).map((v) => (
+                                                            <SelectItem value={v} key={v}>{v}</SelectItem>
+                                                        ))
+                                                    }
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="members.0.role"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Role</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isPending}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a role" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="participant">Participant</SelectItem>
+                                                    <SelectItem value="unitLeader">Unit Leader</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="members.0.phone"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Phone</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} disabled={isPending} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </CollapsibleContent>
+                        </Collapsible>
+
                         <div className="flex items-center justify-end gap-x-3">
                             <Button type="button" className={cn(form.watch("type") !== CampType.Unit && "hidden")} onClick={() => append({
                                 name: "",
@@ -469,7 +439,7 @@ export const ApplyForm = ({ id }: ApplyFormProps) => {
                                 section: Section.Cub,
                                 role: "participant",
                                 phone: "",
-                            })} variant="outline">Add</Button>
+                            })} variant="outline" disabled={isPending}>Add</Button>
                             <Button type="submit" disabled={isPending}>Submit</Button>
                         </div>
                     </form>

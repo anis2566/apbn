@@ -26,6 +26,9 @@ export const apply = async (data: CampSchemaType) => {
     data: {
       type: data.type,
       amount: data.type === CampType.Individual ? 1470 : 10600,
+      unitLeaderName: data.unitLeaderName,
+      unitName: data.unitLeaderName,
+      unitPhone: data.unitPhone,
       eventId: data.eventId,
       members: {
         create: data.members.map((member) => ({

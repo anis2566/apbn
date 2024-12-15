@@ -507,8 +507,9 @@ model CampApplication {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   type CampType
   amount Int
-  unitName String?
-  phone String?
+  unitName String
+  unitLeaderName String
+  unitPhone String
 
   eventId String @db.ObjectId
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
@@ -532,7 +533,7 @@ model CampMember {
   phone String
 
   campApplicationId String @db.ObjectId
-  campApplication CampApplication @relation(fields: [campApplicationId], references: [id])
+  campApplication CampApplication @relation(fields: [campApplicationId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

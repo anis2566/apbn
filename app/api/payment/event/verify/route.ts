@@ -10,8 +10,9 @@ export async function GET(req: NextRequest) {
   const paymentID = searchParams.get("paymentID");
   const token = searchParams.get("token");
   const appId = searchParams.get("appId");
+  const eventId = searchParams.get("eventId");
 
-  if (!appId) redirect("/");
+  if (!appId || !eventId) redirect("/");
 
   const res = await axios.post(
     process.env.NEXT_PUBLIC_PGW_BKASH_EXECUTE_PAYMENT_URL!,
@@ -36,7 +37,8 @@ export async function GET(req: NextRequest) {
         status: AppStatus.Approved,
       },
     });
-    redirect("/payment/success?callback=/");
+    redirect(`/event/${eventId}/ticket/${appId}`);
+    // redirect("/payment/success?callback=/");
   } else {
     redirect(`/payment/fail?redirectUrl=/`);
   }

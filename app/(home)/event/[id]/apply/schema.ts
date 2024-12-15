@@ -24,8 +24,9 @@ export const CampSchema = z.object({
       message: "required",
     }),
   amount: z.number().min(1),
-  unitName: z.string().optional(),
-  phone: z.string().optional(),
+  unitName: requiredString,
+  unitLeaderName: requiredString,
+  unitPhone: requiredString.length(11, {message: "invalid phone number"}),
   members: z.array(ApplyMemberSchema),
   eventId: requiredString,
 });

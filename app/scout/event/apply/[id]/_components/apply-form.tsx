@@ -21,29 +21,29 @@ export const EventAppplyForm = ({ event, scoutId, appId }: EventAppplyFormProps)
 
     const router = useRouter()
 
-    const { mutate: createToken, isPending: isPendingCreateToken } = useMutation({
-        mutationFn: GENERATE_BKASH_TOKEN,
-        onSuccess: (data) => {
-            if (data?.token) {
-                createPayment({ token: data.token, appId, amount: event.entryFee })
-            }
-        },
-        onError: () => {
-            toast.error("Something went wrong")
-        }
-    })
+    // const { mutate: createToken, isPending: isPendingCreateToken } = useMutation({
+    //     mutationFn: GENERATE_BKASH_TOKEN,
+    //     onSuccess: (data) => {
+    //         if (data?.token) {
+    //             createPayment({ token: data.token, appId, amount: event.entryFee })
+    //         }
+    //     },
+    //     onError: () => {
+    //         toast.error("Something went wrong")
+    //     }
+    // })
 
-    const { mutate: createPayment, isPending: isPendingCreatePayment } = useMutation({
-        mutationFn: CREATE_PAYMENT_FOR_EVENT,
-        onSuccess: (data) => {
-            if (data?.url) {
-                window.location.replace(data?.url)
-            }
-        },
-        onError: (error) => {
-            console.log(error)
-        }
-    })
+    // const { mutate: createPayment, isPending: isPendingCreatePayment } = useMutation({
+    //     mutationFn: CREATE_PAYMENT_FOR_EVENT,
+    //     onSuccess: (data) => {
+    //         if (data?.url) {
+    //             window.location.replace(data?.url)
+    //         }
+    //     },
+    //     onError: (error) => {
+    //         console.log(error)
+    //     }
+    // })
 
     const { mutate: joinEvent, isPending: isLoading } = useMutation({
         mutationFn: EVENT_JOIN,
@@ -63,7 +63,7 @@ export const EventAppplyForm = ({ event, scoutId, appId }: EventAppplyFormProps)
     })
 
     const handlePay = () => {
-        createToken()
+        // createToken()
     }
 
     const handleJoin = () => {

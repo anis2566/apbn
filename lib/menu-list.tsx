@@ -245,7 +245,7 @@ export function getMenuList(pathname: string): Group[] {
               label: "Event",
               active: pathname === "/dashboard/app/event",
               icon: Calendar,
-              role: [Role.Admin],
+              role: [Role.Admin, Role.Moderator],
             },
             {
               href: "/dashboard/app/training",

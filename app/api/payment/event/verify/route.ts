@@ -9,10 +9,9 @@ export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const paymentID = searchParams.get("paymentID");
   const token = searchParams.get("token");
-  const scoutId = searchParams.get("scoutId");
   const appId = searchParams.get("appId");
 
-  if (!scoutId || !appId) redirect("/");
+  if (!appId) redirect("/");
 
   const res = await axios.post(
     process.env.NEXT_PUBLIC_PGW_BKASH_EXECUTE_PAYMENT_URL!,
@@ -28,7 +27,7 @@ export async function GET(req: NextRequest) {
   );
 
   if (res.data && res.data?.statusCode === "0000") {
-    await db.eventApplication.update({
+    await db.campApplication.update({
       where: {
         id: appId,
       },
@@ -37,8 +36,8 @@ export async function GET(req: NextRequest) {
         status: AppStatus.Approved,
       },
     });
-    redirect("/payment/success?callback=/scout/event");
+    redirect("/payment/success?callback=/");
   } else {
-    redirect(`/payment/fail?redirectUrl=/scout/event`);
+    redirect(`/payment/fail?redirectUrl=/`);
   }
 }

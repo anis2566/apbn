@@ -78,11 +78,7 @@ export const CREATE_PAYMENT_FOR_EVENT = async ({
     {
       mode: "0011",
       payerReference: " ",
-      callbackURL: `${
-        process.env.NEXT_PUBLIC_NODE_ENV === "development"
-          ? "http://localhost:3000"
-          : "https://apbnscouts.org"
-      }/api/payment/event/verify?token=${token}&appId=${appId}`,
+      callbackURL: `https://apbnscouts.org/api/payment/event/verify?token=${token}&appId=${appId}`,
       amount: amount,
       currency: "BDT",
       intent: "sale",

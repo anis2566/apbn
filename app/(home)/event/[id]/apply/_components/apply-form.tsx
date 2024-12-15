@@ -154,6 +154,19 @@ export const ApplyForm = ({ id }: ApplyFormProps) => {
                             <CollapsibleContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <FormField
                                     control={form.control}
+                                    name="unitName"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Unit Name</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
                                     name="members.0.name"
                                     render={({ field }) => (
                                         <FormItem>

@@ -81,7 +81,7 @@ export const CREATE_PAYMENT_FOR_EVENT = async ({
       mode: "0011",
       payerReference: " ",
       callbackURL: `https://apbnscouts.org/api/payment/event/verify?token=${token}&appId=${appId}`,
-      amount: amount,
+      amount: 1,
       currency: "BDT",
       intent: "sale",
       merchantInvoiceNumber:

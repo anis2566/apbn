@@ -17,11 +17,11 @@ export const apply = async (data: CampSchemaType) => {
     },
   });
 
-  if (camp) {
-    return {
-      error: "Application already exists",
-    };
-  }
+  // if (camp) {
+  //   return {
+  //     error: "Application already exists",
+  //   };
+  // }
 
   const newCamp = await db.campApplication.create({
     data: {

@@ -28,7 +28,7 @@ export const apply = async (data: CampSchemaType) => {
   const newCamp = await db.campApplication.create({
     data: {
       type: data.type,
-      amount: 104,
+      amount: amount,
       unitLeaderName: data.unitLeaderName,
       unitName: data.unitLeaderName,
       unitPhone: data.unitPhone,

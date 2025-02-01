@@ -33,12 +33,10 @@ export const ApplyForm = ({ id }: ApplyFormProps) => {
     const { mutate, isPending } = useMutation({
         mutationFn: apply,
         onSuccess: (data) => {
-            if (data.error) {
-                toast.error(data.error)
-            } else {
-                toast.success(data.success)
-                router.push(`/event/${id}/pay/${data.id}`)
-            }
+                if(data?.success){
+                    toast.success(data.success)
+                    router.push(`/event/${id}/pay/${data.id}`)
+                }
         },
     })
 

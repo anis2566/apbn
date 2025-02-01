@@ -56,7 +56,7 @@ export const Ticket = ({ app }: TicketProps) => {
                     <Image src="/camp.jpg" width={200} height={200} alt="Camp logo" className="object-contain w-[100px] h-[100px] rounded-full" />
                     <div className="flex flex-col gap-y-2 items-center">
                         <h1 className="text-xl font-bold">আর্মড পুলিশ ব্যাটালিয়ন স্কাউট গ্রুপ</h1>
-                        <h1 className="text-base font-semibold text-center">১ম পুলিশ স্কুল স্কাউট ফ্রেন্ডশিপ ক্যাম্প ও <br /> ১০ম বার্ষিক ক্যাম্প ২০২৪</h1>
+                        <h1 className="text-base font-semibold text-center">চড়ুইভাতি</h1>
                     </div>
                     <Image src="/logo.png" width={200} height={200} alt="Logo" className="object-contain w-[100px] h-[100px]" />
                 </div>

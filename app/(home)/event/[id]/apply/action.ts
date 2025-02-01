@@ -23,6 +23,8 @@ export const apply = async (data: CampSchemaType) => {
   //   };
   // }
 
+    const amount = data.type === CampType.Unit ? (data.members.length * 104) : 104
+
   const newCamp = await db.campApplication.create({
     data: {
       type: data.type,

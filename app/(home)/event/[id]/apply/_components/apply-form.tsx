@@ -46,7 +46,7 @@ export const ApplyForm = ({ id }: ApplyFormProps) => {
         resolver: zodResolver(CampSchema),
         defaultValues: {
             type: CampType.Individual,
-            amount: 1470,
+            amount: 104,
             unitName: "",
             unitLeaderName: "",
             unitPhone: "",

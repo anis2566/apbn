@@ -8,6 +8,7 @@ export const apply = async (data: CampSchemaType) => {
   const camp = await db.campApplication.findFirst({
     where: {
       type: data.type,
+      eventId: data.eventId,
       members: {
         some: {
           phone: data.members[0].phone,
